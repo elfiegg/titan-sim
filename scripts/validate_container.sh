@@ -10,7 +10,9 @@ mkdir -p "$VALIDATION_OUTPUT"
 printf 'environment\n' > "$VALIDATION_OUTPUT/stage.txt"
 trap 'result=$?; printf "%s\n" "$result" > "$VALIDATION_OUTPUT/exit-code.txt"' EXIT
 python -m venv --system-site-packages "$VALIDATION_VENV"
-python -c 'import torch; print("torch===" + torch.__version__)' > "$VALIDATION_OUTPUT/torch-constraint.txt"
+# pip resolves wheel/distribution metadata, which can differ from torch.__version__
+# in NVIDIA images. Preserve that installed distribution; check runtime identity below.
+python -c 'from importlib.metadata import version; print("torch===" + version("torch"))' > "$VALIDATION_OUTPUT/torch-constraint.txt"
 "$VALIDATION_VENV/bin/pip" install -c "$VALIDATION_OUTPUT/torch-constraint.txt" -r "$TITAN_CHECKOUT/requirements.txt" pytest > "$VALIDATION_OUTPUT/dependencies.log" 2>&1
 export PATH="$VALIDATION_VENV/bin:$PATH"
 export PYTHONPATH="$TITAN_CHECKOUT:$SIM_CHECKOUT${PYTHONPATH:+:$PYTHONPATH}"
@@ -26,7 +28,8 @@ import sys
 import torch
 from titan_sim.recipes import import_torchtitan
 import os
-result = {'torch_version': torch.__version__, 'cuda': torch.version.cuda,
+result = {'torch_version': torch.__version__, 'torch_distribution_version': md.version('torch'),
+          'cuda': torch.version.cuda,
           'nccl': torch.cuda.nccl.version(), 'torchtitan_commit': import_torchtitan(os.environ['TORCHTITAN_ROOT']),
           'packages': {name: md.version(name) for name in ('spmd_types', 'torch_remat', 'attn-gym')},
           'devices': [{'name': torch.cuda.get_device_name(i), 'capacity_bytes': torch.cuda.get_device_properties(i).total_memory}
