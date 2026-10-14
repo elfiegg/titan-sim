@@ -81,7 +81,7 @@ substituted for a missing implementation.
 
 ## What tests establish
 
-Latest local verification: 96 tests passed with no skips on PyTorch 2.14.1.
+The earlier local verification passed 96 tests with no skips on PyTorch 2.14.1.
 Editable package installation and the installed command-line example also passed.
 The comparison exporter passed a separate synthetic JSON/CSV/SVG check; this
 checks presentation only and is not a DeepSeek-V3 result.
@@ -96,7 +96,7 @@ controls. Report tests distinguish theoretical ceilings from measured points.
 The local test environment uses public macOS PyTorch 2.14.1. Passing tests there
 are separate evidence from the specified NVIDIA container. Initial tests in
 that container exposed the native Stream API difference; the updated Python
-control shim subsequently passed local tests and awaits target revalidation.
+control shim subsequently passed the selected-container 96-test run described below.
 
 ## Outstanding target validation
 
@@ -110,8 +110,28 @@ unit tests or GPU training. The runtime version string used as the pip constrain
 differed from the installed NVIDIA wheel metadata version. The installer now
 uses distribution metadata for the constraint and retains its separate exact
 runtime assertion; a local regression test covers the mismatch. The dependent
-full run was cancelled as designed. Target revalidation of the correction remains
-necessary; no training or memory-accuracy result follows from the local fix.
+full run was cancelled as designed.
+
+The replacement attempt confirmed that dependency correction and recorded
+TorchTitan `607852350b41b4b280d8b8de6340f4847ed71c5e`, runtime PyTorch
+`2.14.0a0+b2c75dd062.nv26.09`, CUDA 13.4, NCCL 2.31.2, and four GB200 devices
+with 197,897,617,408 bytes each. All 96 simulator tests then present passed.
+The next upstream test, `test_full_ac_does_not_recompute_registered_effects`,
+failed: its registered effect executed twice instead of once after backward.
+The validation script stopped before CPU capture probes and GPU debug training;
+the dependent full run was cancelled. This was not an out-of-memory failure.
+
+The selected FullAC policy requests recomputation and relies on the checkpoint
+runtime to preserve registered effects. A standalone CPU diagnostic reproduces
+effect replay without simulator imports. Its explicit-save diagnostic control
+avoids replay, and both cases produce the expected gradients. No upstream policy
+was changed. This establishes a checkpoint/effect-contract incompatibility,
+not demonstrated DeepSeek gradient corruption. See
+[local diagnostic](validation/checkpoint_effect_probe_local.json) and
+[reproduction script](../scripts/probe_checkpoint_effects.py). The local and
+[inspected NVIDIA checkpoint source](validation/checkpoint_source_nv2609.json)
+have identical SHA-256 hashes; source inspection remains separate from runtime
+execution evidence.
 
 Still required before a DeepSeek-V3 accuracy report:
 
@@ -131,3 +151,20 @@ Its charts must never be presented as DeepSeek-V3 results.
 
 Full-model shape evidence and remaining CPU execution blockers are detailed in
 [CPU component probes](validation/CPU_COMPONENT_PROBES.md).
+
+## Supplied historical runtime logs
+
+Latest local verification with the selected upstream checkout enabled: **129
+tests passed, no skips**, on macOS PyTorch 2.14.1. This includes 14 observation
+parser tests and 19 component-budget tests. The five-run analysis CLI completed,
+source-hash mismatch rejection was checked, and all three generated figures
+were visually inspected. The two declared budgets remained incomplete and
+returned unknown required memory on both capacity profiles, as intended.
+
+The [runtime memory analysis](RUNTIME_MEMORY_ANALYSIS.md) audits five supplied
+DeepSeek-V3/V4 workloads before using their observations. Its importer preserves
+source hashes, rank uncertainty, units, and counter windows. Explicit stash
+payloads are reconstructed from logged geometry; separate conditional budgets
+use declared shapes and lifetimes without fitting observed totals. All five
+historical runs fail the matching-context gate for the selected target.
+There is still no independent full-model CPU/GPU memory-error result.

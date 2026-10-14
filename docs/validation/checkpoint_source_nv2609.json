@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "source": "read_only_container_source_inspection",
+  "runtime_execution_performed_by_this_inspection": false,
+  "container": "nvcr.io/nvidia/pytorch:26.09-py3",
+  "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+  "container_source_path": "/usr/local/lib/python3.12/dist-packages/torch/utils/checkpoint.py",
+  "sha256": "86a3d3ce928f5e302996e5a4f185dd47d42bdfe55021355cec90c37259b89887",
+  "source_observation": {
+    "class": "_CachingTorchDispatchMode",
+    "policy_call_line": 1588,
+    "save_decision_line": 1600,
+    "behavior": "Uses the caller policy directly. In eager execution, caches outputs for MUST_SAVE/PREFER_SAVE; otherwise marks recompute. No registered-effect override is present in this decision."
+  },
+  "upstream_policy": {
+    "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+    "path": "torchtitan/distributed/activation_checkpoint.py",
+    "function": "_full_ac_policy",
+    "behavior": "Unconditionally returns CheckpointPolicy.PREFER_RECOMPUTE and relies on PyTorch to preserve registered effects."
+  },
+  "scope": "Source-level explanation for the separately observed target-container FullAC test failure; not a new target-runtime execution or a full-model numerical result."
+}

@@ -1,0 +1,12 @@
+{
+  "name": "NVIDIA GB200 capacity scenario from rounded runtime log",
+  "memory_capacity_bytes": 197568495616,
+  "scope": "memory capacity only; no arithmetic or bandwidth calibration",
+  "provenance": {
+    "source": "deepseek_v3_671b.out:28131",
+    "printed_value": 184.0,
+    "printed_unit": "GiB",
+    "exact_capacity_verified": false,
+    "note": "Displayed value rounded to two decimals; converted to nearest integer byte for scenario arithmetic, not an exact hardware measurement."
+  }
+}

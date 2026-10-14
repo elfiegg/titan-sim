@@ -1,0 +1,130 @@
+{
+  "source": "independent_component_spec",
+  "name": "DeepSeek-V3 PP1 EP64 batch8 conditional steady-step components",
+  "ranks": [
+    0
+  ],
+  "phases": [
+    "initialized",
+    "forward_end",
+    "backward",
+    "optimizer",
+    "step_end"
+  ],
+  "coverage": {
+    "pipeline_buffers": "not_applicable"
+  },
+  "components": [
+    {
+      "name": "master_parameters",
+      "category": "parameters",
+      "rank": 0,
+      "storage_id": "master_parameters",
+      "shape": [
+        2621196892
+      ],
+      "dtype": "float32",
+      "live_range": {
+        "start": "initialized",
+        "end": null
+      },
+      "provenance": {
+        "kind": "analytical_assumption",
+        "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+      }
+    },
+    {
+      "name": "adam_first_moment",
+      "category": "optimizer",
+      "rank": 0,
+      "storage_id": "adam_first_moment",
+      "shape": [
+        2621196892
+      ],
+      "dtype": "float32",
+      "live_range": {
+        "start": "initialized",
+        "end": null
+      },
+      "provenance": {
+        "kind": "analytical_assumption",
+        "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+      }
+    },
+    {
+      "name": "adam_second_moment",
+      "category": "optimizer",
+      "rank": 0,
+      "storage_id": "adam_second_moment",
+      "shape": [
+        2621196892
+      ],
+      "dtype": "float32",
+      "live_range": {
+        "start": "initialized",
+        "end": null
+      },
+      "provenance": {
+        "kind": "analytical_assumption",
+        "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+      }
+    },
+    {
+      "name": "checkpoint_boundaries",
+      "category": "activations",
+      "rank": 0,
+      "storage_id": "checkpoint_boundaries",
+      "shape": [
+        61,
+        32768,
+        7168
+      ],
+      "dtype": "bfloat16",
+      "live_range": {
+        "start": "forward_end",
+        "end": "optimizer"
+      },
+      "provenance": {
+        "kind": "analytical_assumption",
+        "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+      }
+    },
+    {
+      "name": "gradient_shards",
+      "category": "gradients",
+      "rank": 0,
+      "storage_id": "gradient_shards",
+      "shape": [
+        2621196892
+      ],
+      "dtype": "float32",
+      "live_range": {
+        "start": "backward",
+        "end": "step_end"
+      },
+      "provenance": {
+        "kind": "analytical_assumption",
+        "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+      }
+    }
+  ],
+  "configuration": {
+    "model": "DeepSeek-V3 671B",
+    "parameter_elements": 671026404352,
+    "world_size": 256,
+    "pp": 1,
+    "tp": 1,
+    "ep": 64,
+    "sequence_length": 4096,
+    "local_batch": 8
+  },
+  "assumptions": [
+    "Representative evenly sharded rank; not all-rank execution.",
+    "Steady step after optimizer initialization; initialized means start of this modeled step, not program startup.",
+    "All parameter elements and two Adam moments assumed FP32 and evenly sharded over256; supplied historical logs do not establish every state dtype/placement.",
+    "One distinct BF16 hidden-state checkpoint boundary per61layers assumed simultaneously retained at forward_end. Shapes use7168hidden and4096sequence. Actual compiler/AC saves, aliases, gradients and frees unvalidated.",
+    "Full FP32 gradient shard assumed live across backward and optimizer. Actual incremental lifetimes are not inferred.",
+    "All categories except PP buffers remain incomplete, including specified categories: no fit/required-capacity verdict and no log-based accuracy claim.",
+    "Quantized compute label does not determine master, optimizer or activation storage dtype."
+  ]
+}

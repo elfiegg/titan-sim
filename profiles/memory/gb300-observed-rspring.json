@@ -1,0 +1,12 @@
+{
+  "name": "NVIDIA GB300 capacity scenario from rounded runtime log",
+  "memory_capacity_bytes": 297018463355,
+  "scope": "memory capacity only; no arithmetic or bandwidth calibration",
+  "provenance": {
+    "source": "lyris_expB-rung5-mxfp8-64n-408471707.txt:22",
+    "printed_value": 276.62,
+    "printed_unit": "GiB",
+    "exact_capacity_verified": false,
+    "note": "Displayed value rounded to two decimals; converted to nearest integer byte for scenario arithmetic, not an exact hardware measurement."
+  }
+}

@@ -97,6 +97,35 @@ upstream local compile regions remain enabled. See
 See [implementation items](docs/IMPLEMENTATION_ITEMS.md) for independent agent
 work units, acceptance checks, and remaining fidelity work.
 
+The [runtime memory analysis](docs/RUNTIME_MEMORY_ANALYSIS.md) audits the supplied
+DeepSeek-V3 and V4 logs, separates measured counters from reconstructed buffer
+payloads, and explains the remaining parallel capture and validation gaps.
+Two additional CPU tools support that analysis:
+
+```sh
+python -m titan_sim.log_observations training.log --output observations.json
+python -m titan_sim.memory_budget examples/memory/deepseek-v3-batch8-conditional.json \
+  --hardware profiles/memory/gb200-observed-1098308.json \
+  --hardware profiles/memory/gb300-observed-rspring.json --output budget.json
+```
+
+The component budget tracks declared lifetimes, rank-local storage aliases,
+and host versus GPU buffers. It is a separate analytical input path: it does
+not generate a TorchTitan pipeline schedule. Incomplete coverage keeps required
+memory unknown, even when the known subtotal is below device capacity.
+Hardware capacity changes do not change declared tensor byte sizes.
+
+To reproduce the audited reports with the original private logs and the optional
+`plots` dependency installed:
+
+```sh
+python scripts/analyze_runtime_logs.py --log-root /path/to/extracted-bundle \
+  --additional-log-dir /path/to/deepseek-1098308 --output results/log-audit
+```
+
+This script verifies the reviewed source hashes before attaching configuration
+annotations. Raw logs are not included in the repository.
+
 The [multi-node validation guide](docs/MULTINODE_VALIDATION.md) includes the
 self-running container checks, full 64-node launcher, bounded allocator history,
 and independent comparison export commands.

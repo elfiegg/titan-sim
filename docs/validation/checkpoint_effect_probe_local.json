@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "source": "independent_cpu_runtime_diagnostic",
+  "status": "diagnostic_complete",
+  "torch_version": "2.14.1",
+  "torch_git_version": "5c4886908584029761b579af026dcfb627c84070",
+  "python_version": "3.12.11",
+  "platform": "Darwin",
+  "device": "cpu",
+  "torchtitan_imported": false,
+  "simulator_imported": false,
+  "upstream_modified": false,
+  "torchtitan_policy_reference": "607852350b41b4b280d8b8de6340f4847ed71c5e: torchtitan/distributed/activation_checkpoint.py:_full_ac_policy",
+  "expected_behavior": "One execution of a registered ordered effect per original forward, none during recomputation",
+  "effect_registered": true,
+  "results": [
+    {
+      "policy": "original_prefer_recompute",
+      "iterations": [
+        {
+          "iteration": 0,
+          "calls_after_forward": 1,
+          "calls_after_backward": 2,
+          "expected_calls_after_backward": 1,
+          "forward_matches": true,
+          "gradients_match": true
+        },
+        {
+          "iteration": 1,
+          "calls_after_forward": 3,
+          "calls_after_backward": 4,
+          "expected_calls_after_backward": 2,
+          "forward_matches": true,
+          "gradients_match": true
+        }
+      ],
+      "effect_policy_visits": [
+        {
+          "is_recompute": false,
+          "effect_registered": true
+        },
+        {
+          "is_recompute": false,
+          "effect_registered": true
+        }
+      ],
+      "preserves_registered_effect": false
+    },
+    {
+      "policy": "explicit_must_save_control",
+      "iterations": [
+        {
+          "iteration": 0,
+          "calls_after_forward": 1,
+          "calls_after_backward": 1,
+          "expected_calls_after_backward": 1,
+          "forward_matches": true,
+          "gradients_match": true
+        },
+        {
+          "iteration": 1,
+          "calls_after_forward": 2,
+          "calls_after_backward": 2,
+          "expected_calls_after_backward": 2,
+          "forward_matches": true,
+          "gradients_match": true
+        }
+      ],
+      "effect_policy_visits": [
+        {
+          "is_recompute": false,
+          "effect_registered": true
+        },
+        {
+          "is_recompute": false,
+          "effect_registered": true
+        }
+      ],
+      "preserves_registered_effect": true
+    }
+  ],
+  "original_policy_meets_expected_behavior": false,
+  "explicit_save_control_meets_expected_behavior": true,
+  "checkpoint_source": {
+    "module": "torch.utils.checkpoint",
+    "sha256": "86a3d3ce928f5e302996e5a4f185dd47d42bdfe55021355cec90c37259b89887"
+  },
+  "limitations": [
+    "CPU custom-operator diagnostic, not a full model or GPU validation.",
+    "Correct gradients in this identity example do not establish correctness of other stateful operations.",
+    "The explicit-save control is not applied to the pinned training recipe."
+  ]
+}

@@ -77,3 +77,18 @@ scope can be promoted. PUB-01 publishes this scope explicitly.
 
 See [validation record](VALIDATION.md) for completed evidence and the remaining
 256-GPU comparison gates.
+
+## Supplied runtime-log analysis
+
+The [runtime memory analysis](RUNTIME_MEMORY_ANALYSIS.md) adds two implemented
+foundations: a log observation importer with source hashes, explicit metric
+semantics and configuration comparison gates; and a phase-based component
+budget with rank ownership, storage aliasing, host/GPU separation and capacity
+scenarios. Logged buffer geometry remains observation evidence and cannot be
+submitted as an independent predicted component.
+
+This work provides tests and conditional examples for partial memory budgets.
+It does not complete MEM-02 allocator fidelity, DIST-02 pipeline execution,
+COMP-01 compiled capture, or VAL-01 matched full-model validation. Those still
+require actual allocation/free and stream lifetimes, upstream execution across
+ranks, matching compiler policies, and independent GPU observations.

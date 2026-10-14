@@ -1,0 +1,598 @@
+{
+  "schema_version": 1,
+  "source": "independent_component_budget",
+  "ledger": {
+    "name": "DeepSeek-V3 PP1 EP64 batch16 conditional steady-step components",
+    "components": [
+      {
+        "name": "master_parameters",
+        "category": "parameters",
+        "rank": 0,
+        "storage_id": "master_parameters",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "initialized",
+          "end": null
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        },
+        "device": "cuda",
+        "resolved_size_bytes": 10484787568
+      },
+      {
+        "name": "adam_first_moment",
+        "category": "optimizer",
+        "rank": 0,
+        "storage_id": "adam_first_moment",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "initialized",
+          "end": null
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        },
+        "device": "cuda",
+        "resolved_size_bytes": 10484787568
+      },
+      {
+        "name": "adam_second_moment",
+        "category": "optimizer",
+        "rank": 0,
+        "storage_id": "adam_second_moment",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "initialized",
+          "end": null
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        },
+        "device": "cuda",
+        "resolved_size_bytes": 10484787568
+      },
+      {
+        "name": "checkpoint_boundaries",
+        "category": "activations",
+        "rank": 0,
+        "storage_id": "checkpoint_boundaries",
+        "shape": [
+          61,
+          65536,
+          7168
+        ],
+        "dtype": "bfloat16",
+        "live_range": {
+          "start": "forward_end",
+          "end": "optimizer"
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        },
+        "device": "cuda",
+        "resolved_size_bytes": 57310969856
+      },
+      {
+        "name": "gradient_shards",
+        "category": "gradients",
+        "rank": 0,
+        "storage_id": "gradient_shards",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "backward",
+          "end": "step_end"
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        },
+        "device": "cuda",
+        "resolved_size_bytes": 10484787568
+      }
+    ],
+    "per_rank": {
+      "0": {
+        "phases": [
+          {
+            "phase": "initialized",
+            "known_bytes": 31454362704,
+            "by_category": {
+              "parameters": 10484787568,
+              "optimizer": 20969575136,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_storage_ids": [
+              "master_parameters",
+              "adam_first_moment",
+              "adam_second_moment"
+            ],
+            "unknown_components": [],
+            "known_host_bytes": 0,
+            "host_by_category": {
+              "parameters": 0,
+              "optimizer": 0,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_host_storage_ids": [],
+            "unknown_host_components": [],
+            "uncovered_categories": [
+              "parameters",
+              "optimizer",
+              "gradients",
+              "gathered_parameters",
+              "activations",
+              "moe_buffers",
+              "quantization",
+              "workspace",
+              "external",
+              "allocator_cache"
+            ],
+            "required_memory_bytes": null
+          },
+          {
+            "phase": "forward_end",
+            "known_bytes": 88765332560,
+            "by_category": {
+              "parameters": 10484787568,
+              "optimizer": 20969575136,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 57310969856,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_storage_ids": [
+              "master_parameters",
+              "adam_first_moment",
+              "adam_second_moment",
+              "checkpoint_boundaries"
+            ],
+            "unknown_components": [],
+            "known_host_bytes": 0,
+            "host_by_category": {
+              "parameters": 0,
+              "optimizer": 0,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_host_storage_ids": [],
+            "unknown_host_components": [],
+            "uncovered_categories": [
+              "parameters",
+              "optimizer",
+              "gradients",
+              "gathered_parameters",
+              "activations",
+              "moe_buffers",
+              "quantization",
+              "workspace",
+              "external",
+              "allocator_cache"
+            ],
+            "required_memory_bytes": null
+          },
+          {
+            "phase": "backward",
+            "known_bytes": 99250120128,
+            "by_category": {
+              "parameters": 10484787568,
+              "optimizer": 20969575136,
+              "gradients": 10484787568,
+              "gathered_parameters": 0,
+              "activations": 57310969856,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_storage_ids": [
+              "master_parameters",
+              "adam_first_moment",
+              "adam_second_moment",
+              "checkpoint_boundaries",
+              "gradient_shards"
+            ],
+            "unknown_components": [],
+            "known_host_bytes": 0,
+            "host_by_category": {
+              "parameters": 0,
+              "optimizer": 0,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_host_storage_ids": [],
+            "unknown_host_components": [],
+            "uncovered_categories": [
+              "parameters",
+              "optimizer",
+              "gradients",
+              "gathered_parameters",
+              "activations",
+              "moe_buffers",
+              "quantization",
+              "workspace",
+              "external",
+              "allocator_cache"
+            ],
+            "required_memory_bytes": null
+          },
+          {
+            "phase": "optimizer",
+            "known_bytes": 41939150272,
+            "by_category": {
+              "parameters": 10484787568,
+              "optimizer": 20969575136,
+              "gradients": 10484787568,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_storage_ids": [
+              "master_parameters",
+              "adam_first_moment",
+              "adam_second_moment",
+              "gradient_shards"
+            ],
+            "unknown_components": [],
+            "known_host_bytes": 0,
+            "host_by_category": {
+              "parameters": 0,
+              "optimizer": 0,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_host_storage_ids": [],
+            "unknown_host_components": [],
+            "uncovered_categories": [
+              "parameters",
+              "optimizer",
+              "gradients",
+              "gathered_parameters",
+              "activations",
+              "moe_buffers",
+              "quantization",
+              "workspace",
+              "external",
+              "allocator_cache"
+            ],
+            "required_memory_bytes": null
+          },
+          {
+            "phase": "step_end",
+            "known_bytes": 31454362704,
+            "by_category": {
+              "parameters": 10484787568,
+              "optimizer": 20969575136,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_storage_ids": [
+              "master_parameters",
+              "adam_first_moment",
+              "adam_second_moment"
+            ],
+            "unknown_components": [],
+            "known_host_bytes": 0,
+            "host_by_category": {
+              "parameters": 0,
+              "optimizer": 0,
+              "gradients": 0,
+              "gathered_parameters": 0,
+              "activations": 0,
+              "pipeline_buffers": 0,
+              "moe_buffers": 0,
+              "quantization": 0,
+              "workspace": 0,
+              "external": 0,
+              "allocator_cache": 0
+            },
+            "live_host_storage_ids": [],
+            "unknown_host_components": [],
+            "uncovered_categories": [
+              "parameters",
+              "optimizer",
+              "gradients",
+              "gathered_parameters",
+              "activations",
+              "moe_buffers",
+              "quantization",
+              "workspace",
+              "external",
+              "allocator_cache"
+            ],
+            "required_memory_bytes": null
+          }
+        ],
+        "max_known_bytes": 99250120128,
+        "max_known_host_bytes": 0,
+        "peak_known_phases": [
+          "backward"
+        ],
+        "required_peak_bytes": null
+      }
+    },
+    "max_per_rank_by_phase": [
+      {
+        "phase": "initialized",
+        "max_per_rank_known_bytes": 31454362704,
+        "max_per_rank_known_host_bytes": 0
+      },
+      {
+        "phase": "forward_end",
+        "max_per_rank_known_bytes": 88765332560,
+        "max_per_rank_known_host_bytes": 0
+      },
+      {
+        "phase": "backward",
+        "max_per_rank_known_bytes": 99250120128,
+        "max_per_rank_known_host_bytes": 0
+      },
+      {
+        "phase": "optimizer",
+        "max_per_rank_known_bytes": 41939150272,
+        "max_per_rank_known_host_bytes": 0
+      },
+      {
+        "phase": "step_end",
+        "max_per_rank_known_bytes": 31454362704,
+        "max_per_rank_known_host_bytes": 0
+      }
+    ],
+    "max_over_ranks_known_bytes": 99250120128,
+    "max_over_ranks_known_host_bytes": 0,
+    "required_max_over_ranks_bytes": null,
+    "coverage_complete": false
+  },
+  "capacity_scenarios": [
+    {
+      "hardware": "NVIDIA GB200 capacity scenario from rounded runtime log",
+      "memory_capacity_bytes": 197568495616,
+      "source": "capacity_scenario",
+      "per_rank": {
+        "0": {
+          "known_bytes": 99250120128,
+          "required_peak_bytes": null,
+          "known_host_peak_bytes": 0,
+          "host_capacity_evaluated": false,
+          "known_headroom_bytes": 98318375488,
+          "capacity_verdict": "unknown",
+          "gpu_fit_validated": false
+        }
+      },
+      "gpu_fit_validated": false
+    },
+    {
+      "hardware": "NVIDIA GB300 capacity scenario from rounded runtime log",
+      "memory_capacity_bytes": 297018463355,
+      "source": "capacity_scenario",
+      "per_rank": {
+        "0": {
+          "known_bytes": 99250120128,
+          "required_peak_bytes": null,
+          "known_host_peak_bytes": 0,
+          "host_capacity_evaluated": false,
+          "known_headroom_bytes": 197768343227,
+          "capacity_verdict": "unknown",
+          "gpu_fit_validated": false
+        }
+      },
+      "gpu_fit_validated": false
+    }
+  ],
+  "assumptions": [
+    "Known bytes mean numerically specified, not experimentally validated; declared assumptions remain conditional.",
+    "Missing category coverage or unknown live components keeps required memory unknown.",
+    "A known-component overflow is conditional on the declared sizes and lifetimes; no GPU fit is validated.",
+    "Phase lifetimes are caller declarations, not a CPU runtime trace or an upstream pipeline schedule.",
+    "Pipeline buffers use explicit declared lifetimes; no actual upstream pipeline-parallel execution is claimed.",
+    "CPU and pinned-host buffers are reported separately and never consume GPU capacity; host capacity and full host coverage are not evaluated.",
+    "Aliased backing storage is counted once per rank and phase; phase maxima are not summed.",
+    "Allocator cache means unused reserved bytes only; total reserved and allocated bytes are never added.",
+    "Storage dtype must be explicit; a compute precision or hardware name does not change storage bytes.",
+    "Hardware scenarios reuse the same ledger; different kernels, workspaces or sharding require a separate explicit spec."
+  ],
+  "input_spec": {
+    "source": "independent_component_spec",
+    "name": "DeepSeek-V3 PP1 EP64 batch16 conditional steady-step components",
+    "ranks": [
+      0
+    ],
+    "phases": [
+      "initialized",
+      "forward_end",
+      "backward",
+      "optimizer",
+      "step_end"
+    ],
+    "coverage": {
+      "pipeline_buffers": "not_applicable"
+    },
+    "components": [
+      {
+        "name": "master_parameters",
+        "category": "parameters",
+        "rank": 0,
+        "storage_id": "master_parameters",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "initialized",
+          "end": null
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        }
+      },
+      {
+        "name": "adam_first_moment",
+        "category": "optimizer",
+        "rank": 0,
+        "storage_id": "adam_first_moment",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "initialized",
+          "end": null
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        }
+      },
+      {
+        "name": "adam_second_moment",
+        "category": "optimizer",
+        "rank": 0,
+        "storage_id": "adam_second_moment",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "initialized",
+          "end": null
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        }
+      },
+      {
+        "name": "checkpoint_boundaries",
+        "category": "activations",
+        "rank": 0,
+        "storage_id": "checkpoint_boundaries",
+        "shape": [
+          61,
+          65536,
+          7168
+        ],
+        "dtype": "bfloat16",
+        "live_range": {
+          "start": "forward_end",
+          "end": "optimizer"
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        }
+      },
+      {
+        "name": "gradient_shards",
+        "category": "gradients",
+        "rank": 0,
+        "storage_id": "gradient_shards",
+        "shape": [
+          2621196892
+        ],
+        "dtype": "float32",
+        "live_range": {
+          "start": "backward",
+          "end": "step_end"
+        },
+        "provenance": {
+          "kind": "analytical_assumption",
+          "detail": "Full-shard FP32 state and BF16 checkpoint-boundary scenario; no allocator values fitted. See spec assumptions."
+        }
+      }
+    ],
+    "configuration": {
+      "model": "DeepSeek-V3 671B",
+      "parameter_elements": 671026404352,
+      "world_size": 256,
+      "pp": 1,
+      "tp": 1,
+      "ep": 64,
+      "sequence_length": 4096,
+      "local_batch": 16
+    },
+    "assumptions": [
+      "Representative evenly sharded rank; not all-rank execution.",
+      "Steady step after optimizer initialization; initialized means start of this modeled step, not program startup.",
+      "All parameter elements and two Adam moments assumed FP32 and evenly sharded over256; supplied historical logs do not establish every state dtype/placement.",
+      "One distinct BF16 hidden-state checkpoint boundary per61layers assumed simultaneously retained at forward_end. Shapes use7168hidden and4096sequence. Actual compiler/AC saves, aliases, gradients and frees unvalidated.",
+      "Full FP32 gradient shard assumed live across backward and optimizer. Actual incremental lifetimes are not inferred.",
+      "All categories except PP buffers remain incomplete, including specified categories: no fit/required-capacity verdict and no log-based accuracy claim.",
+      "Quantized compute label does not determine master, optimizer or activation storage dtype."
+    ]
+  },
+  "input_spec_source": "examples/memory/deepseek-v3-batch16-conditional.json",
+  "input_spec_sha256": "a4230fb5c6cbcbb3fb223e526caafb825ecc48b5b9ffa7455167786e253b6ec0"
+}
