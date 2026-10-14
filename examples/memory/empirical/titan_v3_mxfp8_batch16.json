@@ -1,0 +1,34 @@
+{
+  "source": "empirical_memory_request",
+  "context": {
+    "model": "DeepSeek-V3 671B",
+    "framework": "TorchTitan",
+    "revision": null,
+    "torch_version": null,
+    "hardware": "NVIDIA GB300",
+    "world_size": 256,
+    "tp": 1,
+    "pp": 1,
+    "ep": 64,
+    "cp": 1,
+    "dp_shard": 256,
+    "dp_replicate": 1,
+    "sequence_length": 4096,
+    "tokens_per_rank": 65536,
+    "precision": "MXFP8 compute",
+    "checkpoint_policy": "FullAC",
+    "compile_policy": "loss and each TransformerBlock",
+    "global_batch": 4096,
+    "microbatches": 1,
+    "memory_metric": "training_memory_unspecified"
+  },
+  "baseline": {
+    "state_bytes": 41939150272,
+    "checkpoint_proxy_bytes": 57310969856,
+    "parameter_elements": 671026404352,
+    "state_bytes_per_local_parameter": 16,
+    "layers": 61,
+    "hidden_size": 7168,
+    "checkpoint_dtype_bytes": 2
+  }
+}

@@ -1,5 +1,10 @@
 # Runtime Memory Evidence and Conditional Component Budgets
 
+The subsequent [log-calibrated memory model](LOG_CALIBRATED_MEMORY.md) fits
+empirical allowances to these observations. The independent conditional budgets
+below retain their original assumptions and are not reclassified as calibrated
+or validated predictions.
+
 *Assessment of five supplied training runs. GB denotes decimal bytes and GiB denotes binary bytes, except where a logger's unverified `GB` label is explicitly retained.*
 
 ## Abstract

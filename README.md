@@ -18,6 +18,11 @@ distributed backend, upstream pipeline schedule lowering, live host waits,
 compiler/quantization plans, and allocator/network scenarios, with their current
 coverage boundaries. Full-model validation remains separate.
 
+The [log-calibrated memory model](docs/LOG_CALIBRATED_MEMORY.md) adds empirical
+V3 runtime allowances and V4 allocator ratios from the supplied GPU logs. It runs
+on CPU, preserves calibration scope, and keeps fitted counter estimates separate
+from independently simulated storage and required-capacity claims.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.

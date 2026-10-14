@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "source": "log_calibrated_memory_profile",
+  "name": "titan_v3_expert_mxfp8_batch8",
+  "formula": "state_bytes + runtime_factor * checkpoint_proxy_bytes",
+  "context": {
+    "model": "DeepSeek-V3 671B",
+    "framework": "TorchTitan",
+    "revision": null,
+    "torch_version": null,
+    "hardware": "NVIDIA GB200",
+    "world_size": 256,
+    "tp": 1,
+    "pp": 1,
+    "ep": 64,
+    "cp": 1,
+    "dp_shard": 256,
+    "dp_replicate": 1,
+    "expert_tp": 1,
+    "sequence_length": 4096,
+    "tokens_per_rank": 32768,
+    "precision": "expert-only MXFP8 compute",
+    "attention": "sdpa",
+    "checkpoint_policy": "FullAC",
+    "compile_policy": "each TransformerBlock",
+    "global_batch": 2048,
+    "microbatches": 1,
+    "memory_metric": "training_memory_unspecified"
+  },
+  "baseline": {
+    "state_bytes": 41939150272,
+    "checkpoint_proxy_bytes": 28655484928,
+    "parameter_elements": 671026404352,
+    "state_bytes_per_local_parameter": 16,
+    "layers": 61,
+    "hidden_size": 7168,
+    "checkpoint_dtype_bytes": 2
+  },
+  "assumptions": [
+    "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+    "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+    "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+    "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+    "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+  ],
+  "runtime_factor": 2.366318410921153,
+  "planning_factor": 2.4,
+  "planning_factor_policy": "Round fitted coefficient upward to 0.1; heuristic, not a confidence bound",
+  "target_metric": "training_memory_unspecified",
+  "metric_semantics_verified": false,
+  "source_evidence": {
+    "source": "additional/deepseek_v3_671b.out",
+    "sha256": "6f9354483ad56a3b9a95f4e801c18f0b3f624ac04a9d42570bc3064f475a9057",
+    "maximum_sample": {
+      "source": "additional/deepseek_v3_671b.out",
+      "line": 135938,
+      "rank": null,
+      "step": 10,
+      "metric": "training_memory_unspecified",
+      "value": 102.21,
+      "unit": "GiB",
+      "bytes": 109747151831,
+      "metric_semantics_verified": false,
+      "window": "unverified",
+      "loss": 10.0025,
+      "grad_norm": 11.443,
+      "tps": 3122.0,
+      "tflops": 877.7
+    }
+  },
+  "sampled_counter_history": [
+    {
+      "step": 1,
+      "minimum_bytes": 109339129938,
+      "maximum_bytes": 109349867356,
+      "sample_count": 256,
+      "known_ranks": [],
+      "has_unranked_samples": true
+    },
+    {
+      "step": 10,
+      "minimum_bytes": 109736414413,
+      "maximum_bytes": 109747151831,
+      "sample_count": 256,
+      "known_ranks": [],
+      "has_unranked_samples": true
+    },
+    {
+      "step": 20,
+      "minimum_bytes": 109736414413,
+      "maximum_bytes": 109747151831,
+      "sample_count": 256,
+      "known_ranks": [],
+      "has_unranked_samples": true
+    },
+    {
+      "step": 30,
+      "minimum_bytes": 109736414413,
+      "maximum_bytes": 109747151831,
+      "sample_count": 256,
+      "known_ranks": [],
+      "has_unranked_samples": true
+    },
+    {
+      "step": 40,
+      "minimum_bytes": 109736414413,
+      "maximum_bytes": 109747151831,
+      "sample_count": 256,
+      "known_ranks": [],
+      "has_unranked_samples": true
+    },
+    {
+      "step": 50,
+      "minimum_bytes": 109736414413,
+      "maximum_bytes": 109747151831,
+      "sample_count": 256,
+      "known_ranks": [],
+      "has_unranked_samples": true
+    }
+  ],
+  "unknown_context_fields": [
+    "allocator_policy",
+    "counter_window",
+    "gradient_dtype",
+    "offload_policy",
+    "optimizer",
+    "optimizer_state_dtype",
+    "parameter_dtype",
+    "revision",
+    "routing_policy",
+    "torch_version"
+  ],
+  "limitations": [
+    "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+    "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+    "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+    "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+  ],
+  "configuration_evidence": {
+    "framework": {
+      "value": "TorchTitan 0.2.0; exact revision unavailable",
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            1
+          ]
+        }
+      ]
+    },
+    "model": {
+      "value": {
+        "model": "DeepSeek-V3 671B",
+        "parameter_elements": 671026404352
+      },
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            34405
+          ]
+        }
+      ]
+    },
+    "hardware": {
+      "value": {
+        "gpu": "NVIDIA GB200",
+        "capacity_gib_printed": 184.0
+      },
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            28131
+          ]
+        }
+      ],
+      "qualification": "Rounded display, not exact byte capacity or all-device census."
+    },
+    "mesh": {
+      "value": {
+        "pp": 1,
+        "tp": 1,
+        "ep": 64,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "cp": 1,
+        "expert_tp": 1
+      },
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            227
+          ]
+        }
+      ]
+    },
+    "precision": {
+      "value": "MoE modules matching ['experts'] converted to TE grouped GEMM mxfp8",
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            28111
+          ]
+        }
+      ],
+      "qualification": "Expert compute conversion does not establish parameter, gradient or optimizer storage precision."
+    },
+    "attention": {
+      "value": "sdpa",
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            1825
+          ]
+        }
+      ]
+    },
+    "checkpointing": {
+      "value": "FullAC",
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            61174
+          ]
+        }
+      ]
+    },
+    "compile": {
+      "value": "Each TransformerBlock compiled",
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            65395
+          ]
+        }
+      ]
+    },
+    "workload": {
+      "value": {
+        "local_batch": 8,
+        "global_batch": 2048,
+        "gradient_accumulation": 1,
+        "sequence_length": 4096,
+        "steps": 50
+      },
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            133127
+          ]
+        }
+      ],
+      "qualification": "Runtime values override the supplied TOML."
+    },
+    "memory": {
+      "value": {
+        "initialization_gib": 9.85,
+        "step1_gib_range": [
+          101.83,
+          101.84
+        ],
+        "later_gib_range": [
+          102.2,
+          102.21
+        ]
+      },
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            133122,
+            135425
+          ]
+        }
+      ],
+      "qualification": "256 unranked fan-out samples per logged step; do not assign ranks by ordering or claim all-rank identity."
+    },
+    "completion": {
+      "value": "Training completed",
+      "classification": "runtime_log_observed",
+      "evidence": [
+        {
+          "file": "additional/deepseek_v3_671b.out",
+          "lines": [
+            139772
+          ]
+        }
+      ]
+    }
+  },
+  "execution_completion": null,
+  "context_audit": "docs/validation/runtime_logs/run_audit.json"
+}

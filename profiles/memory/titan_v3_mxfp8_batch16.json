@@ -1,0 +1,361 @@
+{
+  "schema_version": 1,
+  "source": "log_calibrated_memory_profile",
+  "name": "titan_v3_mxfp8_batch16",
+  "formula": "state_bytes + runtime_factor * checkpoint_proxy_bytes",
+  "context": {
+    "model": "DeepSeek-V3 671B",
+    "framework": "TorchTitan",
+    "revision": null,
+    "torch_version": null,
+    "hardware": "NVIDIA GB300",
+    "world_size": 256,
+    "tp": 1,
+    "pp": 1,
+    "ep": 64,
+    "cp": 1,
+    "dp_shard": 256,
+    "dp_replicate": 1,
+    "sequence_length": 4096,
+    "tokens_per_rank": 65536,
+    "precision": "MXFP8 compute",
+    "checkpoint_policy": "FullAC",
+    "compile_policy": "loss and each TransformerBlock",
+    "global_batch": 4096,
+    "microbatches": 1,
+    "memory_metric": "training_memory_unspecified"
+  },
+  "baseline": {
+    "state_bytes": 41939150272,
+    "checkpoint_proxy_bytes": 57310969856,
+    "parameter_elements": 671026404352,
+    "state_bytes_per_local_parameter": 16,
+    "layers": 61,
+    "hidden_size": 7168,
+    "checkpoint_dtype_bytes": 2
+  },
+  "assumptions": [
+    "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+    "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+    "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+    "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+    "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+  ],
+  "runtime_factor": 2.350934381106,
+  "planning_factor": 2.4,
+  "planning_factor_policy": "Round fitted coefficient upward to 0.1; heuristic, not a confidence bound",
+  "target_metric": "training_memory_unspecified",
+  "metric_semantics_verified": false,
+  "source_evidence": {
+    "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+    "sha256": "d37c4bc1f5da809cf6a61c103782fa9e0da4bf62c45898379ecbac88647dd1b5",
+    "maximum_sample": {
+      "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+      "line": 44,
+      "rank": 0,
+      "step": 10,
+      "metric": "training_memory_unspecified",
+      "value": 164.54,
+      "unit": "GiB",
+      "bytes": 176673479721,
+      "metric_semantics_verified": false,
+      "window": "unverified",
+      "loss": 10.28121,
+      "grad_norm": 3.8999,
+      "tps": 3147.0,
+      "tflops": 884.86
+    }
+  },
+  "sampled_counter_history": [
+    {
+      "step": 1,
+      "minimum_bytes": 158548717732,
+      "maximum_bytes": 158548717732,
+      "sample_count": 1,
+      "known_ranks": [
+        0
+      ],
+      "has_unranked_samples": false
+    },
+    {
+      "step": 10,
+      "minimum_bytes": 176673479721,
+      "maximum_bytes": 176673479721,
+      "sample_count": 1,
+      "known_ranks": [
+        0
+      ],
+      "has_unranked_samples": false
+    },
+    {
+      "step": 20,
+      "minimum_bytes": 176673479721,
+      "maximum_bytes": 176673479721,
+      "sample_count": 1,
+      "known_ranks": [
+        0
+      ],
+      "has_unranked_samples": false
+    },
+    {
+      "step": 30,
+      "minimum_bytes": 176673479721,
+      "maximum_bytes": 176673479721,
+      "sample_count": 1,
+      "known_ranks": [
+        0
+      ],
+      "has_unranked_samples": false
+    },
+    {
+      "step": 40,
+      "minimum_bytes": 176673479721,
+      "maximum_bytes": 176673479721,
+      "sample_count": 1,
+      "known_ranks": [
+        0
+      ],
+      "has_unranked_samples": false
+    },
+    {
+      "step": 50,
+      "minimum_bytes": 176673479721,
+      "maximum_bytes": 176673479721,
+      "sample_count": 1,
+      "known_ranks": [
+        0
+      ],
+      "has_unranked_samples": false
+    }
+  ],
+  "unknown_context_fields": [
+    "allocator_policy",
+    "attention",
+    "counter_window",
+    "expert_tp",
+    "gradient_dtype",
+    "offload_policy",
+    "optimizer",
+    "optimizer_state_dtype",
+    "parameter_dtype",
+    "revision",
+    "routing_policy",
+    "torch_version"
+  ],
+  "limitations": [
+    "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+    "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+    "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+    "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+  ],
+  "configuration_evidence": [
+    {
+      "field": "model",
+      "value": "DeepSeek-V3 671B",
+      "total_parameter_elements": 671026404352,
+      "dense_parameter_elements": 14456871936,
+      "expert_parameter_elements_logged_as_sparse": 656569532416,
+      "active_parameter_elements": 37552282624,
+      "caution": "Model label and count do not establish every architectural dimension. Sparse here is the logged MoE parameter category, not evidence of structured sparse GEMM throughput.",
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 20
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 23
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "field": "hardware",
+      "gpu_name": "NVIDIA GB300",
+      "reported_capacity_gib": 276.62,
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 22
+        }
+      ],
+      "caution": "Rounded capacity and rank0 identity; no all-rank hardware inventory or exact byte count supplied. This is not GB200."
+    },
+    {
+      "field": "mesh",
+      "pp": 1,
+      "dp_replicate": 1,
+      "dp_shard": 256,
+      "cp": 1,
+      "tp": 1,
+      "ep": 64,
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 17
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "field": "batch_and_sequence",
+      "local_batch_size": 16,
+      "global_batch_size": 4096,
+      "gradient_accumulation_steps": 1,
+      "sequence_length": 4096,
+      "configured_steps": 50,
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 39
+        }
+      ]
+    },
+    {
+      "field": "checkpointing_and_compile",
+      "activation_checkpointing": "FullAC",
+      "fsdp_applied": true,
+      "compile_loss": true,
+      "compile_each_transformer_block": true,
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 25
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 26
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 27
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 28
+        }
+      ]
+    },
+    {
+      "field": "optimizer",
+      "name": "AdamW",
+      "fused": true,
+      "foreach": false,
+      "learning_rate": 0.00022,
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.1,
+      "logged_parameter_tensor_count": 967,
+      "caution": "967 params refers to optimizer tensor entries, not the model scalar parameter count. Optimizer-state dtype is not logged.",
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 32
+        }
+      ]
+    },
+    {
+      "field": "scheduler_adjustment",
+      "warmup_requested": 2000,
+      "warmup_adjusted": 50,
+      "decay_requested": 40,
+      "decay_adjusted": 0,
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 33
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 34
+        }
+      ]
+    },
+    {
+      "field": "hybrid_expert_parallel_buffer",
+      "hidden_dim": 7168,
+      "max_tokens_per_rank": 65536,
+      "num_local_experts": 4,
+      "ep_size": 64,
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "field": "precision_mxfp8_arm",
+      "observed_conversions": [
+        "MXFP8Linear",
+        "dynamic mxfp8_rceil GroupedExperts grouped_mm"
+      ],
+      "caution": "Conversion messages establish quantized compute paths, not universal FP8 state storage.",
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 12
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 13
+        }
+      ]
+    },
+    {
+      "field": "runtime_package_version",
+      "package": "torchtitan",
+      "value": "0.2.2+gita615ec2",
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 10
+        }
+      ],
+      "caution": "Abbreviated package git suffix only; full immutable commit and dirty-tree state absent."
+    },
+    {
+      "field": "mfu_denominator_as_logged",
+      "flops_per_second": 2500000000000000.0,
+      "reported_mfu": "N/A",
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 29
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 42
+        }
+      ],
+      "caution": "This is an application denominator, not independent verification of GB300 precision-specific hardware ceilings."
+    },
+    {
+      "field": "dataset_and_initial_load_warning",
+      "dataset_label": "c4_test",
+      "initial_load_warning": "initial_load_model_only=True has no effect without an initial_load_path",
+      "caution": "No evidence of a pretrained checkpoint being loaded; initialization seed and exact dataset provenance were not established from the supplied excerpts.",
+      "evidence": [
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 36
+        },
+        {
+          "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 38
+        }
+      ]
+    }
+  ],
+  "execution_completion": "Step 50 and Training completed observed.",
+  "context_audit": "docs/validation/runtime_logs/run_audit.json"
+}

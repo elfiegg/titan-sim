@@ -1,0 +1,2092 @@
+{
+  "schema_version": 1,
+  "source": "log_calibrated_memory_catalog",
+  "profiles": {
+    "titan_v3_nvfp4_batch16": {
+      "schema_version": 1,
+      "source": "log_calibrated_memory_profile",
+      "name": "titan_v3_nvfp4_batch16",
+      "formula": "state_bytes + runtime_factor * checkpoint_proxy_bytes",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "global_batch": 4096,
+        "microbatches": 1,
+        "memory_metric": "training_memory_unspecified"
+      },
+      "baseline": {
+        "state_bytes": 41939150272,
+        "checkpoint_proxy_bytes": 57310969856,
+        "parameter_elements": 671026404352,
+        "state_bytes_per_local_parameter": 16,
+        "layers": 61,
+        "hidden_size": 7168,
+        "checkpoint_dtype_bytes": 2
+      },
+      "assumptions": [
+        "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+        "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+        "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+        "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+        "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+      ],
+      "runtime_factor": 2.1487798143605716,
+      "planning_factor": 2.2,
+      "planning_factor_policy": "Round fitted coefficient upward to 0.1; heuristic, not a confidence bound",
+      "target_metric": "training_memory_unspecified",
+      "metric_semantics_verified": false,
+      "source_evidence": {
+        "source": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+        "sha256": "132f699bf12a67fa041c6e4b0f5843c357da72f2ef0637fb6bf711c85898d1cf",
+        "maximum_sample": {
+          "source": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+          "line": 47,
+          "rank": 0,
+          "step": 10,
+          "metric": "training_memory_unspecified",
+          "value": 153.75,
+          "unit": "GiB",
+          "bytes": 165087805440,
+          "metric_semantics_verified": false,
+          "window": "unverified",
+          "loss": 9.85997,
+          "grad_norm": 4.4284,
+          "tps": 3574.0,
+          "tflops": 1004.99
+        }
+      },
+      "sampled_counter_history": [
+        {
+          "step": 1,
+          "minimum_bytes": 141809082696,
+          "maximum_bytes": 141809082696,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 10,
+          "minimum_bytes": 165087805440,
+          "maximum_bytes": 165087805440,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 20,
+          "minimum_bytes": 165087805440,
+          "maximum_bytes": 165087805440,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 30,
+          "minimum_bytes": 165087805440,
+          "maximum_bytes": 165087805440,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 40,
+          "minimum_bytes": 165087805440,
+          "maximum_bytes": 165087805440,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        }
+      ],
+      "unknown_context_fields": [
+        "allocator_policy",
+        "attention",
+        "counter_window",
+        "expert_tp",
+        "gradient_dtype",
+        "offload_policy",
+        "optimizer",
+        "optimizer_state_dtype",
+        "parameter_dtype",
+        "revision",
+        "routing_policy",
+        "torch_version"
+      ],
+      "limitations": [
+        "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+        "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+        "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+        "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+      ],
+      "configuration_evidence": [
+        {
+          "field": "model",
+          "value": "DeepSeek-V3 671B",
+          "total_parameter_elements": 671026404352,
+          "dense_parameter_elements": 14456871936,
+          "expert_parameter_elements_logged_as_sparse": 656569532416,
+          "active_parameter_elements": 37552282624,
+          "caution": "Model label and count do not establish every architectural dimension. Sparse here is the logged MoE parameter category, not evidence of structured sparse GEMM throughput.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 23
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 26
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 27
+            }
+          ]
+        },
+        {
+          "field": "hardware",
+          "gpu_name": "NVIDIA GB300",
+          "reported_capacity_gib": 276.62,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 25
+            }
+          ],
+          "caution": "Rounded capacity and rank0 identity; no all-rank hardware inventory or exact byte count supplied. This is not GB200."
+        },
+        {
+          "field": "mesh",
+          "pp": 1,
+          "dp_replicate": 1,
+          "dp_shard": 256,
+          "cp": 1,
+          "tp": 1,
+          "ep": 64,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 20
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 21
+            }
+          ]
+        },
+        {
+          "field": "batch_and_sequence",
+          "local_batch_size": 16,
+          "global_batch_size": 4096,
+          "gradient_accumulation_steps": 1,
+          "sequence_length": 4096,
+          "configured_steps": 50,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 42
+            }
+          ]
+        },
+        {
+          "field": "checkpointing_and_compile",
+          "activation_checkpointing": "FullAC",
+          "fsdp_applied": true,
+          "compile_loss": true,
+          "compile_each_transformer_block": true,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 28
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 29
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 30
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 31
+            }
+          ]
+        },
+        {
+          "field": "optimizer",
+          "name": "AdamW",
+          "fused": true,
+          "foreach": false,
+          "learning_rate": 0.00022,
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "eps": 1e-08,
+          "weight_decay": 0.1,
+          "logged_parameter_tensor_count": 967,
+          "caution": "967 params refers to optimizer tensor entries, not the model scalar parameter count. Optimizer-state dtype is not logged.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 35
+            }
+          ]
+        },
+        {
+          "field": "scheduler_adjustment",
+          "warmup_requested": 2000,
+          "warmup_adjusted": 50,
+          "decay_requested": 40,
+          "decay_adjusted": 0,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 36
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 37
+            }
+          ]
+        },
+        {
+          "field": "hybrid_expert_parallel_buffer",
+          "hidden_dim": 7168,
+          "max_tokens_per_rank": 65536,
+          "num_local_experts": 4,
+          "ep_size": 64,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 44
+            }
+          ]
+        },
+        {
+          "field": "precision_nvfp4_arm",
+          "observed_conversions": [
+            "NVFP4Linear",
+            "dynamic NVFP4 GroupedExperts grouped_mm",
+            "MXFP8Linear"
+          ],
+          "kernel_preference": "cutedsl",
+          "resolved_backend": "cutedsl",
+          "caution": "Mixed NVFP4/MXFP8 conversion is observed; exact module exclusion/selection and weights/gradients/accumulators/optimizer-state dtypes remain unknown. Do not call the whole training state FP4.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 12
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 13
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 14
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 15
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 16
+            }
+          ]
+        },
+        {
+          "field": "runtime_package_version",
+          "package": "torchtitan",
+          "value": "0.2.2+gita615ec2",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 10
+            }
+          ],
+          "caution": "Abbreviated package git suffix only; full immutable commit and dirty-tree state absent."
+        },
+        {
+          "field": "mfu_denominator_as_logged",
+          "flops_per_second": 2500000000000000.0,
+          "reported_mfu": "N/A",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 32
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 45
+            }
+          ],
+          "caution": "This is an application denominator, not independent verification of GB300 precision-specific hardware ceilings."
+        },
+        {
+          "field": "dataset_and_initial_load_warning",
+          "dataset_label": "c4_test",
+          "initial_load_warning": "initial_load_model_only=True has no effect without an initial_load_path",
+          "caution": "No evidence of a pretrained checkpoint being loaded; initialization seed and exact dataset provenance were not established from the supplied excerpts.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 39
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+              "line": 41
+            }
+          ]
+        }
+      ],
+      "execution_completion": "Last retained step 40; no Training completed record. Exact last executed step unknown.",
+      "context_audit": "docs/validation/runtime_logs/run_audit.json"
+    },
+    "titan_v3_mxfp8_batch16": {
+      "schema_version": 1,
+      "source": "log_calibrated_memory_profile",
+      "name": "titan_v3_mxfp8_batch16",
+      "formula": "state_bytes + runtime_factor * checkpoint_proxy_bytes",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "precision": "MXFP8 compute",
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "global_batch": 4096,
+        "microbatches": 1,
+        "memory_metric": "training_memory_unspecified"
+      },
+      "baseline": {
+        "state_bytes": 41939150272,
+        "checkpoint_proxy_bytes": 57310969856,
+        "parameter_elements": 671026404352,
+        "state_bytes_per_local_parameter": 16,
+        "layers": 61,
+        "hidden_size": 7168,
+        "checkpoint_dtype_bytes": 2
+      },
+      "assumptions": [
+        "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+        "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+        "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+        "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+        "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+      ],
+      "runtime_factor": 2.350934381106,
+      "planning_factor": 2.4,
+      "planning_factor_policy": "Round fitted coefficient upward to 0.1; heuristic, not a confidence bound",
+      "target_metric": "training_memory_unspecified",
+      "metric_semantics_verified": false,
+      "source_evidence": {
+        "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+        "sha256": "d37c4bc1f5da809cf6a61c103782fa9e0da4bf62c45898379ecbac88647dd1b5",
+        "maximum_sample": {
+          "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "line": 44,
+          "rank": 0,
+          "step": 10,
+          "metric": "training_memory_unspecified",
+          "value": 164.54,
+          "unit": "GiB",
+          "bytes": 176673479721,
+          "metric_semantics_verified": false,
+          "window": "unverified",
+          "loss": 10.28121,
+          "grad_norm": 3.8999,
+          "tps": 3147.0,
+          "tflops": 884.86
+        }
+      },
+      "sampled_counter_history": [
+        {
+          "step": 1,
+          "minimum_bytes": 158548717732,
+          "maximum_bytes": 158548717732,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 10,
+          "minimum_bytes": 176673479721,
+          "maximum_bytes": 176673479721,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 20,
+          "minimum_bytes": 176673479721,
+          "maximum_bytes": 176673479721,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 30,
+          "minimum_bytes": 176673479721,
+          "maximum_bytes": 176673479721,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 40,
+          "minimum_bytes": 176673479721,
+          "maximum_bytes": 176673479721,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        },
+        {
+          "step": 50,
+          "minimum_bytes": 176673479721,
+          "maximum_bytes": 176673479721,
+          "sample_count": 1,
+          "known_ranks": [
+            0
+          ],
+          "has_unranked_samples": false
+        }
+      ],
+      "unknown_context_fields": [
+        "allocator_policy",
+        "attention",
+        "counter_window",
+        "expert_tp",
+        "gradient_dtype",
+        "offload_policy",
+        "optimizer",
+        "optimizer_state_dtype",
+        "parameter_dtype",
+        "revision",
+        "routing_policy",
+        "torch_version"
+      ],
+      "limitations": [
+        "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+        "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+        "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+        "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+      ],
+      "configuration_evidence": [
+        {
+          "field": "model",
+          "value": "DeepSeek-V3 671B",
+          "total_parameter_elements": 671026404352,
+          "dense_parameter_elements": 14456871936,
+          "expert_parameter_elements_logged_as_sparse": 656569532416,
+          "active_parameter_elements": 37552282624,
+          "caution": "Model label and count do not establish every architectural dimension. Sparse here is the logged MoE parameter category, not evidence of structured sparse GEMM throughput.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 20
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 23
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 24
+            }
+          ]
+        },
+        {
+          "field": "hardware",
+          "gpu_name": "NVIDIA GB300",
+          "reported_capacity_gib": 276.62,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 22
+            }
+          ],
+          "caution": "Rounded capacity and rank0 identity; no all-rank hardware inventory or exact byte count supplied. This is not GB200."
+        },
+        {
+          "field": "mesh",
+          "pp": 1,
+          "dp_replicate": 1,
+          "dp_shard": 256,
+          "cp": 1,
+          "tp": 1,
+          "ep": 64,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 17
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 18
+            }
+          ]
+        },
+        {
+          "field": "batch_and_sequence",
+          "local_batch_size": 16,
+          "global_batch_size": 4096,
+          "gradient_accumulation_steps": 1,
+          "sequence_length": 4096,
+          "configured_steps": 50,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 39
+            }
+          ]
+        },
+        {
+          "field": "checkpointing_and_compile",
+          "activation_checkpointing": "FullAC",
+          "fsdp_applied": true,
+          "compile_loss": true,
+          "compile_each_transformer_block": true,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 25
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 26
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 27
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 28
+            }
+          ]
+        },
+        {
+          "field": "optimizer",
+          "name": "AdamW",
+          "fused": true,
+          "foreach": false,
+          "learning_rate": 0.00022,
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "eps": 1e-08,
+          "weight_decay": 0.1,
+          "logged_parameter_tensor_count": 967,
+          "caution": "967 params refers to optimizer tensor entries, not the model scalar parameter count. Optimizer-state dtype is not logged.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 32
+            }
+          ]
+        },
+        {
+          "field": "scheduler_adjustment",
+          "warmup_requested": 2000,
+          "warmup_adjusted": 50,
+          "decay_requested": 40,
+          "decay_adjusted": 0,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 33
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 34
+            }
+          ]
+        },
+        {
+          "field": "hybrid_expert_parallel_buffer",
+          "hidden_dim": 7168,
+          "max_tokens_per_rank": 65536,
+          "num_local_experts": 4,
+          "ep_size": 64,
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 41
+            }
+          ]
+        },
+        {
+          "field": "precision_mxfp8_arm",
+          "observed_conversions": [
+            "MXFP8Linear",
+            "dynamic mxfp8_rceil GroupedExperts grouped_mm"
+          ],
+          "caution": "Conversion messages establish quantized compute paths, not universal FP8 state storage.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 12
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 13
+            }
+          ]
+        },
+        {
+          "field": "runtime_package_version",
+          "package": "torchtitan",
+          "value": "0.2.2+gita615ec2",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 10
+            }
+          ],
+          "caution": "Abbreviated package git suffix only; full immutable commit and dirty-tree state absent."
+        },
+        {
+          "field": "mfu_denominator_as_logged",
+          "flops_per_second": 2500000000000000.0,
+          "reported_mfu": "N/A",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 29
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 42
+            }
+          ],
+          "caution": "This is an application denominator, not independent verification of GB300 precision-specific hardware ceilings."
+        },
+        {
+          "field": "dataset_and_initial_load_warning",
+          "dataset_label": "c4_test",
+          "initial_load_warning": "initial_load_model_only=True has no effect without an initial_load_path",
+          "caution": "No evidence of a pretrained checkpoint being loaded; initialization seed and exact dataset provenance were not established from the supplied excerpts.",
+          "evidence": [
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 36
+            },
+            {
+              "file": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+              "line": 38
+            }
+          ]
+        }
+      ],
+      "execution_completion": "Step 50 and Training completed observed.",
+      "context_audit": "docs/validation/runtime_logs/run_audit.json"
+    },
+    "titan_v3_expert_mxfp8_batch8": {
+      "schema_version": 1,
+      "source": "log_calibrated_memory_profile",
+      "name": "titan_v3_expert_mxfp8_batch8",
+      "formula": "state_bytes + runtime_factor * checkpoint_proxy_bytes",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB200",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "expert_tp": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 32768,
+        "precision": "expert-only MXFP8 compute",
+        "attention": "sdpa",
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "each TransformerBlock",
+        "global_batch": 2048,
+        "microbatches": 1,
+        "memory_metric": "training_memory_unspecified"
+      },
+      "baseline": {
+        "state_bytes": 41939150272,
+        "checkpoint_proxy_bytes": 28655484928,
+        "parameter_elements": 671026404352,
+        "state_bytes_per_local_parameter": 16,
+        "layers": 61,
+        "hidden_size": 7168,
+        "checkpoint_dtype_bytes": 2
+      },
+      "assumptions": [
+        "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+        "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+        "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+        "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+        "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+      ],
+      "runtime_factor": 2.366318410921153,
+      "planning_factor": 2.4,
+      "planning_factor_policy": "Round fitted coefficient upward to 0.1; heuristic, not a confidence bound",
+      "target_metric": "training_memory_unspecified",
+      "metric_semantics_verified": false,
+      "source_evidence": {
+        "source": "additional/deepseek_v3_671b.out",
+        "sha256": "6f9354483ad56a3b9a95f4e801c18f0b3f624ac04a9d42570bc3064f475a9057",
+        "maximum_sample": {
+          "source": "additional/deepseek_v3_671b.out",
+          "line": 135938,
+          "rank": null,
+          "step": 10,
+          "metric": "training_memory_unspecified",
+          "value": 102.21,
+          "unit": "GiB",
+          "bytes": 109747151831,
+          "metric_semantics_verified": false,
+          "window": "unverified",
+          "loss": 10.0025,
+          "grad_norm": 11.443,
+          "tps": 3122.0,
+          "tflops": 877.7
+        }
+      },
+      "sampled_counter_history": [
+        {
+          "step": 1,
+          "minimum_bytes": 109339129938,
+          "maximum_bytes": 109349867356,
+          "sample_count": 256,
+          "known_ranks": [],
+          "has_unranked_samples": true
+        },
+        {
+          "step": 10,
+          "minimum_bytes": 109736414413,
+          "maximum_bytes": 109747151831,
+          "sample_count": 256,
+          "known_ranks": [],
+          "has_unranked_samples": true
+        },
+        {
+          "step": 20,
+          "minimum_bytes": 109736414413,
+          "maximum_bytes": 109747151831,
+          "sample_count": 256,
+          "known_ranks": [],
+          "has_unranked_samples": true
+        },
+        {
+          "step": 30,
+          "minimum_bytes": 109736414413,
+          "maximum_bytes": 109747151831,
+          "sample_count": 256,
+          "known_ranks": [],
+          "has_unranked_samples": true
+        },
+        {
+          "step": 40,
+          "minimum_bytes": 109736414413,
+          "maximum_bytes": 109747151831,
+          "sample_count": 256,
+          "known_ranks": [],
+          "has_unranked_samples": true
+        },
+        {
+          "step": 50,
+          "minimum_bytes": 109736414413,
+          "maximum_bytes": 109747151831,
+          "sample_count": 256,
+          "known_ranks": [],
+          "has_unranked_samples": true
+        }
+      ],
+      "unknown_context_fields": [
+        "allocator_policy",
+        "counter_window",
+        "gradient_dtype",
+        "offload_policy",
+        "optimizer",
+        "optimizer_state_dtype",
+        "parameter_dtype",
+        "revision",
+        "routing_policy",
+        "torch_version"
+      ],
+      "limitations": [
+        "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+        "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+        "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+        "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+      ],
+      "configuration_evidence": {
+        "framework": {
+          "value": "TorchTitan 0.2.0; exact revision unavailable",
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                1
+              ]
+            }
+          ]
+        },
+        "model": {
+          "value": {
+            "model": "DeepSeek-V3 671B",
+            "parameter_elements": 671026404352
+          },
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                34405
+              ]
+            }
+          ]
+        },
+        "hardware": {
+          "value": {
+            "gpu": "NVIDIA GB200",
+            "capacity_gib_printed": 184.0
+          },
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                28131
+              ]
+            }
+          ],
+          "qualification": "Rounded display, not exact byte capacity or all-device census."
+        },
+        "mesh": {
+          "value": {
+            "pp": 1,
+            "tp": 1,
+            "ep": 64,
+            "dp_shard": 256,
+            "dp_replicate": 1,
+            "cp": 1,
+            "expert_tp": 1
+          },
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                227
+              ]
+            }
+          ]
+        },
+        "precision": {
+          "value": "MoE modules matching ['experts'] converted to TE grouped GEMM mxfp8",
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                28111
+              ]
+            }
+          ],
+          "qualification": "Expert compute conversion does not establish parameter, gradient or optimizer storage precision."
+        },
+        "attention": {
+          "value": "sdpa",
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                1825
+              ]
+            }
+          ]
+        },
+        "checkpointing": {
+          "value": "FullAC",
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                61174
+              ]
+            }
+          ]
+        },
+        "compile": {
+          "value": "Each TransformerBlock compiled",
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                65395
+              ]
+            }
+          ]
+        },
+        "workload": {
+          "value": {
+            "local_batch": 8,
+            "global_batch": 2048,
+            "gradient_accumulation": 1,
+            "sequence_length": 4096,
+            "steps": 50
+          },
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                133127
+              ]
+            }
+          ],
+          "qualification": "Runtime values override the supplied TOML."
+        },
+        "memory": {
+          "value": {
+            "initialization_gib": 9.85,
+            "step1_gib_range": [
+              101.83,
+              101.84
+            ],
+            "later_gib_range": [
+              102.2,
+              102.21
+            ]
+          },
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                133122,
+                135425
+              ]
+            }
+          ],
+          "qualification": "256 unranked fan-out samples per logged step; do not assign ranks by ordering or claim all-rank identity."
+        },
+        "completion": {
+          "value": "Training completed",
+          "classification": "runtime_log_observed",
+          "evidence": [
+            {
+              "file": "additional/deepseek_v3_671b.out",
+              "lines": [
+                139772
+              ]
+            }
+          ]
+        }
+      },
+      "execution_completion": null,
+      "context_audit": "docs/validation/runtime_logs/run_audit.json"
+    }
+  },
+  "estimates": {
+    "titan_v3_nvfp4_batch16": {
+      "fitted": {
+        "schema_version": 1,
+        "source": "log_calibrated_memory_estimate",
+        "profile": "titan_v3_nvfp4_batch16",
+        "context": {
+          "model": "DeepSeek-V3 671B",
+          "framework": "TorchTitan",
+          "revision": null,
+          "torch_version": null,
+          "hardware": "NVIDIA GB300",
+          "world_size": 256,
+          "tp": 1,
+          "pp": 1,
+          "ep": 64,
+          "cp": 1,
+          "dp_shard": 256,
+          "dp_replicate": 1,
+          "sequence_length": 4096,
+          "tokens_per_rank": 65536,
+          "precision": "mixed NVFP4/MXFP8 compute",
+          "checkpoint_policy": "FullAC",
+          "compile_policy": "loss and each TransformerBlock",
+          "global_batch": 4096,
+          "microbatches": 1,
+          "memory_metric": "training_memory_unspecified"
+        },
+        "target_metric": "training_memory_unspecified",
+        "estimated_bytes": 165087805440.0,
+        "estimated_gib": 153.75,
+        "decomposition": {
+          "assumed_state_bytes": 41939150272,
+          "checkpoint_proxy_bytes": 57310969856,
+          "runtime_bundle_bytes_including_proxy": 123148655168.0
+        },
+        "runtime_factor": 2.1487798143605716,
+        "rounded_planning_factor_used": false,
+        "extrapolation": false,
+        "configuration_mismatches": {},
+        "independent_validation": false,
+        "required_capacity_bytes": null,
+        "capacity_verdict": "unknown",
+        "external_allocation_coverage": "unknown",
+        "unknown_context_fields": [
+          "allocator_policy",
+          "attention",
+          "counter_window",
+          "expert_tp",
+          "gradient_dtype",
+          "offload_policy",
+          "optimizer",
+          "optimizer_state_dtype",
+          "parameter_dtype",
+          "revision",
+          "routing_policy",
+          "torch_version"
+        ],
+        "source_evidence": {
+          "source": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+          "sha256": "132f699bf12a67fa041c6e4b0f5843c357da72f2ef0637fb6bf711c85898d1cf",
+          "maximum_sample": {
+            "source": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+            "line": 47,
+            "rank": 0,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 153.75,
+            "unit": "GiB",
+            "bytes": 165087805440,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 9.85997,
+            "grad_norm": 4.4284,
+            "tps": 3574.0,
+            "tflops": 1004.99
+          }
+        },
+        "assumptions": [
+          "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+          "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+          "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+          "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+          "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+        ],
+        "limitations": [
+          "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+          "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+          "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+          "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+        ]
+      },
+      "planning": {
+        "schema_version": 1,
+        "source": "log_calibrated_memory_estimate",
+        "profile": "titan_v3_nvfp4_batch16",
+        "context": {
+          "model": "DeepSeek-V3 671B",
+          "framework": "TorchTitan",
+          "revision": null,
+          "torch_version": null,
+          "hardware": "NVIDIA GB300",
+          "world_size": 256,
+          "tp": 1,
+          "pp": 1,
+          "ep": 64,
+          "cp": 1,
+          "dp_shard": 256,
+          "dp_replicate": 1,
+          "sequence_length": 4096,
+          "tokens_per_rank": 65536,
+          "precision": "mixed NVFP4/MXFP8 compute",
+          "checkpoint_policy": "FullAC",
+          "compile_policy": "loss and each TransformerBlock",
+          "global_batch": 4096,
+          "microbatches": 1,
+          "memory_metric": "training_memory_unspecified"
+        },
+        "target_metric": "training_memory_unspecified",
+        "estimated_bytes": 168023283955.2,
+        "estimated_gib": 156.4838774085045,
+        "decomposition": {
+          "assumed_state_bytes": 41939150272,
+          "checkpoint_proxy_bytes": 57310969856,
+          "runtime_bundle_bytes_including_proxy": 126084133683.20001
+        },
+        "runtime_factor": 2.2,
+        "rounded_planning_factor_used": true,
+        "extrapolation": false,
+        "configuration_mismatches": {},
+        "independent_validation": false,
+        "required_capacity_bytes": null,
+        "capacity_verdict": "unknown",
+        "external_allocation_coverage": "unknown",
+        "unknown_context_fields": [
+          "allocator_policy",
+          "attention",
+          "counter_window",
+          "expert_tp",
+          "gradient_dtype",
+          "offload_policy",
+          "optimizer",
+          "optimizer_state_dtype",
+          "parameter_dtype",
+          "revision",
+          "routing_policy",
+          "torch_version"
+        ],
+        "source_evidence": {
+          "source": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+          "sha256": "132f699bf12a67fa041c6e4b0f5843c357da72f2ef0637fb6bf711c85898d1cf",
+          "maximum_sample": {
+            "source": "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+            "line": 47,
+            "rank": 0,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 153.75,
+            "unit": "GiB",
+            "bytes": 165087805440,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 9.85997,
+            "grad_norm": 4.4284,
+            "tps": 3574.0,
+            "tflops": 1004.99
+          }
+        },
+        "assumptions": [
+          "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+          "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+          "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+          "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+          "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+        ],
+        "limitations": [
+          "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+          "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+          "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+          "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+        ]
+      }
+    },
+    "titan_v3_mxfp8_batch16": {
+      "fitted": {
+        "schema_version": 1,
+        "source": "log_calibrated_memory_estimate",
+        "profile": "titan_v3_mxfp8_batch16",
+        "context": {
+          "model": "DeepSeek-V3 671B",
+          "framework": "TorchTitan",
+          "revision": null,
+          "torch_version": null,
+          "hardware": "NVIDIA GB300",
+          "world_size": 256,
+          "tp": 1,
+          "pp": 1,
+          "ep": 64,
+          "cp": 1,
+          "dp_shard": 256,
+          "dp_replicate": 1,
+          "sequence_length": 4096,
+          "tokens_per_rank": 65536,
+          "precision": "MXFP8 compute",
+          "checkpoint_policy": "FullAC",
+          "compile_policy": "loss and each TransformerBlock",
+          "global_batch": 4096,
+          "microbatches": 1,
+          "memory_metric": "training_memory_unspecified"
+        },
+        "target_metric": "training_memory_unspecified",
+        "estimated_bytes": 176673479721.0,
+        "estimated_gib": 164.54000000003725,
+        "decomposition": {
+          "assumed_state_bytes": 41939150272,
+          "checkpoint_proxy_bytes": 57310969856,
+          "runtime_bundle_bytes_including_proxy": 134734329448.99998
+        },
+        "runtime_factor": 2.350934381106,
+        "rounded_planning_factor_used": false,
+        "extrapolation": false,
+        "configuration_mismatches": {},
+        "independent_validation": false,
+        "required_capacity_bytes": null,
+        "capacity_verdict": "unknown",
+        "external_allocation_coverage": "unknown",
+        "unknown_context_fields": [
+          "allocator_policy",
+          "attention",
+          "counter_window",
+          "expert_tp",
+          "gradient_dtype",
+          "offload_policy",
+          "optimizer",
+          "optimizer_state_dtype",
+          "parameter_dtype",
+          "revision",
+          "routing_policy",
+          "torch_version"
+        ],
+        "source_evidence": {
+          "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "sha256": "d37c4bc1f5da809cf6a61c103782fa9e0da4bf62c45898379ecbac88647dd1b5",
+          "maximum_sample": {
+            "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+            "line": 44,
+            "rank": 0,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 164.54,
+            "unit": "GiB",
+            "bytes": 176673479721,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.28121,
+            "grad_norm": 3.8999,
+            "tps": 3147.0,
+            "tflops": 884.86
+          }
+        },
+        "assumptions": [
+          "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+          "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+          "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+          "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+          "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+        ],
+        "limitations": [
+          "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+          "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+          "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+          "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+        ]
+      },
+      "planning": {
+        "schema_version": 1,
+        "source": "log_calibrated_memory_estimate",
+        "profile": "titan_v3_mxfp8_batch16",
+        "context": {
+          "model": "DeepSeek-V3 671B",
+          "framework": "TorchTitan",
+          "revision": null,
+          "torch_version": null,
+          "hardware": "NVIDIA GB300",
+          "world_size": 256,
+          "tp": 1,
+          "pp": 1,
+          "ep": 64,
+          "cp": 1,
+          "dp_shard": 256,
+          "dp_replicate": 1,
+          "sequence_length": 4096,
+          "tokens_per_rank": 65536,
+          "precision": "MXFP8 compute",
+          "checkpoint_policy": "FullAC",
+          "compile_policy": "loss and each TransformerBlock",
+          "global_batch": 4096,
+          "microbatches": 1,
+          "memory_metric": "training_memory_unspecified"
+        },
+        "target_metric": "training_memory_unspecified",
+        "estimated_bytes": 179485477926.4,
+        "estimated_gib": 167.15887740850448,
+        "decomposition": {
+          "assumed_state_bytes": 41939150272,
+          "checkpoint_proxy_bytes": 57310969856,
+          "runtime_bundle_bytes_including_proxy": 137546327654.4
+        },
+        "runtime_factor": 2.4,
+        "rounded_planning_factor_used": true,
+        "extrapolation": false,
+        "configuration_mismatches": {},
+        "independent_validation": false,
+        "required_capacity_bytes": null,
+        "capacity_verdict": "unknown",
+        "external_allocation_coverage": "unknown",
+        "unknown_context_fields": [
+          "allocator_policy",
+          "attention",
+          "counter_window",
+          "expert_tp",
+          "gradient_dtype",
+          "offload_policy",
+          "optimizer",
+          "optimizer_state_dtype",
+          "parameter_dtype",
+          "revision",
+          "routing_policy",
+          "torch_version"
+        ],
+        "source_evidence": {
+          "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+          "sha256": "d37c4bc1f5da809cf6a61c103782fa9e0da4bf62c45898379ecbac88647dd1b5",
+          "maximum_sample": {
+            "source": "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+            "line": 44,
+            "rank": 0,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 164.54,
+            "unit": "GiB",
+            "bytes": 176673479721,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.28121,
+            "grad_norm": 3.8999,
+            "tps": 3147.0,
+            "tflops": 884.86
+          }
+        },
+        "assumptions": [
+          "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+          "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+          "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+          "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+          "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+        ],
+        "limitations": [
+          "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+          "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+          "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+          "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+        ]
+      }
+    },
+    "titan_v3_expert_mxfp8_batch8": {
+      "fitted": {
+        "schema_version": 1,
+        "source": "log_calibrated_memory_estimate",
+        "profile": "titan_v3_expert_mxfp8_batch8",
+        "context": {
+          "model": "DeepSeek-V3 671B",
+          "framework": "TorchTitan",
+          "revision": null,
+          "torch_version": null,
+          "hardware": "NVIDIA GB200",
+          "world_size": 256,
+          "tp": 1,
+          "pp": 1,
+          "ep": 64,
+          "cp": 1,
+          "dp_shard": 256,
+          "dp_replicate": 1,
+          "expert_tp": 1,
+          "sequence_length": 4096,
+          "tokens_per_rank": 32768,
+          "precision": "expert-only MXFP8 compute",
+          "attention": "sdpa",
+          "checkpoint_policy": "FullAC",
+          "compile_policy": "each TransformerBlock",
+          "global_batch": 2048,
+          "microbatches": 1,
+          "memory_metric": "training_memory_unspecified"
+        },
+        "target_metric": "training_memory_unspecified",
+        "estimated_bytes": 109747151831.0,
+        "estimated_gib": 102.20999999996275,
+        "decomposition": {
+          "assumed_state_bytes": 41939150272,
+          "checkpoint_proxy_bytes": 28655484928,
+          "runtime_bundle_bytes_including_proxy": 67808001559.00001
+        },
+        "runtime_factor": 2.366318410921153,
+        "rounded_planning_factor_used": false,
+        "extrapolation": false,
+        "configuration_mismatches": {},
+        "independent_validation": false,
+        "required_capacity_bytes": null,
+        "capacity_verdict": "unknown",
+        "external_allocation_coverage": "unknown",
+        "unknown_context_fields": [
+          "allocator_policy",
+          "counter_window",
+          "gradient_dtype",
+          "offload_policy",
+          "optimizer",
+          "optimizer_state_dtype",
+          "parameter_dtype",
+          "revision",
+          "routing_policy",
+          "torch_version"
+        ],
+        "source_evidence": {
+          "source": "additional/deepseek_v3_671b.out",
+          "sha256": "6f9354483ad56a3b9a95f4e801c18f0b3f624ac04a9d42570bc3064f475a9057",
+          "maximum_sample": {
+            "source": "additional/deepseek_v3_671b.out",
+            "line": 135938,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 102.21,
+            "unit": "GiB",
+            "bytes": 109747151831,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.0025,
+            "grad_norm": 11.443,
+            "tps": 3122.0,
+            "tflops": 877.7
+          }
+        },
+        "assumptions": [
+          "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+          "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+          "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+          "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+          "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+        ],
+        "limitations": [
+          "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+          "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+          "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+          "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+        ]
+      },
+      "planning": {
+        "schema_version": 1,
+        "source": "log_calibrated_memory_estimate",
+        "profile": "titan_v3_expert_mxfp8_batch8",
+        "context": {
+          "model": "DeepSeek-V3 671B",
+          "framework": "TorchTitan",
+          "revision": null,
+          "torch_version": null,
+          "hardware": "NVIDIA GB200",
+          "world_size": 256,
+          "tp": 1,
+          "pp": 1,
+          "ep": 64,
+          "cp": 1,
+          "dp_shard": 256,
+          "dp_replicate": 1,
+          "expert_tp": 1,
+          "sequence_length": 4096,
+          "tokens_per_rank": 32768,
+          "precision": "expert-only MXFP8 compute",
+          "attention": "sdpa",
+          "checkpoint_policy": "FullAC",
+          "compile_policy": "each TransformerBlock",
+          "global_batch": 2048,
+          "microbatches": 1,
+          "memory_metric": "training_memory_unspecified"
+        },
+        "target_metric": "training_memory_unspecified",
+        "estimated_bytes": 110712314099.2,
+        "estimated_gib": 103.10887740850448,
+        "decomposition": {
+          "assumed_state_bytes": 41939150272,
+          "checkpoint_proxy_bytes": 28655484928,
+          "runtime_bundle_bytes_including_proxy": 68773163827.2
+        },
+        "runtime_factor": 2.4,
+        "rounded_planning_factor_used": true,
+        "extrapolation": false,
+        "configuration_mismatches": {},
+        "independent_validation": false,
+        "required_capacity_bytes": null,
+        "capacity_verdict": "unknown",
+        "external_allocation_coverage": "unknown",
+        "unknown_context_fields": [
+          "allocator_policy",
+          "counter_window",
+          "gradient_dtype",
+          "offload_policy",
+          "optimizer",
+          "optimizer_state_dtype",
+          "parameter_dtype",
+          "revision",
+          "routing_policy",
+          "torch_version"
+        ],
+        "source_evidence": {
+          "source": "additional/deepseek_v3_671b.out",
+          "sha256": "6f9354483ad56a3b9a95f4e801c18f0b3f624ac04a9d42570bc3064f475a9057",
+          "maximum_sample": {
+            "source": "additional/deepseek_v3_671b.out",
+            "line": 135938,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 102.21,
+            "unit": "GiB",
+            "bytes": 109747151831,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.0025,
+            "grad_norm": 11.443,
+            "tps": 3122.0,
+            "tflops": 877.7
+          }
+        },
+        "assumptions": [
+          "Representative evenly sharded rank: 671026404352 parameter elements / 256 GPUs.",
+          "State proxy assumes 4B parameters + 4B gradients + two 4B Adam moments per local element. State dtype/lifetime is not verified by these logs.",
+          "Checkpoint proxy assumes 61 BF16 hidden-state boundaries, hidden size 7168, using logged local tokens. This is a normalization basis, not captured FullAC storage.",
+          "The fitted runtime bundle includes the checkpoint proxy and all unexplained counter usage, including any baseline error. It does not identify individual components.",
+          "Hardware/software/precision/attention differences are confounded; cross-run similarity does not establish a universal scaling law."
+        ],
+        "limitations": [
+          "Fit to sampled printed memory; allocated/reserved/peak semantics and reset window unverified.",
+          "Runtime factor includes the checkpoint proxy plus unresolved storage and baseline error.",
+          "Not an allocation trajectory, all-rank maximum, or independently validated capacity requirement.",
+          "Do not add separately modeled workspaces, quantization, communication or allocator cache to this total."
+        ]
+      }
+    }
+  },
+  "observed_stash": {
+    "megatron_v3": {
+      "source": "observed_buffer_geometry",
+      "payload_factor": 1.0,
+      "gpu_payload_bytes": 23924736000,
+      "host_payload_bytes": 15949824000,
+      "components": [
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8433,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            1393920,
+            7168
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "uint8",
+          "payload_bytes": 9991618560,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8433,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cpu",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            929280,
+            7168
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "uint8",
+          "payload_bytes": 6661079040,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8434,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            1351680,
+            4096
+          ],
+          "storage_dtype": "bfloat16",
+          "logical_dtype": "bfloat16",
+          "payload_bytes": 11072962560,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8434,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cpu",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            901120,
+            4096
+          ],
+          "storage_dtype": "bfloat16",
+          "logical_dtype": "bfloat16",
+          "payload_bytes": 7381975040,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8435,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            1351680,
+            1
+          ],
+          "storage_dtype": "float32",
+          "logical_dtype": "float32",
+          "payload_bytes": 5406720,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8435,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cpu",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            901120,
+            1
+          ],
+          "storage_dtype": "float32",
+          "logical_dtype": "float32",
+          "payload_bytes": 3604480,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8436,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            1351680,
+            2048
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e4m3fn",
+          "payload_bytes": 2768240640,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8436,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cpu",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            901120,
+            2048
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e4m3fn",
+          "payload_bytes": 1845493760,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8437,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            42240,
+            2048
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e8m0fnu",
+          "payload_bytes": 86507520,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "chasse/slurm-3061209.out",
+          "line": 8437,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cpu",
+          "rank": null,
+          "launcher_label": 0,
+          "shape": [
+            28160,
+            2048
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e8m0fnu",
+          "payload_bytes": 57671680,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        }
+      ],
+      "limitations": "Recorded payload sum only; simultaneous residency, aliases and all-rank coverage unverified. Do not add to a fitted total."
+    },
+    "megatron_v4": {
+      "source": "observed_buffer_geometry",
+      "payload_factor": 1.0,
+      "gpu_payload_bytes": 51219582208,
+      "host_payload_bytes": null,
+      "components": [
+        {
+          "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64274,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2311424,
+            7168
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "uint8",
+          "payload_bytes": 16568287232,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64275,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            6144
+          ],
+          "storage_dtype": "bfloat16",
+          "logical_dtype": "bfloat16",
+          "payload_bytes": 27541635072,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64276,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            1
+          ],
+          "storage_dtype": "float32",
+          "logical_dtype": "float32",
+          "payload_bytes": 8965376,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64277,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            3072
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e4m3fn",
+          "payload_bytes": 6885408768,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64278,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            70080,
+            3072
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e8m0fnu",
+          "payload_bytes": 215285760,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        }
+      ],
+      "limitations": "Recorded payload sum only; simultaneous residency, aliases and all-rank coverage unverified. Do not add to a fitted total."
+    }
+  },
+  "v4_allocator": {
+    "context": {
+      "model": "DeepSeek-V4 runtime estimate 1637.42B",
+      "framework": "Megatron-Bridge/Megatron-Core",
+      "revision": null,
+      "torch_version": null,
+      "hardware": null,
+      "world_size": 256,
+      "tp": 1,
+      "pp": 4,
+      "ep": 64,
+      "cp": 1,
+      "expert_tp": 1,
+      "sequence_length": 4096,
+      "tokens_per_rank": 4096,
+      "precision": "MXFP8 compute with precision-aware optimizer",
+      "gradient_dtype": "bfloat16 with float32 mHC exceptions",
+      "optimizer_state_dtype": "bfloat16 moments",
+      "checkpoint_policy": "selective recompute",
+      "compile_policy": "full iteration CUDA graphs",
+      "global_batch": 4096,
+      "microbatches": 64,
+      "memory_metric": "allocator counters, unverified unit divisor/reset window"
+    },
+    "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6",
+    "rows": [
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64272,
+        "rank": 0,
+        "step": 1,
+        "printed_values": {
+          "allocated": 136.76,
+          "reserved": 216.76,
+          "max-allocated": 208.93,
+          "max-reserved": 216.76
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.584966364434045,
+        "high_water_allocated_over_current": 1.527712781515063,
+        "high_water_reserved_over_current": 1.584966364434045,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64267,
+        "rank": 64,
+        "step": 1,
+        "printed_values": {
+          "allocated": 133.44,
+          "reserved": 200.61,
+          "max-allocated": 193.1,
+          "max-reserved": 200.61
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.5033723021582734,
+        "high_water_allocated_over_current": 1.4470923261390887,
+        "high_water_reserved_over_current": 1.5033723021582734,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64265,
+        "rank": 128,
+        "step": 1,
+        "printed_values": {
+          "allocated": 133.44,
+          "reserved": 187.61,
+          "max-allocated": 181.23,
+          "max-reserved": 187.61
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.4059502398081536,
+        "high_water_allocated_over_current": 1.358138489208633,
+        "high_water_reserved_over_current": 1.4059502398081536,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64273,
+        "rank": 192,
+        "step": 1,
+        "printed_values": {
+          "allocated": 127.36,
+          "reserved": 182.82,
+          "max-allocated": 168.77,
+          "max-reserved": 182.82
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.4354585427135678,
+        "high_water_allocated_over_current": 1.3251413316582916,
+        "high_water_reserved_over_current": 1.4354585427135678,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64290,
+        "rank": 0,
+        "step": 2,
+        "printed_values": {
+          "allocated": 187.98,
+          "reserved": 266.13,
+          "max-allocated": 243.74,
+          "max-reserved": 266.13
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.4157357165655922,
+        "high_water_allocated_over_current": 1.2966273007766784,
+        "high_water_reserved_over_current": 1.4157357165655922,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64280,
+        "rank": 64,
+        "step": 2,
+        "printed_values": {
+          "allocated": 179.27,
+          "reserved": 236.64,
+          "max-allocated": 227.13,
+          "max-reserved": 236.64
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.3200200814414011,
+        "high_water_allocated_over_current": 1.2669716070731298,
+        "high_water_reserved_over_current": 1.3200200814414011,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64281,
+        "rank": 128,
+        "step": 2,
+        "printed_values": {
+          "allocated": 173.88,
+          "reserved": 223.7,
+          "max-allocated": 214.53,
+          "max-reserved": 223.7
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.2865194386933516,
+        "high_water_allocated_over_current": 1.2337819185645273,
+        "high_water_reserved_over_current": 1.2865194386933516,
+        "peak_reset_verified": false
+      },
+      {
+        "source": "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+        "line": 64284,
+        "rank": 192,
+        "step": 2,
+        "printed_values": {
+          "allocated": 162.41,
+          "reserved": 217.82,
+          "max-allocated": 198.81,
+          "max-reserved": 217.82
+        },
+        "printed_unit": "GB",
+        "reserved_over_current_allocated": 1.3411735730558463,
+        "high_water_allocated_over_current": 1.2241241302875439,
+        "high_water_reserved_over_current": 1.3411735730558463,
+        "peak_reset_verified": false
+      }
+    ],
+    "ranges_by_iteration": {
+      "1": {
+        "reserved_over_current_allocated": {
+          "min": 1.4059502398081536,
+          "max": 1.584966364434045
+        },
+        "high_water_allocated_over_current": {
+          "min": 1.3251413316582916,
+          "max": 1.527712781515063
+        },
+        "high_water_reserved_over_current": {
+          "min": 1.4059502398081536,
+          "max": 1.584966364434045
+        }
+      },
+      "2": {
+        "reserved_over_current_allocated": {
+          "min": 1.2865194386933516,
+          "max": 1.4157357165655922
+        },
+        "high_water_allocated_over_current": {
+          "min": 1.2241241302875439,
+          "max": 1.2966273007766784
+        },
+        "high_water_reserved_over_current": {
+          "min": 1.2865194386933516,
+          "max": 1.4157357165655922
+        }
+      }
+    },
+    "scope": "Four sampled ranks, iterations 1 and 2, before iteration-4 graph capture; NaN gradients from iteration 2. Ratios assume common logger units."
+  },
+  "independent_validation": false
+}

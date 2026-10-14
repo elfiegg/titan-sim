@@ -1,0 +1,34 @@
+{
+  "additional/deepseek_v3_671b.out": {
+    "sha256": "6f9354483ad56a3b9a95f4e801c18f0b3f624ac04a9d42570bc3064f475a9057",
+    "verified": true
+  },
+  "chasse/slurm-3061209.out": {
+    "sha256": "6e26e504d829400c64bfae7a03da6ec04fdc38d0550def3fee53cca191ae4119",
+    "verified": true
+  },
+  "rmukundan/llmb-config_2568526.yaml": {
+    "sha256": "32c491ec0fc8afb51a4ed4ed59c8787dba0dc1ee892543ba0c20135bb7bd05f8",
+    "verified": true
+  },
+  "rmukundan/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out": {
+    "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6",
+    "verified": true
+  },
+  "rmukundan/sbatch_coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526.out": {
+    "sha256": "6686cff7f2fcc5298ac3caf1f8eb0668d1b46d8b1ef1591a9fd9ec42d17b9c06",
+    "verified": true
+  },
+  "rspring/RESULTS.md": {
+    "sha256": "16548d291f3b7441db79465fa5816eed5cedcb1e3a700cdf56304edc05431bf3",
+    "verified": true
+  },
+  "rspring/lyris_expB-rung5-mxfp8-64n-408471707.txt": {
+    "sha256": "d37c4bc1f5da809cf6a61c103782fa9e0da4bf62c45898379ecbac88647dd1b5",
+    "verified": true
+  },
+  "rspring/lyris_expB-rung5-nvfp4-64n-408471710.txt": {
+    "sha256": "132f699bf12a67fa041c6e4b0f5843c357da72f2ef0637fb6bf711c85898d1cf",
+    "verified": true
+  }
+}
