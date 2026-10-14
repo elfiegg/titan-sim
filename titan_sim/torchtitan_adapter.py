@@ -1,7 +1,7 @@
 """Run the upstream model/loss/optimizer on fake CPU tensors.
 
 This unsharded eager probe establishes operator coverage. It does not claim
-production FSDP, activation-remat, compiler, or 256-rank fidelity. The production
+production FSDP, activation-checkpoint, compiler, or 256-rank fidelity. The production
 adapter should place TensorCapture around the unchanged TrainingEngine instead.
 """
 from __future__ import annotations
@@ -28,16 +28,15 @@ def capture_smoke(*, torchtitan_root, flavor="debugmodel", seq_len=16, tokens=16
     from torchtitan.components.loss import ChunkedLossWrapper, CrossEntropyLoss
     from torchtitan.components.optim import AdamW
     from torchtitan.tools.utils import set_default_dtype
-    from torchtitan.models.common.attention import VarlenAttentionMetadata, VarlenInnerAttention
+    from torchtitan.models.common.aux_loss import AuxLoss
 
     capture = TensorCapture(source="cpu_projection", modeled_device="cuda:0")
     metadata = dict(status="running", torchtitan_commit=revision,
-                    import_compatibility=globals().get("IMPORT_COMPATIBILITY", {}),
                     torch_version=torch.__version__, scenario="unsharded_eager_operator_coverage",
                     flavor=flavor, seq_len=seq_len, tokens=tokens, fake_device=fake_device,
                     overrides=["All parameters and compute BF16; production retains FP32 master parameters.",
-                               "No FSDP, EP, activation-remat policy or compiler transforms.",
-                               "Synthetic fixed-length document boundaries supplied explicitly.",
+                               "No FSDP, EP, full activation checkpoint policy or local compiler transforms.",
+                               "Synthetic fixed-length positions passed through upstream FlexAttention mask construction.",
                                "Direct AdamW without trainer optimizer hooks or gradient clipping."],
                     routing="Upstream routing; no fabricated expert counts or replacement kernels")
     config = build_smoke_model_config(flavor=flavor, seq_len=seq_len)
@@ -58,17 +57,20 @@ def capture_smoke(*, torchtitan_root, flavor="debugmodel", seq_len=16, tokens=16
                 input_tokens = torch.zeros(tokens, dtype=torch.int64)
                 labels = torch.zeros_like(input_tokens)
                 positions = torch.arange(tokens, dtype=torch.int64) % seq_len
-                offsets = torch.arange(0, tokens + 1, seq_len, dtype=torch.int32)
-                attention_metadata = {VarlenInnerAttention: VarlenAttentionMetadata(
-                    cu_seq_q=offsets, cu_seq_k=offsets, max_q=seq_len, max_k=seq_len)}
-                denominator = torch.full((1,), float(tokens), dtype=torch.float32)
+                padding_mask = torch.zeros(tokens, dtype=torch.bool)
+                denominator = torch.full((), float(tokens), dtype=torch.float32)
+                AuxLoss.set_step_denominator(denominator)
+            with capture.phase("attention_mask"):
+                attention_masks = model.get_attention_masks(
+                    positions, padding_mask=padding_mask,
+                    max_context_length=seq_len,
+                )
             with capture.phase("forward"):
                 prediction = model(input_tokens, positions=positions,
-                                   attention_metadata=attention_metadata,
-                                   aux_loss_denominators=denominator)
+                                   attention_masks=attention_masks, padding_mask=padding_mask)
             # The upstream chunked loss itself runs lm_head backward per chunk.
             with capture.phase("loss_and_head_backward"):
-                loss, _ = loss_fn(prediction, labels, denominator[0])
+                loss, _ = loss_fn(prediction, labels, denominator)
             with capture.phase("backward"):
                 loss.backward()
                 capture.register_model(model)

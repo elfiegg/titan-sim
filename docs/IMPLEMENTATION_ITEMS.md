@@ -1,6 +1,6 @@
 # Implementation worklist
 
-The target comparison is full DeepSeek-V3 671B, the pinned upstream default recipe,
+The target comparison is full DeepSeek-V3 671B, the user-selected revision and PP=1 / EP=64 / TP=1 / FSDP-auto / FullAC policy,
 256 GB200 GPUs, and the newest public NVIDIA PyTorch container resolved in
 `profiles/versions.json`. Synthetic fixed-length token batches and random model
 initialization replace dataset/tokenizer setup for the memory experiment; model,

@@ -8,3 +8,11 @@ class ProvenanceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_calibration_context(metadata, hardware, {'context': {'torch_version': 'older'}})
         validate_calibration_context(metadata, hardware, {'context': {**metadata, 'hardware': 'c'}})
+
+    def test_partial_preserves_bound_configuration(self):
+        import functools
+        from titan_sim.provenance import config_value
+        first = config_value(functools.partial(pow, exp=2))
+        second = config_value(functools.partial(pow, exp=3))
+        self.assertNotEqual(first, second)
+        self.assertEqual(first['keywords'], {'exp': 2})

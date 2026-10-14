@@ -3,16 +3,45 @@
 This initial implementation is a foundation, not a validated full DeepSeek-V3
 runtime predictor. No 256-GPU training accuracy result is claimed.
 
+## Current selected validation target
+
+The user replaced the initial tip-of-tree revision with
+`607852350b41b4b280d8b8de6340f4847ed71c5e` and requested PP=1, EP=64, TP=1,
+automatic FSDP sharding, and full activation checkpointing. The shared recipe
+builder applies upstream `FullAC.Config`, calls the original model sharding and
+configuration validation, and preserves FlexAttention and local compilation.
+Expected dense FSDP/input DP degree is 256; expert FSDP degree is 4.
+Both projection and GPU adapters use this shared configuration.
+
+Configuration integration tests load the actual selected upstream recipe,
+validate the FullAC and compile policies, and resolve dense FSDP=256 / expert
+FSDP=4 through upstream ParallelismContext. The local suite passes 73 tests
+with these upstream integration checks enabled (macOS PyTorch 2.14.1).
+
+A local metadata smoke attempt reaches model initialization, then stops at
+PyTorch 2.14.1 `trunc_normal_`: its `mask.any()` branch requires tensor values
+and raises `DataDependentOutputException`. This is a local FakeTensor coverage
+finding, not evidence of a failure in the requested NVIDIA container. No
+initialization workaround or model substitution has been applied.
+
+The new revision does not contain the optional pipeline API imports or the
+new FSDP callback argument that caused the earlier failures. Native API
+execution is now the default; previous compatibility wrappers are opt-in.
+This source inspection is not a successful training run.
+
+The environment and failures below describe the **initial revision** unless
+explicitly stated otherwise; they are retained as historical evidence.
+
 ## Environment established
 
-- TorchTitan tip-of-tree pinned at `dbfba1da8ba1cd5688f32d16321a32aaf9132a43`.
+- Initial TorchTitan tip-of-tree pinned at `dbfba1da8ba1cd5688f32d16321a32aaf9132a43`.
 - Newest public monthly image resolved from registry tags:
   `nvcr.io/nvidia/pytorch:26.09-py3`; no 26.10 tag was present at resolution.
 - Compute-node import confirmed PyTorch `2.14.0a0+b2c75dd062.nv26.09`, CUDA 13.4,
   NCCL 2.31.2, and NVIDIA GB200 devices.
 - Four-rank NCCL all-reduce completed successfully on one GB200 node.
 - Observed per-device PyTorch capacity: 197,897,617,408 bytes (184.31 GiB).
-- Default production recipe resolves to 671B flavor, 16,384-token context,
+- The initial default production recipe resolved to 671B flavor, 16,384-token context,
   65,536 tokens per microbatch per data-parallel rank, EP=2, PP=1, and automatic
   data-parallel sharding. The experiment targets world size 256.
 
@@ -20,9 +49,9 @@ Container digest pins are in `profiles/versions.json`. These observations
 establish software/hardware identity and communication availability; they do
 not establish training memory or speed accuracy.
 
-## Compatibility findings
+## Historical compatibility findings at the initial revision
 
-The pinned TorchTitan and newest public NVIDIA PyTorch image do not run together
+The initial TorchTitan revision and newest public NVIDIA PyTorch image did not run together
 without adaptation:
 
 1. TorchTitan eagerly imports `analyze_pipeline_activation_liveness` and
@@ -71,11 +100,11 @@ explicit approval after automatic approval review rejected the transfer.
 Still required before a DeepSeek-V3 accuracy report:
 
 - Re-run all tests and both reduced adapters in the specified container.
-- Complete metadata execution of the full default sharded recipe, including
-  activation rematerialization and the actual compilation policy.
+- Complete metadata execution of the full selected sharded recipe, including
+  FullAC checkpointing and the actual compilation policy.
 - Resolve native fake-CUDA autograd on a CPU-only host, data-dependent routing,
   and actual asynchronous FSDP/collective control semantics.
-- Run the default 671B model for at least 10 steps on 256 GB200 GPUs.
+- Run the selected 671B configuration for at least 10 steps on 256 GB200 GPUs.
 - Compare independently produced projection and allocator observations at
   matched phase boundaries and with an identical policy/routing fingerprint.
 - Report rank distribution, steady-state and optimizer-initialization peaks,

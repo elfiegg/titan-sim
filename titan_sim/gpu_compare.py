@@ -97,6 +97,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--flavor", choices=["debugmodel", "671B"], default="671B")
     parser.add_argument("--steps", type=int, default=10)
+    parser.add_argument("--expert-parallel-degree", type=int, default=64, help="Use 1 for the explicitly reduced debug experiment")
     parser.add_argument("--seq-len", type=int)
     parser.add_argument("--tokens", type=int)
     parser.add_argument("--observe-ranks", default="0")
@@ -118,17 +119,10 @@ def main() -> None:
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))
     world = int(os.environ.get("WORLD_SIZE", "1"))
     torch.cuda.set_device(local_rank)
-    if args.flavor == "671B":
-        from torchtitan_recipes.models.deepseek_v3 import deepseek_v3_671b
-        config = deepseek_v3_671b(seq_len=args.seq_len)
-    else:
-        from torchtitan_recipes.tests.models.deepseek_v3 import deepseek_v3_debugmodel
-        config = deepseek_v3_debugmodel(seq_len=args.seq_len or 128)
-    if config.dist_moe_runtime is not None or config.parallelism.pipeline_parallel_degree != 1:
-        raise ValueError("Import-compatibility validation is scoped to non-Dist-MoE, PP=1 recipes")
+    from .recipes import load_validation_recipe, TORCHTITAN_COMMIT, resolved_validation_topology
+    config = load_validation_recipe(flavor=args.flavor, seq_len=args.seq_len,
+                                    tokens=args.tokens, expert_parallel_degree=args.expert_parallel_degree)
     config.training.steps = args.steps
-    if args.tokens is not None:
-        config.training.num_tokens_per_microbatch_per_dp_rank = args.tokens
     seq_len = config.training.max_context_length
     tokens = config.training.num_tokens_per_microbatch_per_dp_rank
     if tokens % seq_len:
@@ -140,6 +134,8 @@ def main() -> None:
     import torchtitan
     titan_root = Path(torchtitan.__file__).resolve().parents[1]
     commit = subprocess.check_output(["git", "-C", str(titan_root), "rev-parse", "HEAD"], text=True).strip()
+    if commit != TORCHTITAN_COMMIT:
+        raise ValueError(f"Expected TorchTitan {TORCHTITAN_COMMIT}, found {commit}")
     metadata = {
         "import_compatibility": globals().get("IMPORT_COMPATIBILITY", {}),
         "torch_version": torch.__version__,
@@ -157,7 +153,7 @@ def main() -> None:
         "steps": args.steps,
         "input": "synthetic fixed-length documents, random initialization, seed 42",
         "recipe": "torchtitan_recipes.models.deepseek_v3.deepseek_v3_671b" if args.flavor == "671B" else "torchtitan_recipes.tests.models.deepseek_v3.deepseek_v3_debugmodel",
-        "overrides": {"steps": args.steps, "sequence_length": args.seq_len, "tokens": args.tokens},
+        "overrides": {"steps": args.steps, "sequence_length": args.seq_len, "tokens": args.tokens, "expert_parallel_degree": args.expert_parallel_degree, "activation_checkpoint": "FullAC", "pipeline_parallel_degree": 1, "tensor_parallel_degree": 1, "data_parallel_shard_degree": -1},
         "execution": "upstream TrainingEngine with synthetic microbatches",
     }
     from .provenance import execution_policy
@@ -173,7 +169,8 @@ def main() -> None:
         engine = TrainingEngine(config, model_config=config.model,
                                 max_num_documents=config.dataloader.max_num_documents,
                                 output_dir=str(args.output))
-        engine.initialize(hf_assets_path=config.hf_assets_path)
+        metadata["resolved_topology"] = resolved_validation_topology(engine.parallelism_context, world_size=world, expert_parallel_degree=args.expert_parallel_degree)
+        engine.initialize(compile_config=config.compile, hf_assets_path=config.hf_assets_path)
         observer.attach(engine)
         torch.cuda.synchronize()
         observer.sample("after_initialize")
@@ -199,8 +196,7 @@ def main() -> None:
                 labels=torch.randint(vocab, (tokens,), generator=generator),
                 positions=torch.arange(seq_len).repeat(tokens // seq_len),
                 padding_mask=torch.zeros(tokens, dtype=torch.bool),
-                loss_token_counts=torch.tensor(tokens, dtype=torch.int64),
-                routing_token_counts=torch.tensor([tokens], dtype=torch.int64),
+                num_valid_tokens=tokens,
             )
 
         for step in range(1, args.steps + 1):
@@ -214,8 +210,7 @@ def main() -> None:
             started = time.perf_counter()
             engine.forward_backward(
                 microbatch_groups=groups,
-                global_loss_token_counts=global_tokens,
-                global_routing_token_counts=torch.tensor([global_tokens], dtype=torch.int64),
+                global_valid_tokens=global_tokens,
             )
             observer.sample("after_forward_backward")
             grad_norm = engine.optim_step()

@@ -1,11 +1,12 @@
 {
   "torchtitan_repository": "https://github.com/pytorch/torchtitan",
-  "torchtitan_commit": "dbfba1da8ba1cd5688f32d16321a32aaf9132a43",
+  "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
   "container": "nvcr.io/nvidia/pytorch:26.09-py3",
   "container_index_digest": "sha256:6e8ccc607fc2a51e3741667b86316a0889418ba8b78ed0ba96e8d282b648a7a6",
   "container_arm64_digest": "sha256:307c449df7dabed6b36e017a2b2f2e45bdec9dc203b81507111315f1e971de6e",
   "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
   "cuda_version": "13.4",
   "nccl_version": "2.31.2",
-  "latest_tag_verification": "Registry tags queried during implementation; latest monthly 26.09-py3, no 26.10 tag."
+  "latest_tag_verification": "Registry tags queried during implementation; latest monthly 26.09-py3, no 26.10 tag.",
+  "torchtitan_selection": "User-selected container-compatible revision; replaces initial tip-of-tree pin"
 }

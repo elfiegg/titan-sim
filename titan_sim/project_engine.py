@@ -1,4 +1,4 @@
-"""Attempt the pinned default TrainingEngine under metadata-only execution.
+"""Attempt the pinned validation TrainingEngine under metadata-only execution.
 
 Failures produce partial traces and a nonzero exit. No unsupported operator,
 parallelism, compiler region or data-dependent routing is silently removed.
@@ -11,59 +11,54 @@ import json
 import os
 from pathlib import Path
 import traceback
-from types import MethodType
 from unittest.mock import patch
 
-from .recipes import DEFAULT_RECIPE, import_torchtitan, load_default_recipe
-
-
-def _fixed_document_metadata(model, *, tokens, seq_len, capture):
-    import torch
-    from torchtitan.models.common.attention import VarlenAttentionMetadata, VarlenInnerAttention
-
-    def metadata(self, positions, **kwargs):
-        capture._event("host_sync", "scenario.fixed_document_boundaries",
-                       category="input_metadata", device="cpu")
-        offsets = torch.arange(0, tokens + 1, seq_len, dtype=torch.int32, device=positions.device)
-        import spmd_types as spmd
-        if spmd.is_type_checking():
-            spmd.mutate_type(offsets, "dp", src=spmd.R, dst=spmd.V)
-        result = VarlenAttentionMetadata(offsets, offsets, seq_len, seq_len)
-        return {VarlenInnerAttention: result}
-
-    return patch.object(model, "_get_attention_metadata", MethodType(metadata, model))
+from .recipes import DEFAULT_RECIPE, import_torchtitan, load_validation_recipe
 
 
 @contextlib.contextmanager
 def _balanced_routing_scenario(*, tokens, capture):
     """Supply only host split counts, preserving every upstream dispatch tensor op."""
     import torch
-    from torch._subclasses.fake_tensor import unset_fake_temporarily
-    from torch.utils._python_dispatch import _disable_current_modes
+    from torch._subclasses.fake_tensor import FakeTensor
     from torchtitan.models.common.token_dispatcher import AllToAllTokenDispatcher
 
     original = AllToAllTokenDispatcher._sync_token_count_exchange
+    original_tolist = FakeTensor.tolist
 
-    def synchronize(self, local_counts, peer_counts, ep_size):
-        global_counts, input_splits, output_splits = original(self, local_counts, peer_counts, ep_size)
+    def synchronize(self, num_local_tokens_per_expert_E,
+                    num_global_tokens_per_local_expert_EP_e, ep_size):
         total = tokens * self.top_k
         if total % ep_size:
             raise ValueError("Balanced routing requires T*K divisible by EP degree")
-        # Values affect only shape/control flow; these are specified scenario
-        # inputs, never measurements of GPU model activations or memory.
-        with unset_fake_temporarily(), _disable_current_modes():
-            splits = torch.full((ep_size,), total // ep_size, dtype=torch.int64, device="cpu")
-            output_splits_concrete = splits.clone()
-        capture._event("host_sync", "scenario.balanced_ep_splits", category="routing",
-                       device="cpu", split_sizes=splits.tolist(), scenario="balanced")
-        return global_counts, splits, output_splits_concrete
+        calls = 0
+
+        def scenario_tolist(tensor):
+            nonlocal calls
+            if isinstance(tensor, FakeTensor) and tensor.device.type == "cpu" and tuple(tensor.shape) == (ep_size,):
+                calls += 1
+                return [total // ep_size] * ep_size
+            return original_tolist(tensor)
+
+        # This revision materializes split lists inside _sync_token_count_exchange.
+        # Preserve the original wait/reduce/copy operations and substitute only
+        # its two value-dependent host list reads for this explicit scenario.
+        with patch.object(FakeTensor, "tolist", scenario_tolist):
+            result = original(self, num_local_tokens_per_expert_E,
+                              num_global_tokens_per_local_expert_EP_e, ep_size)
+        if calls != 2:
+            raise RuntimeError(f"Expected two EP split-list reads, observed {calls}")
+        capture._event("compute", "scenario.balanced_ep_splits", category="routing",
+                       device="cpu", stream="__host_control__", metadata_only=True,
+                       split_sizes=[total // ep_size] * ep_size, scenario="balanced")
+        return result
 
     with patch.object(AllToAllTokenDispatcher, "_sync_token_count_exchange", synchronize):
         yield
 
 
 def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B",
-                   seq_len=None, tokens=None, routing_scenario="strict", steps=1,
+                   seq_len=None, tokens=None, expert_parallel_degree=64, routing_scenario="strict", steps=1,
                    probe=True):
     import torch
     from torch._subclasses.fake_tensor import FakeTensorMode
@@ -72,8 +67,8 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
 
     if routing_scenario not in {"strict", "balanced"}:
         raise ValueError("routing_scenario must be strict or balanced")
-    if world_size < 1 or steps < 1:
-        raise ValueError("world_size and steps must be positive")
+    if world_size < 1 or steps < 1 or expert_parallel_degree < 1:
+        raise ValueError("world_size, steps and expert_parallel_degree must be positive")
     revision = import_torchtitan(torchtitan_root)
     capture = TensorCapture(source="cpu_projection")
     metadata = dict(status="running", torchtitan_commit=revision, torch_version=torch.__version__,
@@ -82,7 +77,10 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
                     flavor=flavor, routing_scenario=routing_scenario,
                     execution="upstream TrainingEngine with fake tensor kernels and fake process group",
                     overrides={"comm.backend": "fake", "synthetic_documents": "fixed-length",
-                               "sequence_length": seq_len, "tokens": tokens},
+                               "sequence_length": seq_len, "tokens": tokens,
+                               "expert_parallel_degree": expert_parallel_degree,
+                               "pipeline_parallel_degree": 1, "tensor_parallel_degree": 1,
+                               "data_parallel_shard_degree": -1, "activation_checkpoint": "full"},
                     limitations=["Native fake-CUDA autograd may require CUDA driver/device support even though tensor kernels execute only metadata.",
                                  "Python CUDA stream/event shim preserves control calls but does not model native allocator or kernel workspace.",
                                  "Rank 0 represents a logical rank; all rank placements must be captured to predict rank imbalance."])
@@ -109,25 +107,14 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
             stack.enter_context(runtime)
             from torchtitan.components.data.types import TokenizedTrainingMicrobatch
             from torchtitan.training_engine import TrainingEngine
-            if flavor == "671B":
-                config = load_default_recipe()
-            elif flavor == "debugmodel":
-                from torchtitan_recipes.tests.models.deepseek_v3 import deepseek_v3_debugmodel
-                config = deepseek_v3_debugmodel()
+            config = load_validation_recipe(flavor=flavor, seq_len=seq_len, tokens=tokens,
+                                            expert_parallel_degree=expert_parallel_degree)
+            if flavor == "debugmodel":
                 metadata["recipe"] = "torchtitan_recipes.tests.models.deepseek_v3.deepseek_v3_debugmodel"
-            else:
-                raise ValueError("flavor must be 671B or debugmodel")
-            if seq_len is not None:
-                # Rebuild through the upstream recipe so all RoPE/config shapes match.
-                if flavor == "671B":
-                    from torchtitan_recipes.models.deepseek_v3 import deepseek_v3_671b
-                    config = deepseek_v3_671b(seq_len=seq_len)
-                else:
-                    config = deepseek_v3_debugmodel(seq_len=seq_len)
-            if tokens is not None:
-                config.training.num_tokens_per_microbatch_per_dp_rank = tokens
-            if config.parallelism.pipeline_parallel_degree != 1 or config.dist_moe_runtime is not None:
-                raise NotImplementedError("Import compatibility is restricted to non-PP, non-Dist-MoE recipes")
+            if config.parallelism.pipeline_parallel_degree != 1:
+                raise NotImplementedError("This capture entry point requires PP=1")
+            if world_size % expert_parallel_degree:
+                raise ValueError("world_size must be divisible by expert_parallel_degree")
             config.comm.backend = "fake"
             seq_len = config.training.max_context_length
             tokens = config.training.num_tokens_per_microbatch_per_dp_rank
@@ -146,11 +133,15 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
                 engine = TrainingEngine(config, model_config=config.model,
                                         max_num_documents=config.dataloader.max_num_documents,
                                         output_dir=str(output_dir))
-                engine.initialize(hf_assets_path=config.hf_assets_path)
+                engine.initialize(compile_config=config.compile, hf_assets_path=config.hf_assets_path)
+                from .recipes import resolved_validation_topology
+                metadata["resolved_topology"] = resolved_validation_topology(
+                    engine.parallelism_context, world_size=world_size,
+                    expert_parallel_degree=expert_parallel_degree,
+                )
                 metadata["model_parameter_count"] = engine.model_param_count
                 for model in engine.model_parts:
                     capture.register_model(model)
-                    stack.enter_context(_fixed_document_metadata(model, tokens=tokens, seq_len=seq_len, capture=capture))
             dp = engine.parallelism_context.dp_replicate * engine.parallelism_context.dp_shard
             global_tokens = tokens * dp
             if config.training.num_tokens_per_train_step not in {-1, global_tokens}:
@@ -162,15 +153,12 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
                         labels=torch.zeros(tokens, dtype=torch.int64, device="cpu"),
                         positions=torch.arange(seq_len, device="cpu").repeat(tokens // seq_len),
                         padding_mask=torch.zeros(tokens, dtype=torch.bool, device="cpu"),
-                        loss_token_counts=torch.full((), tokens, dtype=torch.int64, device="cpu"),
-                        routing_token_counts=torch.full((1,), tokens, dtype=torch.int64, device="cpu"),
+                        num_valid_tokens=tokens,
                     )
-                    for tensor in (batch.input, batch.labels, batch.positions, batch.padding_mask,
-                                   batch.loss_token_counts, batch.routing_token_counts):
+                    for tensor in (batch.input, batch.labels, batch.positions, batch.padding_mask):
                         capture.register_tensor(tensor, category="inputs", modeled_device="cpu")
                 with capture.phase(f"forward_backward_step_{step}"):
-                    engine.forward_backward(microbatch_groups=[[batch]], global_loss_token_counts=global_tokens,
-                                            global_routing_token_counts=torch.full((1,), global_tokens, dtype=torch.int64, device="cpu"))
+                    engine.forward_backward(microbatch_groups=[[batch]], global_valid_tokens=global_tokens)
                     for model in engine.model_parts:
                         capture.register_model(model)
                 with capture.phase(f"optimizer_step_{step}"):
@@ -194,6 +182,8 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--world-size", default=256, type=int)
     parser.add_argument("--flavor", default="671B", choices=["671B", "debugmodel"])
+    parser.add_argument("--expert-parallel-degree", default=64, type=int,
+                        help="Use 64 for validation; explicitly select 1 for an unsharded debug probe")
     parser.add_argument("--seq-len", type=int)
     parser.add_argument("--tokens", type=int)
     parser.add_argument("--steps", default=1, type=int)
@@ -201,7 +191,8 @@ def main():
     args = parser.parse_args()
     document = project_engine(torchtitan_root=args.torchtitan_root, output_dir=args.output.parent,
                               world_size=args.world_size, flavor=args.flavor, seq_len=args.seq_len,
-                              tokens=args.tokens, routing_scenario=args.routing_scenario, steps=args.steps)
+                              tokens=args.tokens, expert_parallel_degree=args.expert_parallel_degree,
+                              routing_scenario=args.routing_scenario, steps=args.steps)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(document, indent=2) + "\n")
     print(json.dumps({key: document["metadata"][key]

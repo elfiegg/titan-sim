@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+  "recipe": "torchtitan_recipes.models.deepseek_v3.deepseek_v3_671b",
+  "hardware": "GB200",
+  "world_size": 256,
+  "overrides": {
+    "pipeline_parallel_degree": 1,
+    "expert_parallel_degree": 64,
+    "tensor_parallel_degree": 1,
+    "data_parallel_shard_degree": -1,
+    "activation_checkpoint": "torchtitan.distributed.activation_checkpoint.FullAC.Config"
+  },
+  "expected_resolved_topology": {
+    "dense_fsdp": 256,
+    "expert_parallel": 64,
+    "expert_fsdp": 4,
+    "input_data_parallel": 256
+  },
+  "upstream_defaults_preserved": {
+    "context_length": 16384,
+    "tokens_per_microbatch_per_dp_rank": 65536,
+    "attention": "flex",
+    "compile_regions": ["gated_rmsnorm", "loss", "swiglu"],
+    "master_parameters": "float32",
+    "compute_parameters": "bfloat16",
+    "gradient_reduction": "float32",
+    "disable_cuda_graphs": true
+  },
+  "inputs": "synthetic fixed-length documents; random initialization",
+  "status": "configuration selected; full target execution not yet validated"
+}
