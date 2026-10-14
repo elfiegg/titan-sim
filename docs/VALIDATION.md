@@ -15,7 +15,7 @@ Both projection and GPU adapters use this shared configuration.
 
 Configuration integration tests load the actual selected upstream recipe,
 validate the FullAC and compile policies, and resolve dense FSDP=256 / expert
-FSDP=4 through upstream ParallelismContext. The local suite passes 95 tests
+FSDP=4 through upstream ParallelismContext. The local suite passes 96 tests
 with these upstream integration checks enabled (macOS PyTorch 2.14.1).
 
 A local metadata smoke attempt reaches model initialization, then stops at
@@ -81,7 +81,7 @@ substituted for a missing implementation.
 
 ## What tests establish
 
-Latest local verification: 95 tests passed with no skips on PyTorch 2.14.1.
+Latest local verification: 96 tests passed with no skips on PyTorch 2.14.1.
 Editable package installation and the installed command-line example also passed.
 The comparison exporter passed a separate synthetic JSON/CSV/SVG check; this
 checks presentation only and is not a DeepSeek-V3 result.
@@ -105,8 +105,13 @@ A finite, self-running development validation script installs the selected
 upstream requirements while constraining the container PyTorch version, records
 the environment, runs unit and FullAC effect tests, records CPU probe failures
 separately, then attempts ten-step single-GPU and four-GPU EP debug experiments.
-Development allocation and the full 256-GPU run remain resource-dependent;
-neither queued work nor a successful transfer counts as a training result.
+The first attempt with this script failed during dependency installation before
+unit tests or GPU training. The runtime version string used as the pip constraint
+differed from the installed NVIDIA wheel metadata version. The installer now
+uses distribution metadata for the constraint and retains its separate exact
+runtime assertion; a local regression test covers the mismatch. The dependent
+full run was cancelled as designed. Target revalidation of the correction remains
+necessary; no training or memory-accuracy result follows from the local fix.
 
 Still required before a DeepSeek-V3 accuracy report:
 

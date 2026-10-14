@@ -9,8 +9,8 @@ optimizer execution, or a memory trajectory for the 256-GB200 target.
 
 The explicit `post_initialization` scope omits random sampling within upstream
 parameter initializer callbacks. It preserves their other operations and all
-buffer initialization. This probe omitted 603 parameter initializers containing
-722 sampling calls: one normal sampler and 721 truncated-normal samplers.
+buffer initialization. This probe omitted random sampling inside 603 parameter initializer callbacks,
+while retaining their other operations. It omitted 722 sampling calls: one normal sampler and 721 truncated-normal samplers.
 Parameter values remain unknown; initialization time and peak memory are
 excluded. Strict capture remains the default. The current comparison gate
 rejects this scope until an explicitly scoped steady-state comparison contract

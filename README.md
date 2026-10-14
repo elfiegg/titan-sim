@@ -9,6 +9,10 @@ newest public NVIDIA PyTorch container resolved in `profiles/versions.json`.
 This is experimental software. Full target validation is recorded separately;
 a passing event-engine test is not a demonstrated 671B training projection.
 
+For a human-readable explanation of the design, governing calculations,
+TorchTitan fidelity, and evidence limits, read the
+[implementation analysis](docs/IMPLEMENTATION_ANALYSIS.md).
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.
