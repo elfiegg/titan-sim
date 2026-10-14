@@ -12,9 +12,11 @@ not validated merely because a module imports or a reduced model runs.
 | ID | Work item | Files / owner | Acceptance |
 |---|---|---|---|
 | ENV-01 | Resolve newest public ARM64 image and exact PyTorch/CUDA versions | Cluster agent; private run ledger, public versions manifest | Registry tag/digest evidence and compute-node import |
-| ENV-02 | Pin TorchTitan tip-of-tree and compatible dependency revisions | Integration lead | Commit, clean source diff, exact environment |
+| ENV-02 | Pin user-selected TorchTitan revision and compatible dependencies | Integration lead | Commit, clean source diff, exact environment |
 | CAP-01 | Metadata dispatch capture, storage identity, aliasing, lifetime | Capture agent: capture.py | No numeric model execution; view/copy/lifetime tests |
 | CAP-02 | Actual DeepSeek-V3 forward/backward/optimizer smoke | Capture agent: torchtitan_adapter.py, recipes.py | Successful CPU metadata run with every override visible |
+| CAP-04 | CPU-only native device/stream guard compatible with autograd | Native-runtime agent; isolated extension and fake_device.py | Forward/backward with GPUs hidden; native and Python stream identity/order agree; no silent no-op guard |
+| CAP-05 | Explicit initialization and steady-state capture scopes | Capture agent: torchtitan_adapter.py, provenance and comparison contracts | Preserve buffer setup; unknown values explicit; excluded startup phases cannot enter full-run comparisons |
 | CAP-03 | Full recipe, rank-local FSDP/EP metadata execution | Capture agent and integration lead sequentially | Actual 671B local shards, optimizer, and recomputation; no reduced-model substitution |
 | RUN-01 | Event schema, causal and stream scheduler | Runtime agent: events.py, runtime.py | Dependency/stream/host-wait tests; cycle diagnostics |
 | MEM-01 | Storage lifetime, asynchronous safe release, per-rank trajectory | Runtime agent | Aliases counted once; outstanding users retain storage |
@@ -58,11 +60,17 @@ scope and final report.
 
 Implemented foundations: CAP-01, RUN-01, MEM-01, COST-01, COST-02, REP-01.
 These have semantic tests; fidelity still depends on the supplied event stream.
-ENV-01 is verified. ENV-02 has documented compatibility gaps and guarded adapters.
+ENV-01 registry/runtime versions are verified; cached-image byte-for-byte OCI provenance remains unverified.
+ENV-02 now selects the requested native-API revision; historical compatibility
+adapters are opt-in and are not used for target validation.
 GPU-01/GPU-02 and CAP-02/CAP-03 have entry points but are not target-validated.
 HOST-01 has a saved-timeline pacing demonstration only, not live interception.
 DIST-01 has partial control emulation, not collective participant simulation.
 MOE-01 has a declared balanced-split scenario, not measured routing replay.
+CAP-05 has explicit post-initialization sampling omission and full-comparison
+rejection; a scoped steady-state comparison contract remains outstanding.
+CAP-04 has diagnostic probes only. VAL-01 now has gated named-phase/explicit
+correspondence exports; it has no matched DeepSeek projection/observation pair.
 MEM-02, DIST-02, COMP-01, CAL-01, and VAL-01 remain substantial independent work.
 QA-01 is iterative; review findings require fixes and new verification before
 scope can be promoted. PUB-01 publishes this scope explicitly.

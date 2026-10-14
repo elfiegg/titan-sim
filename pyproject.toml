@@ -7,7 +7,7 @@ name = "titan-sim"
 version = "0.1.0"
 description = "CPU metadata execution and GPU memory/runtime projections for TorchTitan"
 requires-python = ">=3.10"
-license = {text = "BSD-3-Clause"}
+license = {text = "MIT"}
 dependencies = []
 
 [project.optional-dependencies]

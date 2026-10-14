@@ -75,6 +75,10 @@ The smoke path is an explicitly unsharded eager BF16 operator-coverage experimen
 It is not the production recipe. `project_engine` attempts the selected recipe with the requested parallelism
 and FullAC overrides while preserving its compiler policy. `--routing-scenario balanced` is a
 conditional equal-split scenario, not a prediction of routing decisions.
+`--capture-scope post_initialization` explicitly omits random parameter sampling
+while preserving buffer initialization. Parameter values remain unknown, and
+initialization runtime/startup memory peaks are excluded. Strict capture remains
+the default. Neither option bypasses unsupported native CUDA/autograd behavior.
 
 `launch` uses native container APIs by default. The original compatibility
 wrappers remain available only through explicit `--legacy-import-compat` for
@@ -88,6 +92,10 @@ upstream local compile regions remain enabled. See
 
 See [implementation items](docs/IMPLEMENTATION_ITEMS.md) for independent agent
 work units, acceptance checks, and remaining fidelity work.
+
+The [multi-node validation guide](docs/MULTINODE_VALIDATION.md) includes the
+self-running container checks, full 64-node launcher, bounded allocator history,
+and independent comparison export commands.
 
 Current target-validation limits and historical failures are recorded in
 [validation record](docs/VALIDATION.md).

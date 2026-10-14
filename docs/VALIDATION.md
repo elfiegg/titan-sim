@@ -15,14 +15,18 @@ Both projection and GPU adapters use this shared configuration.
 
 Configuration integration tests load the actual selected upstream recipe,
 validate the FullAC and compile policies, and resolve dense FSDP=256 / expert
-FSDP=4 through upstream ParallelismContext. The local suite passes 73 tests
+FSDP=4 through upstream ParallelismContext. The local suite passes 95 tests
 with these upstream integration checks enabled (macOS PyTorch 2.14.1).
 
 A local metadata smoke attempt reaches model initialization, then stops at
 PyTorch 2.14.1 `trunc_normal_`: its `mask.any()` branch requires tensor values
-and raises `DataDependentOutputException`. This is a local FakeTensor coverage
-finding, not evidence of a failure in the requested NVIDIA container. No
-initialization workaround or model substitution has been applied.
+and raises `DataDependentOutputException`. The same data-dependent implementation was confirmed by source inspection
+in the exact cached NVIDIA image; a target runtime probe remains pending.
+Strict capture still stops rather than inventing parameter values. An explicit
+`--capture-scope post_initialization` option omits parameter random sampling,
+preserves upstream buffer initialization, and excludes initialization timing and
+startup peak from its claims. This permits full-model shape construction; it does
+not establish forward/backward, sharded execution, or a complete trajectory.
 
 The new revision does not contain the optional pipeline API imports or the
 new FSDP callback argument that caused the earlier failures. Native API
@@ -77,8 +81,10 @@ substituted for a missing implementation.
 
 ## What tests establish
 
-Latest local verification: 66 tests passed with no skips on PyTorch 2.14.1.
+Latest local verification: 95 tests passed with no skips on PyTorch 2.14.1.
 Editable package installation and the installed command-line example also passed.
+The comparison exporter passed a separate synthetic JSON/CSV/SVG check; this
+checks presentation only and is not a DeepSeek-V3 result.
 The upstream TorchTitan checkout remains unmodified.
 
 Pure scheduler tests exercise causality, host synchronization, aliases, delayed
@@ -94,8 +100,13 @@ control shim subsequently passed local tests and awaits target revalidation.
 
 ## Outstanding target validation
 
-The latest authored source transfer to the development cluster is pending
-explicit approval after automatic approval review rejected the transfer.
+The user explicitly approved the authored-source transfer, and it succeeded.
+A finite, self-running development validation script installs the selected
+upstream requirements while constraining the container PyTorch version, records
+the environment, runs unit and FullAC effect tests, records CPU probe failures
+separately, then attempts ten-step single-GPU and four-GPU EP debug experiments.
+Development allocation and the full 256-GPU run remain resource-dependent;
+neither queued work nor a successful transfer counts as a training result.
 
 Still required before a DeepSeek-V3 accuracy report:
 
@@ -112,3 +123,6 @@ Still required before a DeepSeek-V3 accuracy report:
 
 The included `examples/two_streams.json` is a synthetic scheduler example.
 Its charts must never be presented as DeepSeek-V3 results.
+
+Full-model shape evidence and remaining CPU execution blockers are detailed in
+[CPU component probes](validation/CPU_COMPONENT_PROBES.md).

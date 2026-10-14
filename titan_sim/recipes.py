@@ -47,6 +47,8 @@ def load_validation_recipe(*, flavor="671B", seq_len=None, tokens=None, expert_p
     elif flavor == "debugmodel":
         from torchtitan_recipes.tests.models.deepseek_v3 import deepseek_v3_debugmodel
         config = deepseek_v3_debugmodel(seq_len=seq_len or 128)
+        # Match the production validation execution policy in reduced checks.
+        config.training.disable_cuda_graphs = True
     else:
         raise ValueError("Unsupported validation flavor")
     parallel = config.parallelism

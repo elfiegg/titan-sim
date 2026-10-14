@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "component_probe_complete",
+  "captured_on": "2026-10-14",
+  "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+  "torch_version": "2.14.1",
+  "python_version": "3.12",
+  "host_platform": "macOS ARM64",
+  "tensor_execution": "CPU FakeTensorMode with allow_fallback_kernels=false",
+  "model_flavor": "671B",
+  "sequence_length": 16384,
+  "attention_backend": "flex",
+  "component_scope": "unsharded model construction and upstream buffer initialization",
+  "capture_scope": "post_initialization",
+  "parameter_elements": 671026404352,
+  "buffer_tensor_count": 235,
+  "initialization_coverage": {
+    "random_parameter_values": "unknown",
+    "initialization_time_included": false,
+    "initialization_peak_included": false,
+    "skipped_parameter_initializers": 603,
+    "initializers": {
+      "normal_": 1,
+      "trunc_normal_": 721
+    }
+  },
+  "validated": [
+    "Original model configuration constructs the full parameter shapes without numerical tensor allocation",
+    "Original parameter callbacks execute deterministic and view operations",
+    "Original buffer initialization executes under FakeTensorMode"
+  ],
+  "not_validated": [
+    "FSDP, expert parallelism or 256-rank execution",
+    "Forward, backward or optimizer execution",
+    "Compiled attention-mask execution",
+    "Initialization timing or peak memory",
+    "GPU allocator behavior or memory trajectory",
+    "Numerical model values, loss or convergence"
+  ]
+}

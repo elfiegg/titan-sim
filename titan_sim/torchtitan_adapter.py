@@ -7,15 +7,65 @@ adapter should place TensorCapture around the unchanged TrainingEngine instead.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 from pathlib import Path
 import traceback
+from unittest.mock import patch
 
 from .recipes import build_smoke_model_config, import_torchtitan
 
 
+@contextlib.contextmanager
+def post_initialization_scope():
+    """Exclude random parameter sampling while retaining upstream state setup.
+
+    This is a steady-state projection boundary, not a replacement initializer.
+    Only random sampling inside upstream parameter callbacks is omitted;
+    deterministic parameter initialization and all buffer initialization run.
+    """
+    import torch
+    from torch._subclasses.fake_tensor import FakeTensor
+    from torchtitan.protocols.module import Module
+
+    original = Module._init_param
+    report = dict(scope="post_initialization", random_parameter_values="unknown",
+                  initialization_time_included=False, initialization_peak_included=False,
+                  skipped_parameter_initializers=0, initializers={})
+
+    def initialize(module, name, parameter):
+        sampled = False
+
+        def omit_sampling(label):
+            def sample(tensor, *args, **kwargs):
+                nonlocal sampled
+                local = getattr(tensor, "_local_tensor", tensor)
+                if not isinstance(local, FakeTensor):
+                    raise RuntimeError("post_initialization scope only supports FakeTensor parameters")
+                sampled = True
+                report["initializers"][label] = report["initializers"].get(label, 0) + 1
+                return tensor
+            return sample
+
+        # Composite initializers (e.g. stacked gate/up weights) call samplers
+        # on parameter views. Keep those callbacks and view operations intact.
+        with contextlib.ExitStack() as stack:
+            for label in ("trunc_normal_", "normal_", "uniform_"):
+                stack.enter_context(patch.object(torch.nn.init, "_no_grad_" + label,
+                                                 omit_sampling(label)))
+            result = original(module, name, parameter)
+        if sampled:
+            report["skipped_parameter_initializers"] += 1
+        return result
+
+    with patch.object(Module, "_init_param", initialize):
+        yield report
+
+
 def capture_smoke(*, torchtitan_root, flavor="debugmodel", seq_len=16, tokens=16,
-                  fake_device="cpu", include_optimizer=True):
+                  fake_device="cpu", include_optimizer=True, capture_scope="strict"):
+    if capture_scope not in {"strict", "post_initialization"}:
+        raise ValueError("capture_scope must be strict or post_initialization")
     if fake_device not in {"cpu", "meta"}:
         raise ValueError("CPU-only capture supports cpu/meta; fake CUDA backward may initialize a native CUDA device guard")
     if seq_len <= 0 or tokens <= 0 or tokens % seq_len or tokens % 8:
@@ -34,6 +84,7 @@ def capture_smoke(*, torchtitan_root, flavor="debugmodel", seq_len=16, tokens=16
     metadata = dict(status="running", torchtitan_commit=revision,
                     torch_version=torch.__version__, scenario="unsharded_eager_operator_coverage",
                     flavor=flavor, seq_len=seq_len, tokens=tokens, fake_device=fake_device,
+                    capture_scope=capture_scope,
                     overrides=["All parameters and compute BF16; production retains FP32 master parameters.",
                                "No FSDP, EP, full activation checkpoint policy or local compiler transforms.",
                                "Synthetic fixed-length positions passed through upstream FlexAttention mask construction.",
@@ -42,7 +93,11 @@ def capture_smoke(*, torchtitan_root, flavor="debugmodel", seq_len=16, tokens=16
     config = build_smoke_model_config(flavor=flavor, seq_len=seq_len)
     try:
         with FakeTensorMode(allow_fallback_kernels=False), torch.device(fake_device), capture:
-            with capture.phase("initialization"):
+            initialization = (post_initialization_scope() if capture_scope == "post_initialization"
+                              else contextlib.nullcontext())
+            with capture.phase("initialization"), initialization as initialization_report:
+                if initialization_report is not None:
+                    metadata["initialization_coverage"] = initialization_report
                 with set_default_dtype(torch.bfloat16):
                     model = config.build()
                 model.init_states(buffer_device=torch.device(fake_device))
@@ -93,10 +148,12 @@ def main():
     parser.add_argument("--seq-len", default=16, type=int)
     parser.add_argument("--tokens", default=16, type=int)
     parser.add_argument("--fake-device", default="cpu", choices=["cpu", "meta"])
+    parser.add_argument("--capture-scope", default="strict", choices=["strict", "post_initialization"])
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     document = capture_smoke(torchtitan_root=args.torchtitan_root, flavor=args.flavor,
-                             seq_len=args.seq_len, tokens=args.tokens, fake_device=args.fake_device)
+                             seq_len=args.seq_len, tokens=args.tokens, fake_device=args.fake_device,
+                             capture_scope=args.capture_scope)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(document, indent=2) + "\n")

@@ -59,7 +59,7 @@ def _balanced_routing_scenario(*, tokens, capture):
 
 def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B",
                    seq_len=None, tokens=None, expert_parallel_degree=64, routing_scenario="strict", steps=1,
-                   probe=True):
+                   probe=True, capture_scope="strict"):
     import torch
     from torch._subclasses.fake_tensor import FakeTensorMode
     from .capture import TensorCapture
@@ -67,6 +67,8 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
 
     if routing_scenario not in {"strict", "balanced"}:
         raise ValueError("routing_scenario must be strict or balanced")
+    if capture_scope not in {"strict", "post_initialization"}:
+        raise ValueError("capture_scope must be strict or post_initialization")
     if world_size < 1 or steps < 1 or expert_parallel_degree < 1:
         raise ValueError("world_size, steps and expert_parallel_degree must be positive")
     revision = import_torchtitan(torchtitan_root)
@@ -75,6 +77,7 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
                     recipe=DEFAULT_RECIPE, world_size=world_size, rank=0,
                     import_compatibility=globals().get("IMPORT_COMPATIBILITY", {}),
                     flavor=flavor, routing_scenario=routing_scenario,
+                    capture_scope=capture_scope,
                     execution="upstream TrainingEngine with fake tensor kernels and fake process group",
                     overrides={"comm.backend": "fake", "synthetic_documents": "fixed-length",
                                "sequence_length": seq_len, "tokens": tokens,
@@ -129,7 +132,12 @@ def project_engine(*, torchtitan_root, output_dir, world_size=256, flavor="671B"
             stack.enter_context(FakeTensorMode(allow_fallback_kernels=False, allow_non_fake_inputs=True))
             metadata["fake_parameter_swap_compatibility"] = stack.enter_context(fake_tensor_parameter_swaps())
             stack.enter_context(capture)
-            with capture.phase("initialization"):
+            from .torchtitan_adapter import post_initialization_scope
+            initialization = (post_initialization_scope() if capture_scope == "post_initialization"
+                              else contextlib.nullcontext())
+            with capture.phase("initialization"), initialization as initialization_report:
+                if initialization_report is not None:
+                    metadata["initialization_coverage"] = initialization_report
                 engine = TrainingEngine(config, model_config=config.model,
                                         max_num_documents=config.dataloader.max_num_documents,
                                         output_dir=str(output_dir))
@@ -188,11 +196,13 @@ def main():
     parser.add_argument("--tokens", type=int)
     parser.add_argument("--steps", default=1, type=int)
     parser.add_argument("--routing-scenario", default="strict", choices=["strict", "balanced"])
+    parser.add_argument("--capture-scope", default="strict", choices=["strict", "post_initialization"])
     args = parser.parse_args()
     document = project_engine(torchtitan_root=args.torchtitan_root, output_dir=args.output.parent,
                               world_size=args.world_size, flavor=args.flavor, seq_len=args.seq_len,
                               tokens=args.tokens, expert_parallel_degree=args.expert_parallel_degree,
-                              routing_scenario=args.routing_scenario, steps=args.steps)
+                              routing_scenario=args.routing_scenario, steps=args.steps,
+                              capture_scope=args.capture_scope)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(document, indent=2) + "\n")
     print(json.dumps({key: document["metadata"][key]

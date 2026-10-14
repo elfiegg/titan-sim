@@ -153,7 +153,7 @@ def main() -> None:
         "steps": args.steps,
         "input": "synthetic fixed-length documents, random initialization, seed 42",
         "recipe": "torchtitan_recipes.models.deepseek_v3.deepseek_v3_671b" if args.flavor == "671B" else "torchtitan_recipes.tests.models.deepseek_v3.deepseek_v3_debugmodel",
-        "overrides": {"steps": args.steps, "sequence_length": args.seq_len, "tokens": args.tokens, "expert_parallel_degree": args.expert_parallel_degree, "activation_checkpoint": "FullAC", "pipeline_parallel_degree": 1, "tensor_parallel_degree": 1, "data_parallel_shard_degree": -1},
+        "overrides": {"steps": args.steps, "sequence_length": args.seq_len, "tokens": args.tokens, "expert_parallel_degree": args.expert_parallel_degree, "activation_checkpoint": "FullAC", "pipeline_parallel_degree": 1, "tensor_parallel_degree": 1, "data_parallel_shard_degree": -1, "disable_cuda_graphs": config.training.disable_cuda_graphs},
         "execution": "upstream TrainingEngine with synthetic microbatches",
     }
     from .provenance import execution_policy

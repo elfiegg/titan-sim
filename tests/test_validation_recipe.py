@@ -32,6 +32,7 @@ class ValidationRecipeTests(unittest.TestCase):
         from titan_sim.recipes import load_validation_recipe
         config = load_validation_recipe(flavor='debugmodel', seq_len=128, tokens=1024, expert_parallel_degree=1)
         self.assertEqual(config.parallelism.expert_parallel_degree, 1)
+        self.assertTrue(config.training.disable_cuda_graphs)
         self.assertEqual(config.training.num_tokens_per_microbatch_per_dp_rank, 1024)
 
     def test_upstream_resolves_dense_256_and_expert_fsdp_4(self):

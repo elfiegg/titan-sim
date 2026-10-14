@@ -166,25 +166,65 @@ class FakeCudaRuntime:
         return previous
 
 
-def probe_fake_cuda_autograd(*, timeout=30):
-    """Contain native DeviceGuard failures in a child process before large work."""
+def probe_fake_cuda_autograd(*, timeout=30, cpu_only=True):
+    """Probe Python emulation and native autograd separately in a child process.
+
+    Hide GPUs by default so successful execution establishes CPU-only coverage.
+    A visible-device probe is an explicit diagnostic and does not establish that
+    coverage. Native aborts remain contained in the child process.
+    """
+    import json
+    import os
     import subprocess
     import sys
     code = """
 import json
 import torch
+import torch._dynamo
 from torch._subclasses.fake_tensor import FakeTensorMode
-with FakeTensorMode(allow_fallback_kernels=False):
-    value = torch.empty(2, device='cuda', requires_grad=True)
-    (value.square().sum()).backward()
-print(json.dumps({'status': 'complete', 'torch': torch.__version__}))
+from titan_sim.capture import TensorCapture
+from titan_sim.fake_device import FakeCudaRuntime
+def phase(name):
+    print(json.dumps({'phase': name}), flush=True)
+phase('python_runtime')
+properties = dict(name='logical NVIDIA GB200', major=10, minor=0,
+                  total_memory=197897617408, multi_processor_count=152)
+try:
+    with FakeCudaRuntime(TensorCapture(), properties=properties):
+        with FakeTensorMode(allow_fallback_kernels=False):
+            phase('tensor_creation')
+            value = torch.empty(2, device='cuda', requires_grad=True)
+            phase('forward')
+            loss = value.square().sum()
+            phase('backward')
+            loss.backward()
+    print(json.dumps({'status': 'complete', 'torch': torch.__version__}), flush=True)
+except Exception as error:
+    print(json.dumps({'status': 'blocked', 'error_type': type(error).__name__,
+                      'error': str(error)}), flush=True)
+    raise
 """
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = os.pathsep.join(sys.path)
+    if cpu_only:
+        environment["CUDA_VISIBLE_DEVICES"] = ""
     try:
-        result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=timeout)
+        result = subprocess.run([sys.executable, "-c", code], capture_output=True,
+                                text=True, timeout=timeout, env=environment)
     except subprocess.TimeoutExpired as error:
-        return dict(status="blocked", reason="fake CUDA autograd probe timed out", stderr=str(error))
+        return dict(status="blocked", reason="fake CUDA autograd probe timed out",
+                    cpu_only=cpu_only, stderr=str(error))
+    diagnostics = []
+    for line in result.stdout.splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(row, dict):
+            diagnostics.append(row)
     return dict(status="complete" if result.returncode == 0 else "blocked",
                 returncode=result.returncode, stdout=result.stdout, stderr=result.stderr,
+                cpu_only=cpu_only, diagnostics=diagnostics,
                 limitation="Python runtime emulation cannot replace native C++ CUDA DeviceGuard")
 
 

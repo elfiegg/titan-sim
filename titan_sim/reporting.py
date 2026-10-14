@@ -78,7 +78,17 @@ def comparison_summary(projection, observed):
         if not predicted_meta.get(key) or predicted_meta.get(key) != actual_meta.get(key):
             mismatches[key] = [predicted_meta.get(key), actual_meta.get(key)]
     complete = predicted_meta.get('status') == 'complete' and observed.get('status') == 'complete'
+    coverage_limitations = []
+    for side, metadata in (('prediction', predicted_meta), ('observation', actual_meta)):
+        scope = metadata.get('capture_scope', 'strict')
+        if scope != 'strict':
+            coverage_limitations.append(f'{side} capture_scope={scope} excludes full execution coverage')
+        initialization = metadata.get('initialization_coverage', {})
+        for field in ('initialization_time_included', 'initialization_peak_included'):
+            if initialization.get(field) is False:
+                coverage_limitations.append(f'{side} {field}=false')
     # Metadata equality alone does not certify matched schedules or allocations.
     return {'config_mismatches': mismatches, 'both_complete': complete,
-            'eligible_for_phase_comparison': complete and not mismatches,
+            'coverage_limitations': coverage_limitations,
+            'eligible_for_phase_comparison': complete and not mismatches and not coverage_limitations,
             'note': 'Logical tensor ownership excludes allocator reserve, kernel scratch and deferred CUDA use. Compare phase boundaries only after matching execution policies and routing.'}

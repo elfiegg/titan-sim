@@ -12,6 +12,33 @@ except ModuleNotFoundError as error:
 
 @unittest.skipIf(torch is None, "PyTorch is required")
 class FakeDeviceTests(unittest.TestCase):
+    def test_native_probe_hides_gpus_and_reports_last_phase(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from titan_sim.fake_device import probe_fake_cuda_autograd
+        result = SimpleNamespace(returncode=-6,
+                                 stdout='{"phase": "forward"}\n',
+                                 stderr="native DeviceGuard failure")
+        with patch.dict("os.environ", CUDA_VISIBLE_DEVICES="0,1"):
+            with patch("subprocess.run", return_value=result) as run:
+                report = probe_fake_cuda_autograd()
+        self.assertEqual(run.call_args.kwargs["env"]["CUDA_VISIBLE_DEVICES"], "")
+        self.assertTrue(report["cpu_only"])
+        self.assertEqual(report["status"], "blocked")
+        self.assertEqual(report["diagnostics"], [{"phase": "forward"}])
+
+    def test_visible_device_probe_is_explicitly_not_cpu_only(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from titan_sim.fake_device import probe_fake_cuda_autograd
+        result = SimpleNamespace(returncode=0, stdout='{"status": "complete"}\n', stderr="")
+        with patch.dict("os.environ", CUDA_VISIBLE_DEVICES="0"):
+            with patch("subprocess.run", return_value=result) as run:
+                report = probe_fake_cuda_autograd(cpu_only=False)
+        self.assertEqual(run.call_args.kwargs["env"]["CUDA_VISIBLE_DEVICES"], "0")
+        self.assertFalse(report["cpu_only"])
+        self.assertEqual(report["status"], "complete")
+
     def test_fake_parameter_swap_preserves_identity_and_materializes(self):
         from torch._subclasses.fake_tensor import FakeTensorMode
         with FakeTensorMode(), fake_tensor_parameter_swaps() as report:
