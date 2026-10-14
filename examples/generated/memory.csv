@@ -1,0 +1,4 @@
+time_us,rank,allocated_bytes,delta_bytes,action,storage_id,generation,category,by_category
+0.0,0,1048576,1048576,allocate,p,0,parameters,"{""parameters"": 1048576}"
+0.0,0,5242880,4194304,allocate,a,1,activations,"{""parameters"": 1048576, ""activations"": 4194304}"
+33.4359738368,0,1048576,-4194304,reclaim,a,1,activations,"{""parameters"": 1048576, ""activations"": 0}"

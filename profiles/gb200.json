@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "name": "NVIDIA GB200 NVL72 Blackwell GPU (per GPU, dense peaks)",
+  "scope": "one Blackwell GPU within a GB200 Grace Blackwell Superchip; not the two-GPU Superchip or HGX B200",
+  "peak_flops": {
+    "float64": 40000000000000,
+    "float32": 80000000000000,
+    "tf32": 1250000000000000,
+    "float16": 2500000000000000,
+    "bfloat16": 2500000000000000,
+    "float8_e4m3fn": 5000000000000000,
+    "float8_e5m2": 5000000000000000,
+    "fp8": 5000000000000000
+  },
+  "sparse_tensor_core_peak_flops_reference_only": {
+    "tf32": 2500000000000000,
+    "float16": 5000000000000000,
+    "bfloat16": 5000000000000000,
+    "fp8": 10000000000000000
+  },
+  "memory_bandwidth_bytes_s": 8000000000000,
+  "memory_capacity_bytes": 197897617408,
+  "memory_capacity_provenance": {
+    "basis": "measured device capacity override supplied by the cluster preflight",
+    "measurement": "torch.cuda.get_device_properties(device).total_memory",
+    "value_bytes": 197897617408,
+    "scope": "observed target device, not an inference from NVIDIA marketing capacity",
+    "published_per_gpu_capacity_gb_reference": 186
+  },
+  "compute_provenance": {
+    "basis": "NVIDIA published GB200 NVL72 specification; theoretical peak, not calibrated sustained performance",
+    "normalization": "Superchip contains two GPUs. Divide the listed Superchip Tensor Core sparse rate by two GPUs and then by two for dense. Divide scalar FP32/FP64 rates only by two GPUs.",
+    "dense_bfloat16_derivation": "10 PFLOP/s sparse per Superchip / 2 GPUs / 2 = 2.5 PFLOP/s dense per GPU",
+    "dense_fp8_derivation": "20 PFLOP/s sparse per Superchip / 2 GPUs / 2 = 5 PFLOP/s dense per GPU",
+    "hbm_derivation": "16 TB/s per Superchip / 2 GPUs = 8 TB/s per GPU; decimal TB = 10^12 bytes",
+    "execution_precision": "float32 uses scalar FP32 peak; TF32 is only selected by an explicit tf32 execution-dtype event. FP8 rates apply to actual FP8 Tensor Core arithmetic, not storage dtype alone.",
+    "sparse_policy": "Sparse rates are reference metadata only. Current runtime rejects sparse work; it never substitutes a sparse rate for dense work."
+  },
+  "network": {
+    "status": "unmodeled: network_bandwidth_bytes_s intentionally omitted",
+    "published_nvlink_bandwidth_bytes_s_per_gpu_reference": 1800000000000,
+    "assumptions": [
+      "Published NVLink aggregate interface bandwidth is not assumed to equal effective collective payload throughput.",
+      "No rank placement, topology, collective algorithm, startup latency, NCCL efficiency or network contention is inferred.",
+      "Collective analytical timing requires a separate explicit effective bandwidth assumption; calibrated timing requires exact measured entries."
+    ]
+  },
+  "sources": [
+    {
+      "title": "NVIDIA GB200 NVL72 official specifications",
+      "url": "https://www.nvidia.com/en-us/data-center/gb200-nvl72/",
+      "supports": "Two GPUs per Superchip; sparse versus dense Tensor Core footnote; FP32/FP64; HBM bandwidth and published capacity; NVLink interface bandwidth"
+    },
+    {
+      "title": "NVIDIA GB200 NVL multi-node tuning guide: platform overview",
+      "url": "https://docs.nvidia.com/multi-node-nvlink-systems/multi-node-tuning-guide/overview.html",
+      "supports": "GB200/NVL72 architecture and published NVLink bandwidth; no measured collective efficiency supplied"
+    }
+  ],
+  "limitations": [
+    "All peak rates are optimistic theoretical roofline ceilings; kernel efficiency and launch overhead are not calibrated.",
+    "Clock, power and thermal limits of the measured cluster can change sustained rates.",
+    "Capacity override is device-specific; remeasure for other hardware or MIG configurations.",
+    "HBM traffic in dispatch traces is logical tensor payload and is not measured DRAM traffic."
+  ]
+}

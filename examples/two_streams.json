@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source": "synthetic_semantics_demo",
+  "metadata": {"status": "complete", "scope": "Synthetic scheduler example; not a TorchTitan or DeepSeek result"},
+  "events": [
+    {"event_id": "parameter", "kind": "allocate", "storage_id": "p", "size_bytes": 1048576, "category": "parameters", "host_time_us": 0},
+    {"event_id": "activation", "kind": "allocate", "storage_id": "a", "size_bytes": 4194304, "category": "activations", "host_time_us": 0},
+    {"event_id": "gemm", "kind": "compute", "name": "example_gemm", "dtype": "bfloat16", "flops": 8589934592, "bytes_read": 1048576, "bytes_write": 4194304, "reads": ["p"], "writes": ["a"], "host_time_us": 0},
+    {"event_id": "reduce", "kind": "collective", "stream": "comm", "name": "example_all_reduce", "duration_us": 30, "duration_provenance": "Explicit illustrative duration; not a measurement", "deps": ["gemm"], "reads": ["a"], "host_time_us": 2},
+    {"event_id": "release", "kind": "release", "storage_id": "a", "host_time_us": 3},
+    {"event_id": "sync", "kind": "host_sync", "host_time_us": 4}
+  ]
+}

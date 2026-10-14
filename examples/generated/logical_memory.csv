@@ -1,0 +1,4 @@
+event_index,event_id,rank,action,storage_id,delta_bytes,allocated_bytes,category,phase,by_category
+0,parameter,0,allocate,p,1048576,1048576,parameters,parameters,"{""parameters"": 1048576}"
+1,activation,0,allocate,a,4194304,5242880,activations,activations,"{""parameters"": 1048576, ""activations"": 4194304}"
+4,release,0,release,a,-4194304,1048576,activations,unclassified,"{""parameters"": 1048576, ""activations"": 0}"

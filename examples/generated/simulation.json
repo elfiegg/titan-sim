@@ -1,0 +1,301 @@
+{
+  "timeline": [
+    {
+      "event_id": "parameter",
+      "kind": "allocate",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 0.0,
+      "lane": null,
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work"
+    },
+    {
+      "event_id": "activation",
+      "kind": "allocate",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 0.0,
+      "lane": null,
+      "deps": [
+        "parameter"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work"
+    },
+    {
+      "event_id": "gemm",
+      "kind": "compute",
+      "name": "example_gemm",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 3.4359738368,
+      "lane": "compute",
+      "deps": [
+        "activation",
+        "parameter"
+      ],
+      "flops": 8589934592,
+      "bytes_read": 1048576,
+      "bytes_write": 4194304,
+      "dtype": "bfloat16",
+      "duration_us": 3.4359738368,
+      "source": "roofline",
+      "provenance": "analytical lower bound; no efficiency or launch overhead",
+      "bound": "compute",
+      "compute_us": 3.4359738368,
+      "memory_us": 0.6553599999999999
+    },
+    {
+      "event_id": "reduce",
+      "kind": "collective",
+      "name": "example_all_reduce",
+      "rank": 0,
+      "stream": "comm",
+      "submit_us": 2,
+      "start_us": 3.4359738368,
+      "end_us": 33.4359738368,
+      "lane": "communication",
+      "deps": [
+        "activation",
+        "gemm"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 30,
+      "source": "explicit",
+      "provenance": "Explicit illustrative duration; not a measurement"
+    },
+    {
+      "event_id": "release",
+      "kind": "release",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 3,
+      "start_us": 3.4359738368,
+      "end_us": 3.4359738368,
+      "lane": null,
+      "deps": [
+        "gemm"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work"
+    },
+    {
+      "event_id": "sync",
+      "kind": "host_sync",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 4,
+      "start_us": 33.4359738368,
+      "end_us": 33.4359738368,
+      "lane": null,
+      "deps": [
+        "activation",
+        "gemm",
+        "parameter",
+        "reduce",
+        "release"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work",
+      "sync_scope": "device"
+    }
+  ],
+  "memory": [
+    {
+      "time_us": 0.0,
+      "rank": 0,
+      "allocated_bytes": 1048576,
+      "delta_bytes": 1048576,
+      "action": "allocate",
+      "storage_id": "p",
+      "generation": 0,
+      "category": "parameters",
+      "by_category": {
+        "parameters": 1048576
+      }
+    },
+    {
+      "time_us": 0.0,
+      "rank": 0,
+      "allocated_bytes": 5242880,
+      "delta_bytes": 4194304,
+      "action": "allocate",
+      "storage_id": "a",
+      "generation": 1,
+      "category": "activations",
+      "by_category": {
+        "parameters": 1048576,
+        "activations": 4194304
+      }
+    },
+    {
+      "time_us": 33.4359738368,
+      "rank": 0,
+      "allocated_bytes": 1048576,
+      "delta_bytes": -4194304,
+      "action": "reclaim",
+      "storage_id": "a",
+      "generation": 1,
+      "category": "activations",
+      "by_category": {
+        "parameters": 1048576,
+        "activations": 0
+      }
+    }
+  ],
+  "logical_memory": [
+    {
+      "event_index": 0,
+      "event_id": "parameter",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "p",
+      "delta_bytes": 1048576,
+      "allocated_bytes": 1048576,
+      "category": "parameters",
+      "phase": "parameters",
+      "by_category": {
+        "parameters": 1048576
+      }
+    },
+    {
+      "event_index": 1,
+      "event_id": "activation",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "a",
+      "delta_bytes": 4194304,
+      "allocated_bytes": 5242880,
+      "category": "activations",
+      "phase": "activations",
+      "by_category": {
+        "parameters": 1048576,
+        "activations": 4194304
+      }
+    },
+    {
+      "event_index": 4,
+      "event_id": "release",
+      "rank": 0,
+      "action": "release",
+      "storage_id": "a",
+      "delta_bytes": -4194304,
+      "allocated_bytes": 1048576,
+      "category": "activations",
+      "phase": "unclassified",
+      "by_category": {
+        "parameters": 1048576,
+        "activations": 0
+      }
+    }
+  ],
+  "storage_lifetimes": [
+    {
+      "rank": 0,
+      "storage_id": "p",
+      "generation": 0,
+      "size_bytes": 1048576,
+      "category": "parameters",
+      "allocate_us": 0.0,
+      "reclaim_us": null,
+      "remaining_refs": 1
+    },
+    {
+      "rank": 0,
+      "storage_id": "a",
+      "generation": 1,
+      "size_bytes": 4194304,
+      "category": "activations",
+      "allocate_us": 0.0,
+      "reclaim_us": 33.4359738368,
+      "remaining_refs": 0
+    }
+  ],
+  "summary": {
+    "runtime_us": 33.4359738368,
+    "peak_allocated_bytes": 5242880,
+    "per_rank": {
+      "0": {
+        "runtime_us": 33.4359738368,
+        "host_time_us": 33.4359738368,
+        "peak_allocated_bytes": 5242880,
+        "final_allocated_bytes": 1048576,
+        "peak_by_category": {
+          "parameters": 1048576,
+          "activations": 4194304
+        },
+        "logical_peak_allocated_bytes": 5242880,
+        "capacity_exceeded": false,
+        "scheduled_capacity_exceeded": false
+      }
+    },
+    "capacity_exceeded": false,
+    "scheduled_capacity_exceeded": false,
+    "logical_peak_allocated_bytes": 5242880,
+    "memory_confidence": "explicit_host_schedule_scenario",
+    "logical_memory_model": "program-order reference-owned GPU tensor storage; excludes CPU/meta storage, allocator reserve, kernel workspaces and deferred GPU usage",
+    "coverage": {
+      "work_events": 2,
+      "calibrated_events": 0,
+      "explicit_events": 1,
+      "fallback_events": 0,
+      "fallback_event_fraction": 0.0,
+      "fallback_flop_fraction": 0.0,
+      "fallback_duration_fraction": 0.0
+    },
+    "timing": "roofline",
+    "hardware": "NVIDIA GB200 NVL72 Blackwell GPU (per GPU, dense peaks)",
+    "scheduling_model": "one serialized compute lane and one communication lane per rank",
+    "overlap_model": "ideal compute/communication overlap scenario; contention is not modeled",
+    "memory_model": "physical live storage with alias references and deferred reclamation; no caching/reserved model; conservative allocation-before-free ties",
+    "limitations": [
+      "CPU/meta-device arithmetic/control durations are unmodeled and contribute no device time.",
+      "Collective participant rendezvous must be supplied as explicit dependencies.",
+      "Host launch overhead is zero unless host_time_us encodes it.",
+      "Analytical durations are lower bounds, not predicted measured runtimes.",
+      "No same-stream allocator reuse before physical reclamation."
+    ]
+  },
+  "metadata": {
+    "status": "complete",
+    "scope": "Synthetic scheduler example; not a TorchTitan or DeepSeek result"
+  },
+  "capture_coverage": {},
+  "unknown_flop_ops": {},
+  "partial_trace": false
+}

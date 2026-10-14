@@ -1,0 +1,7 @@
+event_id,kind,name,rank,stream,submit_us,start_us,end_us,lane,deps,flops,bytes_read,bytes_write,dtype,duration_us,source,provenance,bound,compute_us,memory_us,sync_scope
+parameter,allocate,,0,default,0.0,0.0,0.0,,[],0,0,0,float32,0.0,control,zero device work,,,,
+activation,allocate,,0,default,0.0,0.0,0.0,,"[""parameter""]",0,0,0,float32,0.0,control,zero device work,,,,
+gemm,compute,example_gemm,0,default,0.0,0.0,3.4359738368,compute,"[""activation"", ""parameter""]",8589934592,1048576,4194304,bfloat16,3.4359738368,roofline,analytical lower bound; no efficiency or launch overhead,compute,3.4359738368,0.6553599999999999,
+reduce,collective,example_all_reduce,0,comm,2,3.4359738368,33.4359738368,communication,"[""activation"", ""gemm""]",0,0,0,float32,30,explicit,Explicit illustrative duration; not a measurement,,,,
+release,release,,0,default,3,3.4359738368,3.4359738368,,"[""gemm""]",0,0,0,float32,0.0,control,zero device work,,,,
+sync,host_sync,,0,default,4,33.4359738368,33.4359738368,,"[""activation"", ""gemm"", ""parameter"", ""reduce"", ""release""]",0,0,0,float32,0.0,control,zero device work,,,,device

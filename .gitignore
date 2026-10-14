@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+work/
+results/raw/
+*.pickle
+*.pt
+*.sqsh
+*.safetensors
+.DS_Store
