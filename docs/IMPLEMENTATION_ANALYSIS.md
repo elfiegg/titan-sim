@@ -36,30 +36,36 @@ The target is the original upstream 671B configuration with the requested parall
 
 The two sharding descriptions matter. Dense FSDP and expert parallelism are not independent factors that multiply the GPU count beyond 256. Dense tensors use the 256-rank sharding layout; routed expert tensors use the combined expert and expert-FSDP layout. A memory calculation that divides every tensor by both 256 and 64 would substantially undercount storage. The shared configuration builder checks the resolved upstream topology. [Configuration evidence](../profiles/deepseek-v3-256gb200.json)
 
-## 2. Architecture and Execution Method
+## 2. Architecture of the CPU Simulator
 
-There are three distinct parts: execution capture, event simulation, and independent GPU observation. Their separation allows a timing model to change without rewriting tensor accounting, and allows actual measurements to challenge a projection without becoming its input allocations.
+The simulator is intended to execute entirely on CPUs. It takes TorchTitan code and a training configuration, represents GPU tensors and operations without performing their numerical GPU computation, and predicts storage lifetimes and execution time. A real GPU training run is not part of this architecture and is not required alongside each simulation. Independent GPU validation is described in Section 7.
+
+### 2.1 Current capture-and-simulate architecture
+
+The current implementation separates metadata execution from subsequent event simulation:
 
 ```mermaid
 flowchart TD
-    A[Selected upstream model and training configuration]
-    A --> B[CPU metadata execution attempt]
-    B --> C[Tensor storage and operation events]
+    A[TorchTitan code and training configuration] --> B[CPU execution with fake tensors]
+    B --> C[Recorded operations and storage events]
     C --> D[Program-order storage accounting]
-    C --> E[Dependency and stream scheduler]
-    H[Hardware profile or calibrated event durations] --> E
-    E --> F[Conditional device timeline and storage lifetimes]
-    A --> G[Independent GPU training experiment]
-    G --> I[Allocator counters and bounded history]
-    D --> J[Configuration and phase comparison checks]
-    I --> J
+    C --> E[Virtual device scheduler and storage lifetimes]
+    H[Hardware profile or previously collected timings] --> E
+    D --> F[Logical memory trajectory]
+    E --> G[Conditional runtime and timed memory trajectory]
 ```
 
-The diagram shows the intended flow; it does not assert that the full-model capture or GPU experiment has completed. The CPU path uses metadata tensors: shapes, strides, precision, device identity, and storage relationships are represented without allocating the numerical model contents. An observer records operations and storage changes as upstream code executes.
+Every execution and analysis component in this diagram runs on the CPU. The hardware profile describes the target GPU; it does not connect to one. Previously collected timings are optional inputs to calibrated timing. The roofline mode uses hardware specifications instead, subject to the coverage and communication limitations in Section 4.
 
-This is more faithful than estimating every layer from a separate spreadsheet, but only for the code paths that metadata execution can traverse. A trace must include the actual forward pass, backward pass, optimizer state creation, checkpoint recomputation, and distributed transformations before it can represent a complete training step. Constructing the model is only the first of those requirements.
+The metadata execution component follows upstream code using fake tensors that represent shapes, strides, precision, device identity, and storage relationships without allocating the numerical model contents. An observer records operations and storage changes as that code executes. This is execution of supported control flow, rather than a one-time inspection of static parameter shapes. A complete training trace must include forward, backward, optimizer state creation, checkpoint recomputation, and distributed transformations. Constructing the model covers only the beginning of that path.
 
-The event engine itself is independent of PyTorch and can process supplied traces today. The upstream integration is more constrained: the production capture adapter currently represents one logical rank, requires PP=1 and one microbatch per optimizer step, and has not completed the selected full training recipe. Supporting events from multiple ranks is not equivalent to having captured every rank's behavior.
+The event engine can process supplied traces today. The full TorchTitan capture path is incomplete: the production adapter currently represents one logical rank, requires PP=1 and one microbatch per optimizer step, and has not completed the selected full training recipe. Supporting events from multiple ranks is not equivalent to capturing every rank's behavior. The diagram describes the implemented separation of components, not a claim that the full-model path already succeeds.
+
+### 2.2 Intended live execution with fake-GPU waits
+
+The requested live simulator needs one additional connection: metadata execution must submit work directly to the virtual device scheduler, and the scheduler must return completion information to the running host program. At a host-visible synchronization, execution waits for the required simulated work; ordinary asynchronous submission does not wait for every operation individually. Storage accounting follows those submissions and completions.
+
+That connection is not implemented end to end. Current event capture is followed by simulation, and optional wall-clock playback uses an already computed timeline. The intended live connection must preserve native stream/event semantics and distinguish virtual time advancement from optional real-time sleeping. It must not interpret the time spent executing metadata on the CPU as GPU kernel time. Section 5 explains the current synchronization model and its limits.
 
 ## 3. Memory Accounting and Precision
 
@@ -89,7 +95,7 @@ A storage object with remaining references stays live. Allocations precede relea
 
 This distinction explains why timing can change memory peaks even when tensor shapes stay fixed. Earlier prefetch or greater overlap can keep more storage live simultaneously. It also explains why a usable time-based memory trajectory needs a host submission schedule. Without explicit host timestamps, allocations can accumulate at the same default time. The implementation retains the program-order trajectory and withholds its supported capacity verdict in that case. Even with timestamps, the verdict describes the supplied scenario rather than proving real GPU feasibility.
 
-### 3.3 What the GPU measurements mean
+### 3.3 Memory metric definitions
 
 | Quantity | Meaning | Current treatment |
 |---|---|---|
@@ -98,8 +104,6 @@ This distinction explains why timing can change memory peaks even when tensor sh
 | PyTorch allocated memory | Memory in use according to the CUDA allocator | Independently observed on GPU |
 | PyTorch reserved memory | Memory held by the allocator, including reusable blocks | Independently observed; not simulated |
 | Total device memory use | Allocator memory plus CUDA, libraries, and other allocations | Not fully captured by allocator counters |
-
-The GPU observer collects layer-boundary samples without synchronizing at every hook, and synchronizes at step boundaries. This reduces disturbance relative to synchronizing every layer, but module samples are host observations rather than exact GPU execution boundaries. Per-step allocator peak counters and selected allocator history provide complementary evidence. Instrumentation can still affect execution.
 
 The reported simulator peak is the largest per-rank peak, not memory summed across the cluster. For feasibility, the relevant question is whether any individual GPU exceeds its available capacity.
 
@@ -179,7 +183,30 @@ Full activation checkpointing adds another dependency between memory and time: f
 
 Metadata capture also has its own scalability cost. Recording each operation and its metadata avoids numerical model storage, but the event log and dependency graph still grow with workload size. Full model construction does not establish that a complete training trace is fast or small enough on the CPU host; that has not yet been benchmarked.
 
-## 7. Validation Evidence and Current Results
+## 7. Independent Validation Path
+
+### 7.1 Comparison against a separate GPU experiment
+
+Validation asks whether the CPU simulator's outputs agree with independently measured behavior. This path executes actual training on GPUs, separately from CPU simulation. Both paths must use matching model and execution settings, and their memory metrics must be reconciled before differences can be treated as errors.
+
+```mermaid
+flowchart TD
+    A[Matched model and execution configuration] --> B[CPU simulator]
+    A --> C[Separate real GPU training run]
+    B --> D[Predicted memory and runtime]
+    C --> E[Observed allocator memory and elapsed time]
+    D --> F[Check configuration, coverage, phases and metric definitions]
+    E --> F
+    F --> G[Comparison and explanation of differences]
+```
+
+This is the validation procedure; it does not imply that a matched full-model pair is available. Actual GPU allocation events remain observations, not the source of predicted storage. The simulator does not need a GPU run concurrently with each prediction.
+
+Calibration is a separate optional preparation activity. GPU benchmarks may supply operation or collective durations for later CPU simulations. Those timings should have recorded provenance and matching execution conditions; a calibrated prediction still needs independent validation, preferably on workloads not used to fit its timing model.
+
+The GPU observer collects layer-boundary samples without synchronizing at every hook, and synchronizes at step boundaries. This reduces disturbance relative to synchronizing every layer, but module samples are host observations rather than exact GPU execution boundaries. Per-step allocator peak counters and selected allocator history provide complementary evidence. Instrumentation can still affect execution.
+
+### 7.2 Validation evidence and current results
 
 | Evidence | What it establishes | What it does not establish |
 |---|---|---|
