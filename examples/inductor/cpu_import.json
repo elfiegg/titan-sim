@@ -1,0 +1,907 @@
+{
+  "manifest": {
+    "schema_version": 1,
+    "id": "inductor",
+    "device": "cpu",
+    "plan_source": "compiler_artifact",
+    "provenance": {
+      "source": "actual_torch_compile_debug_output",
+      "torch_version": "2.14.1",
+      "device": "cpu",
+      "fullgraph": true,
+      "numeric_execution_verified": true,
+      "function": "relu(x @ weight) + 1",
+      "input_shapes": [
+        [
+          2,
+          4
+        ],
+        [
+          4,
+          3
+        ]
+      ],
+      "output_shape": [
+        2,
+        3
+      ],
+      "output_all_elements": 5.0,
+      "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing"
+    },
+    "external_storages": {
+      "inductor:input:arg0_1": 32,
+      "inductor:input:arg1_1": 48
+    },
+    "slots": [
+      {
+        "id": "s0",
+        "size_bytes": 24,
+        "category": "compiled_storage"
+      }
+    ],
+    "buffers": [
+      {
+        "id": "__backing_s0",
+        "slot": "s0",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "first_kernel": "k0",
+        "last_kernel": "k1"
+      },
+      {
+        "id": "buf0@2",
+        "slot": "s0",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "first_kernel": "k0",
+        "last_kernel": "k0",
+        "alias_of": "__backing_s0"
+      },
+      {
+        "id": "buf1@3",
+        "slot": "s0",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "first_kernel": "k1",
+        "last_kernel": "k1",
+        "alias_of": "__backing_s0"
+      }
+    ],
+    "kernels": [
+      {
+        "id": "k0",
+        "name": "extern_kernels.mm",
+        "dtype": "float32",
+        "flops": 48,
+        "bytes_read": 80,
+        "bytes_write": 24,
+        "provenance": "Explicit 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+        "reads": [
+          "inductor:input:arg0_1",
+          "inductor:input:arg1_1"
+        ],
+        "writes": [
+          "__backing_s0",
+          "buf0@2"
+        ],
+        "logical_ops": [
+          "k0"
+        ]
+      },
+      {
+        "id": "k1",
+        "name": "cpp_fused_add_relu_0",
+        "dtype": "float32",
+        "flops": 12,
+        "bytes_read": 24,
+        "bytes_write": 24,
+        "provenance": "Explicit six ReLU comparisons plus six additions; one fused read/write pass, no intermediate traffic added",
+        "reads": [
+          "__backing_s0",
+          "buf1@3"
+        ],
+        "writes": [
+          "__backing_s0",
+          "buf1@3"
+        ],
+        "logical_ops": [
+          "k1"
+        ]
+      }
+    ],
+    "retained_buffers": [
+      "__backing_s0"
+    ],
+    "graph": {
+      "mode": "none"
+    },
+    "calibration_context": {
+      "backend": "inductor_static_wrapper",
+      "device": "cpu",
+      "wrapper_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+      "kernel_cost_manifest_sha256": "5b4bdcea9c2dad8c677f28538c33e722b13ad917b8c95609030b36644457f551"
+    },
+    "artifact_sha256": "424bddef58b94f198b5bc26c47dd53a245674653ed92f30c4bf097292665e09c"
+  },
+  "artifact": {
+    "kind": "inductor_wrapper_allocation_plan",
+    "source_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+    "source_text": "# AOT ID: ['0_inference']\nfrom ctypes import c_void_p, c_long, c_int\nimport torch\nimport math\nimport random\nimport os\nimport tempfile\nfrom math import inf, nan\nfrom cmath import nanj\nfrom torch._inductor.hooks import run_intermediate_hooks\nfrom torch._inductor.utils import maybe_profile\nfrom torch._inductor.codegen.memory_planning import _align as align\nfrom torch import device, empty_strided\nfrom torch._inductor.async_compile import AsyncCompile\nfrom torch._inductor.select_algorithm import extern_kernels\n\naten = torch.ops.aten\ninductor_ops = torch.ops.inductor\n_quantized = torch.ops._quantized\nassert_size_stride = torch._C._dynamo.guards.assert_size_stride\nassert_size_stride_grouped = torch._C._dynamo.guards.assert_size_stride_grouped\nassert_alignment = torch._C._dynamo.guards.assert_alignment\nempty_strided_cpu = torch._C._dynamo.guards._empty_strided_cpu\nempty_strided_cpu_pinned = torch._C._dynamo.guards._empty_strided_cpu_pinned\nempty_strided_cuda = torch._C._dynamo.guards._empty_strided_cuda\nempty_strided_xpu = torch._C._dynamo.guards._empty_strided_xpu\nempty_strided_mtia = torch._C._dynamo.guards._empty_strided_mtia\nreinterpret_tensor = torch._C._dynamo.guards._reinterpret_tensor\nalloc_from_pool = torch.ops.inductor._alloc_from_pool\nasync_compile = AsyncCompile()\nempty_strided_p2p = torch._C._distributed_c10d._SymmetricMemory.empty_strided_p2p\n\n\ncpp_fused_add_relu_0 = async_compile.cpp_pybinding(['float*'], r'''\n#include <torch/csrc/inductor/cpp_prefix.h>\nextern \"C\"  void  kernel(float* in_out_ptr0)\n{\n    std::atomic<int> inductor_cpu_integer_div_error{0};\n    inductor_cpu_integer_div_error_flag = &inductor_cpu_integer_div_error;\n    {\n        for(int64_t x0=static_cast<int64_t>(0LL); x0<static_cast<int64_t>(6LL); x0+=static_cast<int64_t>(4LL))\n        {\n            {\n                if(C10_LIKELY(x0 >= static_cast<int64_t>(0) && x0 < static_cast<int64_t>(4LL)))\n                {\n                    auto tmp0 = at::vec::Vectorized<float>::loadu(in_out_ptr0 + static_cast<int64_t>(x0), static_cast<int64_t>(4));\n                    auto tmp1 = at::vec::clamp_min(tmp0, decltype(tmp0)(0));\n                    auto tmp2 = static_cast<float>(1.0);\n                    auto tmp3 = at::vec::Vectorized<float>(tmp2);\n                    auto tmp4 = tmp1 + tmp3;\n                    tmp4.store(in_out_ptr0 + static_cast<int64_t>(x0));\n                }\n                if(C10_UNLIKELY(x0 >= static_cast<int64_t>(4LL) && x0 < static_cast<int64_t>(6LL)))\n                {\n                    auto tmp0 = at::vec::Vectorized<float>::loadu(in_out_ptr0 + static_cast<int64_t>(x0), static_cast<int64_t>(2LL));\n                    auto tmp1 = at::vec::clamp_min(tmp0, decltype(tmp0)(0));\n                    auto tmp2 = static_cast<float>(1.0);\n                    auto tmp3 = at::vec::Vectorized<float>(tmp2);\n                    auto tmp4 = tmp1 + tmp3;\n                    tmp4.store(in_out_ptr0 + static_cast<int64_t>(x0), static_cast<int64_t>(2LL));\n                }\n            }\n        }\n    }\n    inductor_cpu_integer_div_error_flag = nullptr;\n    inductor_cpu_throw_if_integer_div_error(inductor_cpu_integer_div_error);\n}\n''')\n\n\nasync_compile.wait(globals())\ndel async_compile\n\nclass Runner:\n    def __init__(self, partitions):\n        self.partitions = partitions\n\n    def recursively_apply_fns(self, fns):\n        new_callables = []\n        for fn, c in zip(fns, self.partitions):\n            new_callables.append(fn(c))\n        self.partitions = new_callables\n\n    def call(self, args):\n        arg0_1, arg1_1 = args\n        args.clear()\n        assert_size_stride_grouped((arg0_1, arg1_1), ((2, 4), (4, 3)), ((4, 1), (3, 1)), 'input')\n        buf0 = empty_strided_cpu((2, 3), (3, 1), torch.float32)\n        # Topologically Sorted Source Nodes: [matmul], Original ATen: [aten.mm]\n        extern_kernels.mm(arg0_1, arg1_1, out=buf0)\n        del arg0_1\n        del arg1_1\n        buf1 = buf0; del buf0  # reuse\n        cpp_fused_add_relu_0(buf1)\n        return (buf1, )\n\nrunner = Runner(partitions=[])\ncall = runner.call\nrecursively_apply_fns = runner.recursively_apply_fns\n\n\ndef get_args():\n    from torch._dynamo.testing import rand_strided\n    arg0_1 = rand_strided((2, 4), (4, 1), device='cpu', dtype=torch.float32)\n    arg1_1 = rand_strided((4, 3), (3, 1), device='cpu', dtype=torch.float32)\n    return [arg0_1, arg1_1]\n\n\ndef benchmark_compiled_module(args, times=10, repeat=10):\n    from torch._inductor.utils import print_performance\n    fn = lambda: call(list(args))\n    return print_performance(fn, times=times, repeat=repeat, device='cpu')\n\n\nif __name__ == \"__main__\":\n    from torch._inductor.wrapper_benchmark import compiled_module_main\n    args = get_args()\n    compiled_module_main('None', lambda times, repeat: benchmark_compiled_module(args, times=times, repeat=repeat))\n",
+    "provenance": {
+      "source": "actual_torch_compile_debug_output",
+      "torch_version": "2.14.1",
+      "device": "cpu",
+      "fullgraph": true,
+      "numeric_execution_verified": true,
+      "function": "relu(x @ weight) + 1",
+      "input_shapes": [
+        [
+          2,
+          4
+        ],
+        [
+          4,
+          3
+        ]
+      ],
+      "output_shape": [
+        2,
+        3
+      ],
+      "output_all_elements": 5.0,
+      "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing"
+    },
+    "device": "cpu",
+    "input_metadata_source": "wrapper_get_args",
+    "input_specs": {
+      "arg0_1": {
+        "shape": [
+          2,
+          4
+        ],
+        "stride": [
+          4,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 32,
+        "device": "cpu"
+      },
+      "arg1_1": {
+        "shape": [
+          4,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 48,
+        "device": "cpu"
+      }
+    },
+    "kernel_costs": {
+      "source_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+      "kernels": {
+        "k0": {
+          "target": "extern_kernels.mm",
+          "dtype": "float32",
+          "flops": 48,
+          "bytes_read": 80,
+          "bytes_write": 24,
+          "reads": [
+            0,
+            1
+          ],
+          "writes": [
+            "out"
+          ],
+          "provenance": "Explicit 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic"
+        },
+        "k1": {
+          "target": "cpp_fused_add_relu_0",
+          "dtype": "float32",
+          "flops": 12,
+          "bytes_read": 24,
+          "bytes_write": 24,
+          "reads": [
+            0
+          ],
+          "writes": [
+            0
+          ],
+          "provenance": "Explicit six ReLU comparisons plus six additions; one fused read/write pass, no intermediate traffic added"
+        }
+      }
+    },
+    "plan": {
+      "external_storages": {
+        "inductor:input:arg0_1": 32,
+        "inductor:input:arg1_1": 48
+      },
+      "slots": [
+        {
+          "id": "s0",
+          "size_bytes": 24,
+          "category": "compiled_storage"
+        }
+      ],
+      "buffers": [
+        {
+          "id": "__backing_s0",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k1"
+        },
+        {
+          "id": "buf0@2",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k0",
+          "alias_of": "__backing_s0"
+        },
+        {
+          "id": "buf1@3",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k1",
+          "last_kernel": "k1",
+          "alias_of": "__backing_s0"
+        }
+      ],
+      "kernels": [
+        {
+          "id": "k0",
+          "name": "extern_kernels.mm",
+          "dtype": "float32",
+          "flops": 48,
+          "bytes_read": 80,
+          "bytes_write": 24,
+          "provenance": "Explicit 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+          "reads": [
+            "inductor:input:arg0_1",
+            "inductor:input:arg1_1"
+          ],
+          "writes": [
+            "__backing_s0",
+            "buf0@2"
+          ],
+          "logical_ops": [
+            "k0"
+          ]
+        },
+        {
+          "id": "k1",
+          "name": "cpp_fused_add_relu_0",
+          "dtype": "float32",
+          "flops": 12,
+          "bytes_read": 24,
+          "bytes_write": 24,
+          "provenance": "Explicit six ReLU comparisons plus six additions; one fused read/write pass, no intermediate traffic added",
+          "reads": [
+            "__backing_s0",
+            "buf1@3"
+          ],
+          "writes": [
+            "__backing_s0",
+            "buf1@3"
+          ],
+          "logical_ops": [
+            "k1"
+          ]
+        }
+      ],
+      "graph": {
+        "mode": "none"
+      },
+      "device": "cpu",
+      "retained_buffers": [
+        "__backing_s0"
+      ]
+    }
+  },
+  "capture": {
+    "schema_version": 1,
+    "source": "compiled_region_manifest",
+    "metadata": {
+      "plan_source": "compiler_artifact",
+      "provenance": {
+        "source": "actual_torch_compile_debug_output",
+        "torch_version": "2.14.1",
+        "device": "cpu",
+        "fullgraph": true,
+        "numeric_execution_verified": true,
+        "function": "relu(x @ weight) + 1",
+        "input_shapes": [
+          [
+            2,
+            4
+          ],
+          [
+            4,
+            3
+          ]
+        ],
+        "output_shape": [
+          2,
+          3
+        ],
+        "output_all_elements": 5.0,
+        "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing"
+      },
+      "artifact_sha256": "424bddef58b94f198b5bc26c47dd53a245674653ed92f30c4bf097292665e09c",
+      "calibration_context": {
+        "backend": "inductor_static_wrapper",
+        "device": "cpu",
+        "wrapper_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+        "kernel_cost_manifest_sha256": "5b4bdcea9c2dad8c677f28538c33e722b13ad917b8c95609030b36644457f551"
+      },
+      "graph": {
+        "mode": "none"
+      },
+      "external_storages": {
+        "inductor:input:arg0_1": 32,
+        "inductor:input:arg1_1": 48
+      },
+      "device": "cpu",
+      "retained_storage_ids": [
+        "inductor:slot:s0"
+      ],
+      "buffer_to_storage": {
+        "__backing_s0": "inductor:slot:s0",
+        "buf0@2": "inductor:slot:s0",
+        "buf1@3": "inductor:slot:s0"
+      },
+      "logical_buffer_lifetimes": [
+        {
+          "id": "__backing_s0",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k1",
+          "first": 0,
+          "last": 1
+        },
+        {
+          "id": "buf0@2",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k0",
+          "alias_of": "__backing_s0",
+          "first": 0,
+          "last": 0
+        },
+        {
+          "id": "buf1@3",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k1",
+          "last_kernel": "k1",
+          "alias_of": "__backing_s0",
+          "first": 1,
+          "last": 1
+        }
+      ],
+      "inductor_import": {
+        "source_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+        "device": "cpu",
+        "allocation_count": 1,
+        "physical_allocation_bytes": 24,
+        "output_storage_ids": [
+          "inductor:slot:s0"
+        ],
+        "logical_views": [
+          {
+            "id": "arg0_1@0",
+            "variable": "arg0_1",
+            "storage": "inductor:input:arg0_1",
+            "shape": [
+              2,
+              4
+            ],
+            "stride": [
+              4,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 32,
+            "device": "cpu",
+            "offset_bytes": 0,
+            "external": true,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": 0,
+            "uses": [
+              0
+            ]
+          },
+          {
+            "id": "arg1_1@1",
+            "variable": "arg1_1",
+            "storage": "inductor:input:arg1_1",
+            "shape": [
+              4,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 48,
+            "device": "cpu",
+            "offset_bytes": 0,
+            "external": true,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": 0,
+            "uses": [
+              0
+            ]
+          },
+          {
+            "id": "buf0@2",
+            "variable": "buf0",
+            "storage": "s0",
+            "shape": [
+              2,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 24,
+            "offset_bytes": 0,
+            "external": false,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": 0,
+            "uses": [
+              0
+            ]
+          },
+          {
+            "id": "buf1@3",
+            "variable": "buf1",
+            "storage": "s0",
+            "shape": [
+              2,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 24,
+            "offset_bytes": 0,
+            "external": false,
+            "created_before_kernel": 1,
+            "deleted_after_kernel": null,
+            "uses": [
+              1,
+              1
+            ]
+          }
+        ],
+        "parsed_statements": [
+          {
+            "line": 85,
+            "kind": "Assign"
+          },
+          {
+            "line": 86,
+            "kind": "Expr"
+          },
+          {
+            "line": 87,
+            "kind": "Expr"
+          },
+          {
+            "line": 88,
+            "kind": "Assign"
+          },
+          {
+            "line": 90,
+            "kind": "Expr"
+          },
+          {
+            "line": 91,
+            "kind": "Delete"
+          },
+          {
+            "line": 92,
+            "kind": "Delete"
+          },
+          {
+            "line": 93,
+            "kind": "Assign"
+          },
+          {
+            "line": 93,
+            "kind": "Delete"
+          },
+          {
+            "line": 94,
+            "kind": "Expr"
+          },
+          {
+            "line": 95,
+            "kind": "Return"
+          }
+        ],
+        "allocation_provenance": "derived by static AST interpretation of supplied compiler wrapper",
+        "cost_provenance": "explicit exact call-index kernel manifest; not inferred from wrapper or measured",
+        "limitations": [
+          "Static one-device Python wrappers only; dynamic shapes/control flow, pools and unknown syntax fail.",
+          "CPU wrapper import proves CPU compiler storage derivation, not CUDA fusion or allocations.",
+          "Source is parsed, never executed; authenticity of supplied wrapper requires external capture provenance.",
+          "Returned physical storage stays allocated until a caller emits its release."
+        ]
+      }
+    },
+    "events": [
+      {
+        "event_id": "input_allocate_0",
+        "kind": "allocate",
+        "storage_id": "inductor:input:arg0_1",
+        "size_bytes": 32,
+        "category": "input",
+        "metadata": {
+          "device": "cpu"
+        }
+      },
+      {
+        "event_id": "input_allocate_1",
+        "kind": "allocate",
+        "storage_id": "inductor:input:arg1_1",
+        "size_bytes": 48,
+        "category": "input",
+        "metadata": {
+          "device": "cpu"
+        }
+      },
+      {
+        "event_id": "inductor:slot:s0:allocate",
+        "kind": "allocate",
+        "rank": 0,
+        "stream": "default",
+        "metadata": {
+          "provenance": {
+            "source": "actual_torch_compile_debug_output",
+            "torch_version": "2.14.1",
+            "device": "cpu",
+            "fullgraph": true,
+            "numeric_execution_verified": true,
+            "function": "relu(x @ weight) + 1",
+            "input_shapes": [
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                3
+              ]
+            ],
+            "output_shape": [
+              2,
+              3
+            ],
+            "output_all_elements": 5.0,
+            "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing"
+          },
+          "plan_source": "compiler_artifact",
+          "device": "cpu"
+        },
+        "storage_id": "inductor:slot:s0",
+        "size_bytes": 24,
+        "category": "compiled_storage",
+        "deps": []
+      },
+      {
+        "event_id": "inductor:execute:k0",
+        "kind": "compute",
+        "rank": 0,
+        "stream": "default",
+        "metadata": {
+          "provenance": "Explicit 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+          "plan_source": "compiler_artifact",
+          "graph_phase": "execute",
+          "logical_ops": [
+            "k0"
+          ],
+          "artifact_sha256": "424bddef58b94f198b5bc26c47dd53a245674653ed92f30c4bf097292665e09c",
+          "calibration_context": {
+            "backend": "inductor_static_wrapper",
+            "device": "cpu",
+            "wrapper_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+            "kernel_cost_manifest_sha256": "5b4bdcea9c2dad8c677f28538c33e722b13ad917b8c95609030b36644457f551"
+          },
+          "signature": {
+            "kind": "compiled_kernel",
+            "kernel": {
+              "id": "k0",
+              "name": "extern_kernels.mm",
+              "dtype": "float32",
+              "flops": 48,
+              "bytes_read": 80,
+              "bytes_write": 24,
+              "provenance": "Explicit 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+              "reads": [
+                "inductor:input:arg0_1",
+                "inductor:input:arg1_1"
+              ],
+              "writes": [
+                "__backing_s0",
+                "buf0@2"
+              ],
+              "logical_ops": [
+                "k0"
+              ]
+            },
+            "artifact_sha256": "424bddef58b94f198b5bc26c47dd53a245674653ed92f30c4bf097292665e09c",
+            "plan_sha256": "5475a87854bb51a4881bcff54703f41b244a944ea40b95cb3aff86bea89e24ab",
+            "context": {
+              "backend": "inductor_static_wrapper",
+              "device": "cpu",
+              "wrapper_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+              "kernel_cost_manifest_sha256": "5b4bdcea9c2dad8c677f28538c33e722b13ad917b8c95609030b36644457f551"
+            }
+          },
+          "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+          "device": "cpu"
+        },
+        "name": "extern_kernels.mm",
+        "dtype": "float32",
+        "flops": 48,
+        "bytes_read": 80,
+        "bytes_write": 24,
+        "read_storage_ids": [
+          "inductor:input:arg0_1",
+          "inductor:input:arg1_1"
+        ],
+        "write_storage_ids": [
+          "inductor:slot:s0"
+        ]
+      },
+      {
+        "event_id": "inductor:execute:k1",
+        "kind": "compute",
+        "rank": 0,
+        "stream": "default",
+        "metadata": {
+          "provenance": "Explicit six ReLU comparisons plus six additions; one fused read/write pass, no intermediate traffic added",
+          "plan_source": "compiler_artifact",
+          "graph_phase": "execute",
+          "logical_ops": [
+            "k1"
+          ],
+          "artifact_sha256": "424bddef58b94f198b5bc26c47dd53a245674653ed92f30c4bf097292665e09c",
+          "calibration_context": {
+            "backend": "inductor_static_wrapper",
+            "device": "cpu",
+            "wrapper_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+            "kernel_cost_manifest_sha256": "5b4bdcea9c2dad8c677f28538c33e722b13ad917b8c95609030b36644457f551"
+          },
+          "signature": {
+            "kind": "compiled_kernel",
+            "kernel": {
+              "id": "k1",
+              "name": "cpp_fused_add_relu_0",
+              "dtype": "float32",
+              "flops": 12,
+              "bytes_read": 24,
+              "bytes_write": 24,
+              "provenance": "Explicit six ReLU comparisons plus six additions; one fused read/write pass, no intermediate traffic added",
+              "reads": [
+                "__backing_s0",
+                "buf1@3"
+              ],
+              "writes": [
+                "__backing_s0",
+                "buf1@3"
+              ],
+              "logical_ops": [
+                "k1"
+              ]
+            },
+            "artifact_sha256": "424bddef58b94f198b5bc26c47dd53a245674653ed92f30c4bf097292665e09c",
+            "plan_sha256": "5475a87854bb51a4881bcff54703f41b244a944ea40b95cb3aff86bea89e24ab",
+            "context": {
+              "backend": "inductor_static_wrapper",
+              "device": "cpu",
+              "wrapper_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+              "kernel_cost_manifest_sha256": "5b4bdcea9c2dad8c677f28538c33e722b13ad917b8c95609030b36644457f551"
+            }
+          },
+          "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+          "device": "cpu"
+        },
+        "name": "cpp_fused_add_relu_0",
+        "dtype": "float32",
+        "flops": 12,
+        "bytes_read": 24,
+        "bytes_write": 24,
+        "read_storage_ids": [
+          "inductor:slot:s0"
+        ],
+        "write_storage_ids": [
+          "inductor:slot:s0"
+        ]
+      }
+    ],
+    "limitations": [
+      "Serial kernel order only; host/compiler latency and launch overhead are not inferred.",
+      "Capture executes the declared work once; replay repeats it without additional pool allocations.",
+      "FX/export graphs establish graph provenance, not GPU fusion or allocator equivalence.",
+      "Physical slots/private pool include declared reservation; general allocator caching is not modeled.",
+      "release_pool drops logical pool ownership; allocator replay can retain graph-pool cached segments."
+    ]
+  },
+  "report": {
+    "source_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+    "device": "cpu",
+    "allocation_count": 1,
+    "physical_allocation_bytes": 24,
+    "output_storage_ids": [
+      "inductor:slot:s0"
+    ],
+    "logical_views": [
+      {
+        "id": "arg0_1@0",
+        "variable": "arg0_1",
+        "storage": "inductor:input:arg0_1",
+        "shape": [
+          2,
+          4
+        ],
+        "stride": [
+          4,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 32,
+        "device": "cpu",
+        "offset_bytes": 0,
+        "external": true,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": 0,
+        "uses": [
+          0
+        ]
+      },
+      {
+        "id": "arg1_1@1",
+        "variable": "arg1_1",
+        "storage": "inductor:input:arg1_1",
+        "shape": [
+          4,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 48,
+        "device": "cpu",
+        "offset_bytes": 0,
+        "external": true,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": 0,
+        "uses": [
+          0
+        ]
+      },
+      {
+        "id": "buf0@2",
+        "variable": "buf0",
+        "storage": "s0",
+        "shape": [
+          2,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "external": false,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": 0,
+        "uses": [
+          0
+        ]
+      },
+      {
+        "id": "buf1@3",
+        "variable": "buf1",
+        "storage": "s0",
+        "shape": [
+          2,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "external": false,
+        "created_before_kernel": 1,
+        "deleted_after_kernel": null,
+        "uses": [
+          1,
+          1
+        ]
+      }
+    ],
+    "parsed_statements": [
+      {
+        "line": 85,
+        "kind": "Assign"
+      },
+      {
+        "line": 86,
+        "kind": "Expr"
+      },
+      {
+        "line": 87,
+        "kind": "Expr"
+      },
+      {
+        "line": 88,
+        "kind": "Assign"
+      },
+      {
+        "line": 90,
+        "kind": "Expr"
+      },
+      {
+        "line": 91,
+        "kind": "Delete"
+      },
+      {
+        "line": 92,
+        "kind": "Delete"
+      },
+      {
+        "line": 93,
+        "kind": "Assign"
+      },
+      {
+        "line": 93,
+        "kind": "Delete"
+      },
+      {
+        "line": 94,
+        "kind": "Expr"
+      },
+      {
+        "line": 95,
+        "kind": "Return"
+      }
+    ],
+    "allocation_provenance": "derived by static AST interpretation of supplied compiler wrapper",
+    "cost_provenance": "explicit exact call-index kernel manifest; not inferred from wrapper or measured",
+    "limitations": [
+      "Static one-device Python wrappers only; dynamic shapes/control flow, pools and unknown syntax fail.",
+      "CPU wrapper import proves CPU compiler storage derivation, not CUDA fusion or allocations.",
+      "Source is parsed, never executed; authenticity of supplied wrapper requires external capture provenance.",
+      "Returned physical storage stays allocated until a caller emits its release."
+    ]
+  }
+}

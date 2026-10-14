@@ -25,6 +25,16 @@ def indexed(result):
 
 
 class RuntimeTests(unittest.TestCase):
+    def test_shared_collective_counts_for_all_participant_device_syncs(self):
+        events = [dict(event_id='shared', kind='collective', rank=0, stream='comm',
+                       duration_us=10, duration_provenance='test scenario',
+                       participants=[0, 1]),
+                  op('rank1_work', rank=1, duration_us=5, duration_provenance='test scenario'),
+                  dict(event_id='rank1_sync', kind='host_sync', rank=1, stream='host')]
+        result = simulate(events, HW)
+        self.assertEqual(indexed(result)['rank1_sync']['end_us'], 10)
+        self.assertEqual(result['summary']['per_rank']['1']['runtime_us'], 10)
+
     def test_stream_order_and_explicit_dependency(self):
         result = simulate([op('a'), op('b'),
                            {'event_id': 'c', 'kind': 'collective', 'stream': 'comm',

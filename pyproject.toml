@@ -20,5 +20,8 @@ titan-sim = "titan_sim.cli:main"
 [tool.setuptools.packages.find]
 include = ["titan_sim*"]
 
+[tool.setuptools.package-data]
+titan_sim = ["native/*.cpp"]
+
 [tool.ruff]
 line-length = 88

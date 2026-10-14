@@ -1,0 +1,778 @@
+{
+  "schema_version": 1,
+  "source": "combined_compiled_quantized_model_contract",
+  "metadata": {
+    "plan_source": "declared",
+    "provenance": "Actual exported matmul/relu graph; GPU kernels, physical allocation plan, quantized lowering and pool capacity explicitly declared. This artifact does not establish compiler equivalence.",
+    "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+    "calibration_context": {
+      "torch_version": "2.14.1",
+      "backend": "declared_gpu_plan_for_exported_graph",
+      "compiler_version": "not_observed",
+      "torchtitan_commit": "not_applicable_cpu_export_example"
+    },
+    "torch_version": "2.14.1",
+    "torchtitan_commit": "not_applicable_cpu_export_example",
+    "graph": {
+      "mode": "capture_replay",
+      "replays": 2,
+      "private_pool": {
+        "id": "graph0",
+        "size_bytes": 64,
+        "slot_offsets": {
+          "intermediate": 0,
+          "workspace": 16
+        }
+      },
+      "release_pool": false
+    },
+    "external_storages": {
+      "quant:weight:parameter": 24,
+      "quant:weight:master_parameter": 48,
+      "quant:weight:gradient": 24,
+      "quant:weight:first_moment": 48,
+      "quant:weight:second_moment": 48,
+      "quant:weight:rowwise:payload": 128,
+      "quant:weight:rowwise:scale": 4,
+      "input": 16,
+      "output": 12
+    },
+    "device": "cuda",
+    "retained_storage_ids": [],
+    "buffer_to_storage": {
+      "product": "compiled:pool:graph0",
+      "scratch": "compiled:pool:graph0"
+    },
+    "logical_buffer_lifetimes": [
+      {
+        "id": "product",
+        "slot": "intermediate",
+        "offset_bytes": 0,
+        "size_bytes": 12,
+        "first_kernel": "mm",
+        "last_kernel": "relu",
+        "first": 0,
+        "last": 1
+      },
+      {
+        "id": "scratch",
+        "slot": "workspace",
+        "offset_bytes": 0,
+        "size_bytes": 32,
+        "first_kernel": "mm",
+        "last_kernel": "mm",
+        "first": 0,
+        "last": 0
+      }
+    ],
+    "quantization": {
+      "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+      "native_training_capture": false,
+      "calibration_context": {
+        "torch_version": "2.14.1",
+        "backend": "declared_gpu_plan_for_exported_graph",
+        "compiler_version": "not_observed",
+        "torchtitan_commit": "not_applicable_cpu_export_example"
+      },
+      "torch_version": "2.14.1",
+      "torchtitan_commit": "not_applicable_cpu_export_example"
+    },
+    "scope": "CPU semantic fixture; actual FX graph, declared GPU plan; no native full training capture"
+  },
+  "events": [
+    {
+      "event_id": "quant:alloc:weight:parameter",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:parameter",
+      "size_bytes": 24,
+      "category": "parameter"
+    },
+    {
+      "event_id": "quant:alloc:weight:master_parameter",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:master_parameter",
+      "size_bytes": 48,
+      "category": "master_parameter"
+    },
+    {
+      "event_id": "quant:alloc:weight:gradient",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:gradient",
+      "size_bytes": 24,
+      "category": "gradient"
+    },
+    {
+      "event_id": "quant:alloc:weight:first_moment",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:first_moment",
+      "size_bytes": 48,
+      "category": "first_moment"
+    },
+    {
+      "event_id": "quant:alloc:weight:second_moment",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:second_moment",
+      "size_bytes": 48,
+      "category": "second_moment"
+    },
+    {
+      "event_id": "quant:alloc:weight:rowwise:payload",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:rowwise:payload",
+      "size_bytes": 128,
+      "category": "quantization"
+    },
+    {
+      "event_id": "quant:alloc:weight:rowwise:scale",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:rowwise:scale",
+      "size_bytes": 4,
+      "category": "quantization"
+    },
+    {
+      "event_id": "quant:alloc:weight:scratch",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:conversion_scratch",
+      "size_bytes": 64,
+      "category": "quantization_workspace"
+    },
+    {
+      "event_id": "quant:convert:weight",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared arithmetic and explicit one-pass physical-payload traffic; no measured conversion kernel",
+        "layout": {
+          "format": "mxfp8",
+          "layout": "rowwise_block",
+          "scale_storage": "per_block",
+          "shape": [
+            4,
+            3
+          ],
+          "bits": 8,
+          "scale_encoding": "e8m0",
+          "block_elements": 32,
+          "block_geometry": [
+            1,
+            32
+          ],
+          "components": [
+            {
+              "orientation": "rowwise",
+              "logical_shape": [
+                4,
+                3
+              ],
+              "padded_shape": [
+                4,
+                32
+              ],
+              "payload_bytes": 128,
+              "scale_shape": [
+                4,
+                1
+              ],
+              "scale_bytes": 4,
+              "tensor_scale_bytes": 0,
+              "total_bytes": 132
+            }
+          ],
+          "total_bytes": 132,
+          "provenance": "explicit packed-layout contract; backend allocation equivalence is unverified"
+        },
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "quantization_conversion",
+          "layout": {
+            "format": "mxfp8",
+            "layout": "rowwise_block",
+            "scale_storage": "per_block",
+            "shape": [
+              4,
+              3
+            ],
+            "bits": 8,
+            "scale_encoding": "e8m0",
+            "block_elements": 32,
+            "block_geometry": [
+              1,
+              32
+            ],
+            "components": [
+              {
+                "orientation": "rowwise",
+                "logical_shape": [
+                  4,
+                  3
+                ],
+                "padded_shape": [
+                  4,
+                  32
+                ],
+                "payload_bytes": 128,
+                "scale_shape": [
+                  4,
+                  1
+                ],
+                "scale_bytes": 4,
+                "tensor_scale_bytes": 0,
+                "total_bytes": 132
+              }
+            ],
+            "total_bytes": 132,
+            "provenance": "explicit packed-layout contract; backend allocation equivalence is unverified"
+          },
+          "conversion": {
+            "source_state": "parameter",
+            "execution_dtype": "float32",
+            "flops": 36,
+            "scratch_bytes": 64,
+            "scratch_read_bytes": 64,
+            "scratch_write_bytes": 64,
+            "provenance": "Declared arithmetic and explicit one-pass physical-payload traffic; no measured conversion kernel"
+          },
+          "source_dtype": "bfloat16",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "one full source read and one write of all padded packed components, plus declared scratch traffic"
+      },
+      "name": "quantize_mxfp8",
+      "dtype": "float32",
+      "flops": 36,
+      "bytes_read": 88,
+      "bytes_write": 196,
+      "read_storage_ids": [
+        "quant:weight:parameter",
+        "quant:weight:conversion_scratch"
+      ],
+      "write_storage_ids": [
+        "quant:weight:rowwise:payload",
+        "quant:weight:rowwise:scale",
+        "quant:weight:conversion_scratch"
+      ]
+    },
+    {
+      "event_id": "quant:release:weight:scratch",
+      "kind": "release",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+        "model_contract": "declared_quantized_storage"
+      },
+      "storage_id": "quant:weight:conversion_scratch"
+    },
+    {
+      "event_id": "input_allocate",
+      "kind": "allocate",
+      "storage_id": "input",
+      "size_bytes": 16,
+      "category": "activation"
+    },
+    {
+      "event_id": "output_allocate",
+      "kind": "allocate",
+      "storage_id": "output",
+      "size_bytes": 12,
+      "category": "activation"
+    },
+    {
+      "event_id": "compiled:pool:allocate",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "Actual exported matmul/relu graph; GPU kernels, physical allocation plan, quantized lowering and pool capacity explicitly declared. This artifact does not establish compiler equivalence.",
+        "graph_pool": "compiled:pool:graph0",
+        "device": "cuda"
+      },
+      "storage_id": "compiled:pool:graph0",
+      "size_bytes": 64,
+      "category": "graph_private_pool",
+      "deps": []
+    },
+    {
+      "event_id": "compiled:capture:mm",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write",
+        "plan_source": "declared",
+        "graph_phase": "capture",
+        "logical_ops": [
+          "matmul"
+        ],
+        "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "compiled_kernel",
+          "kernel": {
+            "id": "mm",
+            "name": "declared_quantized_matmul",
+            "dtype": "mxfp8",
+            "flops": 48,
+            "bytes_read": 180,
+            "bytes_write": 44,
+            "reads": [
+              "input",
+              "quant:weight:rowwise:payload",
+              "quant:weight:rowwise:scale",
+              "scratch"
+            ],
+            "writes": [
+              "product",
+              "scratch"
+            ],
+            "logical_ops": [
+              "matmul"
+            ],
+            "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write"
+          },
+          "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+          "plan_sha256": "3cb41e07decd8d64af6f6b743d5f9bb18c124568951aa7f3be9e43b5c6f588d7",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+        "device": "cuda"
+      },
+      "name": "declared_quantized_matmul",
+      "dtype": "mxfp8",
+      "flops": 48,
+      "bytes_read": 180,
+      "bytes_write": 44,
+      "read_storage_ids": [
+        "compiled:pool:graph0",
+        "input",
+        "quant:weight:rowwise:payload",
+        "quant:weight:rowwise:scale"
+      ],
+      "write_storage_ids": [
+        "compiled:pool:graph0"
+      ]
+    },
+    {
+      "event_id": "compiled:capture:relu",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared",
+        "plan_source": "declared",
+        "graph_phase": "capture",
+        "logical_ops": [
+          "relu"
+        ],
+        "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "compiled_kernel",
+          "kernel": {
+            "id": "relu",
+            "name": "declared_relu",
+            "dtype": "bfloat16",
+            "flops": 6,
+            "bytes_read": 12,
+            "bytes_write": 12,
+            "reads": [
+              "product"
+            ],
+            "writes": [
+              "output"
+            ],
+            "logical_ops": [
+              "relu"
+            ],
+            "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared"
+          },
+          "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+          "plan_sha256": "3cb41e07decd8d64af6f6b743d5f9bb18c124568951aa7f3be9e43b5c6f588d7",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+        "device": "cuda"
+      },
+      "name": "declared_relu",
+      "dtype": "bfloat16",
+      "flops": 6,
+      "bytes_read": 12,
+      "bytes_write": 12,
+      "read_storage_ids": [
+        "compiled:pool:graph0"
+      ],
+      "write_storage_ids": [
+        "output"
+      ]
+    },
+    {
+      "event_id": "compiled:replay1:mm",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write",
+        "plan_source": "declared",
+        "graph_phase": "replay1",
+        "logical_ops": [
+          "matmul"
+        ],
+        "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "compiled_kernel",
+          "kernel": {
+            "id": "mm",
+            "name": "declared_quantized_matmul",
+            "dtype": "mxfp8",
+            "flops": 48,
+            "bytes_read": 180,
+            "bytes_write": 44,
+            "reads": [
+              "input",
+              "quant:weight:rowwise:payload",
+              "quant:weight:rowwise:scale",
+              "scratch"
+            ],
+            "writes": [
+              "product",
+              "scratch"
+            ],
+            "logical_ops": [
+              "matmul"
+            ],
+            "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write"
+          },
+          "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+          "plan_sha256": "3cb41e07decd8d64af6f6b743d5f9bb18c124568951aa7f3be9e43b5c6f588d7",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+        "device": "cuda"
+      },
+      "name": "declared_quantized_matmul",
+      "dtype": "mxfp8",
+      "flops": 48,
+      "bytes_read": 180,
+      "bytes_write": 44,
+      "read_storage_ids": [
+        "compiled:pool:graph0",
+        "input",
+        "quant:weight:rowwise:payload",
+        "quant:weight:rowwise:scale"
+      ],
+      "write_storage_ids": [
+        "compiled:pool:graph0"
+      ]
+    },
+    {
+      "event_id": "compiled:replay1:relu",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared",
+        "plan_source": "declared",
+        "graph_phase": "replay1",
+        "logical_ops": [
+          "relu"
+        ],
+        "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "compiled_kernel",
+          "kernel": {
+            "id": "relu",
+            "name": "declared_relu",
+            "dtype": "bfloat16",
+            "flops": 6,
+            "bytes_read": 12,
+            "bytes_write": 12,
+            "reads": [
+              "product"
+            ],
+            "writes": [
+              "output"
+            ],
+            "logical_ops": [
+              "relu"
+            ],
+            "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared"
+          },
+          "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+          "plan_sha256": "3cb41e07decd8d64af6f6b743d5f9bb18c124568951aa7f3be9e43b5c6f588d7",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+        "device": "cuda"
+      },
+      "name": "declared_relu",
+      "dtype": "bfloat16",
+      "flops": 6,
+      "bytes_read": 12,
+      "bytes_write": 12,
+      "read_storage_ids": [
+        "compiled:pool:graph0"
+      ],
+      "write_storage_ids": [
+        "output"
+      ]
+    },
+    {
+      "event_id": "compiled:replay2:mm",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write",
+        "plan_source": "declared",
+        "graph_phase": "replay2",
+        "logical_ops": [
+          "matmul"
+        ],
+        "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "compiled_kernel",
+          "kernel": {
+            "id": "mm",
+            "name": "declared_quantized_matmul",
+            "dtype": "mxfp8",
+            "flops": 48,
+            "bytes_read": 180,
+            "bytes_write": 44,
+            "reads": [
+              "input",
+              "quant:weight:rowwise:payload",
+              "quant:weight:rowwise:scale",
+              "scratch"
+            ],
+            "writes": [
+              "product",
+              "scratch"
+            ],
+            "logical_ops": [
+              "matmul"
+            ],
+            "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write"
+          },
+          "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+          "plan_sha256": "3cb41e07decd8d64af6f6b743d5f9bb18c124568951aa7f3be9e43b5c6f588d7",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+        "device": "cuda"
+      },
+      "name": "declared_quantized_matmul",
+      "dtype": "mxfp8",
+      "flops": 48,
+      "bytes_read": 180,
+      "bytes_write": 44,
+      "read_storage_ids": [
+        "compiled:pool:graph0",
+        "input",
+        "quant:weight:rowwise:payload",
+        "quant:weight:rowwise:scale"
+      ],
+      "write_storage_ids": [
+        "compiled:pool:graph0"
+      ]
+    },
+    {
+      "event_id": "compiled:replay2:relu",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "default",
+      "metadata": {
+        "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared",
+        "plan_source": "declared",
+        "graph_phase": "replay2",
+        "logical_ops": [
+          "relu"
+        ],
+        "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+        "calibration_context": {
+          "torch_version": "2.14.1",
+          "backend": "declared_gpu_plan_for_exported_graph",
+          "compiler_version": "not_observed",
+          "torchtitan_commit": "not_applicable_cpu_export_example"
+        },
+        "signature": {
+          "kind": "compiled_kernel",
+          "kernel": {
+            "id": "relu",
+            "name": "declared_relu",
+            "dtype": "bfloat16",
+            "flops": 6,
+            "bytes_read": 12,
+            "bytes_write": 12,
+            "reads": [
+              "product"
+            ],
+            "writes": [
+              "output"
+            ],
+            "logical_ops": [
+              "relu"
+            ],
+            "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared"
+          },
+          "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+          "plan_sha256": "3cb41e07decd8d64af6f6b743d5f9bb18c124568951aa7f3be9e43b5c6f588d7",
+          "context": {
+            "torch_version": "2.14.1",
+            "backend": "declared_gpu_plan_for_exported_graph",
+            "compiler_version": "not_observed",
+            "torchtitan_commit": "not_applicable_cpu_export_example"
+          }
+        },
+        "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+        "device": "cuda"
+      },
+      "name": "declared_relu",
+      "dtype": "bfloat16",
+      "flops": 6,
+      "bytes_read": 12,
+      "bytes_write": 12,
+      "read_storage_ids": [
+        "compiled:pool:graph0"
+      ],
+      "write_storage_ids": [
+        "output"
+      ]
+    }
+  ],
+  "limitations": [
+    "Conversions use declared arithmetic and traffic; kernels and throughput are not measured.",
+    "Training state is explicit and unsharded; optimizer updates and distributed policies require additional events.",
+    "Serial kernel order only; host/compiler latency and launch overhead are not inferred.",
+    "Capture executes the declared work once; replay repeats it without additional pool allocations.",
+    "FX/export graphs establish graph provenance, not GPU fusion or allocator equivalence.",
+    "Physical slots/private pool include declared reservation; general allocator caching is not modeled.",
+    "release_pool drops logical pool ownership; allocator replay can retain graph-pool cached segments."
+  ],
+  "hardware": {
+    "name": "synthetic_example",
+    "peak_flops": {
+      "float32": 1000000.0,
+      "bfloat16": 2000000.0,
+      "mxfp8": 4000000.0
+    },
+    "memory_bandwidth_bytes_s": 1000000.0,
+    "memory_capacity_bytes": 1000000
+  },
+  "allocator": {
+    "policy": "caching",
+    "alignment_bytes": 1,
+    "segment_bytes": 1
+  }
+}

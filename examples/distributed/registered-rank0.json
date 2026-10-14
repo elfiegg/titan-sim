@@ -1,0 +1,1324 @@
+{
+  "rank": 0,
+  "torch_version": "2.14.1",
+  "backend": "titan_sim",
+  "real_init_process_group": true,
+  "host_clock_scope": "rank-local host clocks; common matched collective timeline",
+  "numerical_payload_transport": false,
+  "control_transport": "PyTorch Store JSON",
+  "functional_collective_probe": {
+    "status": "unsupported",
+    "diagnostic": "per-call Work timeout is not modeled; registered backend uses init_process_group timeout"
+  },
+  "functional_adapter_probe": {
+    "status": "supported_eager_dispatch_mode",
+    "fake_tensor_mode": true,
+    "operations": [
+      "all_reduce",
+      "all_gather_into_tensor",
+      "reduce_scatter_tensor"
+    ],
+    "new_simulated_transfers": 3
+  },
+  "result": {
+    "timeline": [
+      {
+        "event_id": "store_tx0:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 0.0,
+        "start_us": 0.0,
+        "end_us": 0.0,
+        "lane": null,
+        "deps": [],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx0:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 0.0,
+        "start_us": 0.0,
+        "end_us": 0.0,
+        "lane": null,
+        "deps": [],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx0:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_reduce",
+        "rank": 0,
+        "stream": "store_tx0:__dist_network_0",
+        "submit_us": 0.0,
+        "start_us": 0.0,
+        "end_us": 6.048,
+        "lane": "communication",
+        "deps": [
+          "store_tx0:__dist_arrival_0_0",
+          "store_tx0:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 1024,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 6.048,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 6.048,
+        "traffic_bytes": 2048.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          },
+          {
+            "phase": 1,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "all_reduce",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:0:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 0.0,
+        "start_us": 6.048,
+        "end_us": 6.048,
+        "lane": null,
+        "deps": [
+          "store_tx0:__dist_arrival_0_0",
+          "store_tx0:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:0:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 0.0,
+        "start_us": 6.048,
+        "end_us": 6.048,
+        "lane": null,
+        "deps": [
+          "store_tx0:__dist_arrival_0_1",
+          "store_tx0:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx1:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 6.048,
+        "start_us": 6.048,
+        "end_us": 6.048,
+        "lane": null,
+        "deps": [
+          "store:0:r0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx1:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 6.048,
+        "start_us": 6.048,
+        "end_us": 6.048,
+        "lane": null,
+        "deps": [
+          "store:0:r1"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx1:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_gather",
+        "rank": 0,
+        "stream": "store_tx1:__dist_network_0",
+        "submit_us": 6.048,
+        "start_us": 6.048,
+        "end_us": 10.096,
+        "lane": "communication",
+        "deps": [
+          "store_tx1:__dist_arrival_0_0",
+          "store_tx1:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 2048,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 4.048,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 4.048,
+        "traffic_bytes": 2048.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 1024.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 1024.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 2048.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 2.048,
+            "duration_us": 4.048
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "all_gather",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:1:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 6.048,
+        "start_us": 10.096,
+        "end_us": 10.096,
+        "lane": null,
+        "deps": [
+          "store_tx1:__dist_arrival_0_0",
+          "store_tx1:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:1:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 6.048,
+        "start_us": 10.096,
+        "end_us": 10.096,
+        "lane": null,
+        "deps": [
+          "store_tx1:__dist_arrival_0_1",
+          "store_tx1:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx2:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 10.096,
+        "start_us": 10.096,
+        "end_us": 10.096,
+        "lane": null,
+        "deps": [
+          "store:1:r0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx2:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 10.096,
+        "start_us": 10.096,
+        "end_us": 10.096,
+        "lane": null,
+        "deps": [
+          "store:1:r1"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx2:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_to_all",
+        "rank": 0,
+        "stream": "store_tx2:__dist_network_0",
+        "submit_us": 10.096,
+        "start_us": 10.096,
+        "end_us": 13.120000000000001,
+        "lane": "communication",
+        "deps": [
+          "store_tx2:__dist_arrival_0_0",
+          "store_tx2:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 1024,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 3.024,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 3.024,
+        "traffic_bytes": 1024.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "pairwise",
+        "network_operation": "all_to_all",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:2:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 10.096,
+        "start_us": 13.120000000000001,
+        "end_us": 13.120000000000001,
+        "lane": null,
+        "deps": [
+          "store_tx2:__dist_arrival_0_0",
+          "store_tx2:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:2:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 10.096,
+        "start_us": 13.120000000000001,
+        "end_us": 13.120000000000001,
+        "lane": null,
+        "deps": [
+          "store_tx2:__dist_arrival_0_1",
+          "store_tx2:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx3:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 13.120000000000001,
+        "start_us": 13.120000000000001,
+        "end_us": 13.120000000000001,
+        "lane": null,
+        "deps": [
+          "store:2:r0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx3:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 13.120000000000001,
+        "start_us": 13.120000000000001,
+        "end_us": 13.120000000000001,
+        "lane": null,
+        "deps": [
+          "store:2:r1"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx3:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_reduce",
+        "rank": 0,
+        "stream": "store_tx3:__dist_network_0",
+        "submit_us": 13.120000000000001,
+        "start_us": 13.120000000000001,
+        "end_us": 19.168,
+        "lane": "communication",
+        "deps": [
+          "store_tx3:__dist_arrival_0_0",
+          "store_tx3:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 1024,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 6.048,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 6.048,
+        "traffic_bytes": 2048.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          },
+          {
+            "phase": 1,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "all_reduce",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:3:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 13.120000000000001,
+        "start_us": 19.168,
+        "end_us": 19.168,
+        "lane": null,
+        "deps": [
+          "store_tx3:__dist_arrival_0_0",
+          "store_tx3:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:3:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 13.120000000000001,
+        "start_us": 19.168,
+        "end_us": 19.168,
+        "lane": null,
+        "deps": [
+          "store_tx3:__dist_arrival_0_1",
+          "store_tx3:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx4:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 19.168,
+        "start_us": 19.168,
+        "end_us": 19.168,
+        "lane": null,
+        "deps": [
+          "store:3:r0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx4:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 19.168,
+        "start_us": 19.168,
+        "end_us": 19.168,
+        "lane": null,
+        "deps": [
+          "store:3:r1"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx4:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_reduce",
+        "rank": 0,
+        "stream": "store_tx4:__dist_network_0",
+        "submit_us": 19.168,
+        "start_us": 19.168,
+        "end_us": 23.232,
+        "lane": "communication",
+        "deps": [
+          "store_tx4:__dist_arrival_0_0",
+          "store_tx4:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 32,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 4.064,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 4.064,
+        "traffic_bytes": 64.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 16.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 16.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 32.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 0.032,
+            "duration_us": 2.032
+          },
+          {
+            "phase": 1,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 16.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 16.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 32.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 0.032,
+            "duration_us": 2.032
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "all_reduce",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:4:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 19.168,
+        "start_us": 23.232,
+        "end_us": 23.232,
+        "lane": null,
+        "deps": [
+          "store_tx4:__dist_arrival_0_0",
+          "store_tx4:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:4:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 19.168,
+        "start_us": 23.232,
+        "end_us": 23.232,
+        "lane": null,
+        "deps": [
+          "store_tx4:__dist_arrival_0_1",
+          "store_tx4:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx5:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 23.232,
+        "start_us": 23.232,
+        "end_us": 23.232,
+        "lane": null,
+        "deps": [
+          "store:4:r0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx5:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 23.232,
+        "start_us": 23.232,
+        "end_us": 23.232,
+        "lane": null,
+        "deps": [
+          "store:4:r1"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx5:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_gather",
+        "rank": 0,
+        "stream": "store_tx5:__dist_network_0",
+        "submit_us": 23.232,
+        "start_us": 23.232,
+        "end_us": 25.296,
+        "lane": "communication",
+        "deps": [
+          "store_tx5:__dist_arrival_0_0",
+          "store_tx5:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 64,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 2.064,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 2.064,
+        "traffic_bytes": 64.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 32.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 32.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 64.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 0.064,
+            "duration_us": 2.064
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "all_gather",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:5:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 23.232,
+        "start_us": 25.296,
+        "end_us": 25.296,
+        "lane": null,
+        "deps": [
+          "store_tx5:__dist_arrival_0_0",
+          "store_tx5:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:5:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 23.232,
+        "start_us": 25.296,
+        "end_us": 25.296,
+        "lane": null,
+        "deps": [
+          "store_tx5:__dist_arrival_0_1",
+          "store_tx5:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx6:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 25.296,
+        "start_us": 25.296,
+        "end_us": 25.296,
+        "lane": null,
+        "deps": [
+          "store:5:r0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx6:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 25.296,
+        "start_us": 25.296,
+        "end_us": 25.296,
+        "lane": null,
+        "deps": [
+          "store:5:r1"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store_tx6:__dist_transfer_0",
+        "kind": "collective",
+        "name": "reduce_scatter",
+        "rank": 0,
+        "stream": "store_tx6:__dist_network_0",
+        "submit_us": 25.296,
+        "start_us": 25.296,
+        "end_us": 27.36,
+        "lane": "communication",
+        "deps": [
+          "store_tx6:__dist_arrival_0_0",
+          "store_tx6:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 64,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 2.064,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 2.064,
+        "traffic_bytes": 64.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 32.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 32.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 64.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 0.064,
+            "duration_us": 2.064
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "reduce_scatter",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "store:6:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "registered_collectives",
+        "submit_us": 25.296,
+        "start_us": 27.36,
+        "end_us": 27.36,
+        "lane": null,
+        "deps": [
+          "store_tx6:__dist_arrival_0_0",
+          "store_tx6:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "store:6:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "registered_collectives",
+        "submit_us": 25.296,
+        "start_us": 27.36,
+        "end_us": 27.36,
+        "lane": null,
+        "deps": [
+          "store_tx6:__dist_arrival_0_1",
+          "store_tx6:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      }
+    ],
+    "memory": [],
+    "logical_memory": [],
+    "storage_lifetimes": [],
+    "summary": {
+      "runtime_us": 27.36,
+      "peak_allocated_bytes": 0,
+      "per_rank": {
+        "0": {
+          "runtime_us": 27.36,
+          "host_time_us": 25.296,
+          "peak_allocated_bytes": 0,
+          "final_allocated_bytes": 0,
+          "peak_by_category": {},
+          "logical_peak_allocated_bytes": 0,
+          "capacity_exceeded": false,
+          "scheduled_capacity_exceeded": false
+        },
+        "1": {
+          "runtime_us": 27.36,
+          "host_time_us": 25.296,
+          "peak_allocated_bytes": 0,
+          "final_allocated_bytes": 0,
+          "peak_by_category": {},
+          "logical_peak_allocated_bytes": 0,
+          "capacity_exceeded": false,
+          "scheduled_capacity_exceeded": false
+        }
+      },
+      "capacity_exceeded": false,
+      "scheduled_capacity_exceeded": false,
+      "logical_peak_allocated_bytes": 0,
+      "memory_confidence": "explicit_host_schedule_scenario",
+      "logical_memory_model": "program-order reference-owned GPU tensor storage; excludes CPU/meta storage, allocator reserve, kernel workspaces and deferred GPU usage",
+      "coverage": {
+        "work_events": 7,
+        "calibrated_events": 0,
+        "explicit_events": 0,
+        "fallback_events": 0,
+        "fallback_event_fraction": 0.0,
+        "fallback_flop_fraction": 0.0,
+        "fallback_duration_fraction": 0.0
+      },
+      "timing": "roofline",
+      "hardware": "explicit synthetic two-rank network scenario",
+      "scheduling_model": "one serialized compute lane and one communication lane per rank",
+      "overlap_model": "ideal compute/communication overlap; explicit shared network resources serialize whole communication operations",
+      "memory_model": "physical live storage with alias references and deferred reclamation; no caching/reserved model; conservative allocation-before-free ties",
+      "limitations": [
+        "CPU/meta-device arithmetic/control durations are unmodeled and contribute no device time.",
+        "Collective participant rendezvous must be supplied as explicit dependencies.",
+        "Host launch overhead is zero unless host_time_us encodes it.",
+        "Analytical durations are lower bounds, not predicted measured runtimes.",
+        "No same-stream allocator reuse before physical reclamation."
+      ]
+    },
+    "live_execution": {
+      "python_control_interception": true,
+      "native_cuda_interception": false,
+      "host_clock_scope": "one coordinated host clock",
+      "host_time_us": 27.36,
+      "waits": [
+        {
+          "event_id": "store:0:r0",
+          "wait_us": 6.048,
+          "host_time_us": 6.048,
+          "realtime": false
+        },
+        {
+          "event_id": "store:1:r0",
+          "wait_us": 4.048,
+          "host_time_us": 10.096,
+          "realtime": false
+        },
+        {
+          "event_id": "store:2:r0",
+          "wait_us": 3.024000000000001,
+          "host_time_us": 13.120000000000001,
+          "realtime": false
+        },
+        {
+          "event_id": "store:3:r0",
+          "wait_us": 6.047999999999998,
+          "host_time_us": 19.168,
+          "realtime": false
+        },
+        {
+          "event_id": "store:4:r0",
+          "wait_us": 4.064,
+          "host_time_us": 23.232,
+          "realtime": false
+        },
+        {
+          "event_id": "store:5:r0",
+          "wait_us": 2.064,
+          "host_time_us": 25.296,
+          "realtime": false
+        },
+        {
+          "event_id": "store:6:r0",
+          "wait_us": 2.064,
+          "host_time_us": 27.36,
+          "realtime": false
+        }
+      ],
+      "realtime": false,
+      "limitation": "Closed submitted event graphs only; no native GPU kernels or full-model coverage implied."
+    }
+  }
+}

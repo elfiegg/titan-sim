@@ -1,0 +1,12 @@
+{
+  "status": "complete",
+  "actual_compile_and_execution": true,
+  "device": "cuda",
+  "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+  "derived_allocations": 1,
+  "derived_physical_bytes": 24,
+  "output_storage_ids": [
+    "inductor:slot:s0"
+  ],
+  "timing": "synthetic analytical rates; not GPU timing validation"
+}

@@ -1,0 +1,36 @@
+{
+  "expectation": {
+    "scope": "one tiny compiled forward after warmup, inputs and prior output retained",
+    "compiler_new_allocation_payload_bytes": 24,
+    "compiler_fresh_output_payload_bytes": 24,
+    "generic_alignment_bytes": 512,
+    "generic_fresh_output_allocated_bytes": 512,
+    "generic_all_new_allocations_bytes": 512,
+    "assumptions": [
+      "Fixed 512-byte allocator rounding scenario, declared before measurement.",
+      "Prior output remains alive; fresh output must not alias it.",
+      "Cache reserve and hidden/library workspaces are not predicted.",
+      "This is a single tiny forward, not full-model training validation."
+    ]
+  },
+  "observed": {
+    "baseline": {
+      "allocated_bytes": 33555968,
+      "reserved_bytes": 171966464
+    },
+    "current_allocated_bytes": 33556480,
+    "current_reserved_bytes": 171966464,
+    "peak_allocated_bytes": 33556480,
+    "peak_reserved_bytes": 171966464,
+    "prior_and_new_output_same_storage": false,
+    "allocated_delta_bytes": 512,
+    "peak_allocated_delta_bytes": 512,
+    "reserved_delta_bytes": 0,
+    "peak_reserved_delta_bytes": 0
+  },
+  "comparison": {
+    "fresh_output_matches_generic_alignment_scenario": true,
+    "peak_matches_all_new_allocations_scenario": true,
+    "independent_full_training_memory_validation": false
+  }
+}

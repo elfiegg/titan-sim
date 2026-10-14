@@ -1,0 +1,24 @@
+{
+  "source": "actual_torch_compile_debug_output",
+  "torch_version": "2.14.1",
+  "device": "cpu",
+  "fullgraph": true,
+  "numeric_execution_verified": true,
+  "function": "relu(x @ weight) + 1",
+  "input_shapes": [
+    [
+      2,
+      4
+    ],
+    [
+      4,
+      3
+    ]
+  ],
+  "output_shape": [
+    2,
+    3
+  ],
+  "output_all_elements": 5.0,
+  "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing"
+}

@@ -2,6 +2,12 @@
 
 *Implementation assessment, 14 October 2026. Units are decimal GB and TB unless GiB is explicitly stated.*
 
+This assessment records the initial implementation. The subsequent
+[execution extensions](EXECUTION_EXTENSIONS.md) add distributed rendezvous,
+live Python waits, pipeline scheduling, compiler-plan import, quantization and
+allocator scenarios. Use that report for their current status; the full-model
+validation gap described here remains open.
+
 ## Abstract
 
 Titan-Sim implements the foundations of a CPU simulator for TorchTitan: it captures tensor metadata, accounts for shared storage, schedules events against hardware or calibrated timing models, and collects independent GPU memory observations. Its strongest current capability is explaining the consequences of a supplied execution trace. It is not yet a complete CPU execution environment for TorchTitan, and it has not produced a validated DeepSeek-V3 memory trajectory or runtime prediction.

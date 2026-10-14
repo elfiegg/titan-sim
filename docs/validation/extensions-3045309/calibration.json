@@ -1,0 +1,341 @@
+{
+  "context": {
+    "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+    "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+    "hardware": "NVIDIA GB200 NVL72 Blackwell GPU (per GPU, dense peaks)",
+    "measured_device": "NVIDIA GB200",
+    "cuda": "13.4",
+    "precision": "BF16 inputs/output; default GEMM accumulation",
+    "compile": false,
+    "tf32": false
+  },
+  "entries": {
+    "[\"aten.mm.default\",{\"signature\":{\"arguments\":{\"mat2\":{\"tensor\":{\"device_type\":\"cuda\",\"dtype\":\"torch.bfloat16\",\"layout\":\"torch.strided\",\"shape\":[1024,1024],\"storage_offset\":0,\"stride\":[1024,1]}},\"self\":{\"tensor\":{\"device_type\":\"cuda\",\"dtype\":\"torch.bfloat16\",\"layout\":\"torch.strided\",\"shape\":[1024,1024],\"storage_offset\":0,\"stride\":[1024,1]}}},\"status\":\"complete\",\"unsupported_types\":[],\"version\":1}},\"bfloat16\"]": {
+      "name": "aten.mm.default",
+      "dtype": "bfloat16",
+      "duration_us": 28.351999819278717,
+      "samples_us": [
+        58.52799862623215,
+        36.768000572919846,
+        31.55200183391571,
+        29.664000496268272,
+        28.896000236272812,
+        59.20000001788139,
+        28.9280004799366,
+        29.664000496268272,
+        28.863999992609024,
+        27.264000847935677,
+        26.75200067460537,
+        26.72000043094158,
+        25.855999439954758,
+        27.264000847935677,
+        29.503999277949333,
+        27.83999964594841,
+        26.72000043094158,
+        26.75200067460537,
+        25.696000084280968,
+        26.399999856948853
+      ],
+      "minimum_us": 25.696000084280968,
+      "maximum_us": 59.20000001788139,
+      "provenance": {
+        "source": "cuda_event_measurement",
+        "context": {
+          "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+          "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+          "hardware": "NVIDIA GB200 NVL72 Blackwell GPU (per GPU, dense peaks)",
+          "measured_device": "NVIDIA GB200",
+          "cuda": "13.4",
+          "precision": "BF16 inputs/output; default GEMM accumulation",
+          "compile": false,
+          "tf32": false
+        },
+        "warmup": 10,
+        "measurement": "current-stream CUDA events around one eager torch.mm"
+      },
+      "signature": {
+        "version": 1,
+        "status": "complete",
+        "arguments": {
+          "self": {
+            "tensor": {
+              "shape": [
+                1024,
+                1024
+              ],
+              "stride": [
+                1024,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "device_type": "cuda"
+            }
+          },
+          "mat2": {
+            "tensor": {
+              "shape": [
+                1024,
+                1024
+              ],
+              "stride": [
+                1024,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "device_type": "cuda"
+            }
+          }
+        },
+        "unsupported_types": []
+      }
+    },
+    "[\"aten.mm.default\",{\"signature\":{\"arguments\":{\"mat2\":{\"tensor\":{\"device_type\":\"cuda\",\"dtype\":\"torch.bfloat16\",\"layout\":\"torch.strided\",\"shape\":[7168,512],\"storage_offset\":0,\"stride\":[512,1]}},\"self\":{\"tensor\":{\"device_type\":\"cuda\",\"dtype\":\"torch.bfloat16\",\"layout\":\"torch.strided\",\"shape\":[4096,7168],\"storage_offset\":0,\"stride\":[7168,1]}}},\"status\":\"complete\",\"unsupported_types\":[],\"version\":1}},\"bfloat16\"]": {
+      "name": "aten.mm.default",
+      "dtype": "bfloat16",
+      "duration_us": 40.20800068974495,
+      "samples_us": [
+        46.81599885225296,
+        41.471999138593674,
+        39.93599861860275,
+        39.264000952243805,
+        41.439998894929886,
+        38.7520007789135,
+        38.784001022577286,
+        40.64000025391579,
+        40.44799879193306,
+        40.25600105524063,
+        39.39199820160866,
+        43.136000633239746,
+        43.58400031924248,
+        42.047999799251556,
+        40.800001472234726,
+        38.36800158023834,
+        38.52799907326698,
+        40.16000032424927,
+        39.103999733924866,
+        36.896001547575
+      ],
+      "minimum_us": 36.896001547575,
+      "maximum_us": 46.81599885225296,
+      "provenance": {
+        "source": "cuda_event_measurement",
+        "context": {
+          "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+          "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+          "hardware": "NVIDIA GB200 NVL72 Blackwell GPU (per GPU, dense peaks)",
+          "measured_device": "NVIDIA GB200",
+          "cuda": "13.4",
+          "precision": "BF16 inputs/output; default GEMM accumulation",
+          "compile": false,
+          "tf32": false
+        },
+        "warmup": 10,
+        "measurement": "current-stream CUDA events around one eager torch.mm"
+      },
+      "signature": {
+        "version": 1,
+        "status": "complete",
+        "arguments": {
+          "self": {
+            "tensor": {
+              "shape": [
+                4096,
+                7168
+              ],
+              "stride": [
+                7168,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "device_type": "cuda"
+            }
+          },
+          "mat2": {
+            "tensor": {
+              "shape": [
+                7168,
+                512
+              ],
+              "stride": [
+                512,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "device_type": "cuda"
+            }
+          }
+        },
+        "unsupported_types": []
+      }
+    },
+    "[\"aten.mm.default\",{\"signature\":{\"arguments\":{\"mat2\":{\"tensor\":{\"device_type\":\"cuda\",\"dtype\":\"torch.bfloat16\",\"layout\":\"torch.strided\",\"shape\":[2048,7168],\"storage_offset\":0,\"stride\":[7168,1]}},\"self\":{\"tensor\":{\"device_type\":\"cuda\",\"dtype\":\"torch.bfloat16\",\"layout\":\"torch.strided\",\"shape\":[4096,2048],\"storage_offset\":0,\"stride\":[2048,1]}}},\"status\":\"complete\",\"unsupported_types\":[],\"version\":1}},\"bfloat16\"]": {
+      "name": "aten.mm.default",
+      "dtype": "bfloat16",
+      "duration_us": 92.06400066614151,
+      "samples_us": [
+        101.53599828481674,
+        98.14400225877762,
+        92.12800115346909,
+        94.94400024414062,
+        91.39200299978256,
+        87.55200356245041,
+        89.9839997291565,
+        92.6079973578453,
+        92.19200164079666,
+        95.32800316810608,
+        92.6399976015091,
+        91.74399822950363,
+        91.71199798583984,
+        91.96799993515015,
+        89.31200206279755,
+        91.90399944782257,
+        92.00000017881393,
+        90.52799642086029,
+        95.13600170612335,
+        94.30400282144547
+      ],
+      "minimum_us": 87.55200356245041,
+      "maximum_us": 101.53599828481674,
+      "provenance": {
+        "source": "cuda_event_measurement",
+        "context": {
+          "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+          "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+          "hardware": "NVIDIA GB200 NVL72 Blackwell GPU (per GPU, dense peaks)",
+          "measured_device": "NVIDIA GB200",
+          "cuda": "13.4",
+          "precision": "BF16 inputs/output; default GEMM accumulation",
+          "compile": false,
+          "tf32": false
+        },
+        "warmup": 10,
+        "measurement": "current-stream CUDA events around one eager torch.mm"
+      },
+      "signature": {
+        "version": 1,
+        "status": "complete",
+        "arguments": {
+          "self": {
+            "tensor": {
+              "shape": [
+                4096,
+                2048
+              ],
+              "stride": [
+                2048,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "device_type": "cuda"
+            }
+          },
+          "mat2": {
+            "tensor": {
+              "shape": [
+                2048,
+                7168
+              ],
+              "stride": [
+                7168,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "device_type": "cuda"
+            }
+          }
+        },
+        "unsupported_types": []
+      }
+    }
+  },
+  "heldout": [
+    {
+      "shape_mkn": [
+        1024,
+        1024,
+        1024
+      ],
+      "cpu_gpu_signature_match": true,
+      "predicted_us": 28.351999819278717,
+      "heldout_median_us": 28.560000471770763,
+      "absolute_error_us": 0.20800065249204636,
+      "relative_error": 0.007282935891322484,
+      "scope": "same-signature eager operator CUDA-event interval; not full training or memory validation",
+      "samples_us": [
+        55.904000997543335,
+        32.48000144958496,
+        29.85600009560585,
+        28.736000880599022,
+        27.871999889612198,
+        27.456000447273254,
+        28.384000062942505,
+        29.08799983561039,
+        27.168000116944313,
+        26.528000831604004
+      ]
+    },
+    {
+      "shape_mkn": [
+        4096,
+        7168,
+        512
+      ],
+      "cpu_gpu_signature_match": true,
+      "predicted_us": 40.20800068974495,
+      "heldout_median_us": 40.431998670101166,
+      "absolute_error_us": 0.22399798035621643,
+      "relative_error": 0.005540116435595836,
+      "scope": "same-signature eager operator CUDA-event interval; not full training or memory validation",
+      "samples_us": [
+        42.33599826693535,
+        40.47999903559685,
+        39.93599861860275,
+        43.296001851558685,
+        41.919998824596405,
+        38.784001022577286,
+        40.54399952292442,
+        40.383998304605484,
+        37.76000067591667,
+        39.61599990725517
+      ]
+    },
+    {
+      "shape_mkn": [
+        4096,
+        2048,
+        7168
+      ],
+      "cpu_gpu_signature_match": true,
+      "predicted_us": 92.06400066614151,
+      "heldout_median_us": 93.72800216078758,
+      "absolute_error_us": 1.6640014946460724,
+      "relative_error": 0.017753515025227228,
+      "scope": "same-signature eager operator CUDA-event interval; not full training or memory validation",
+      "samples_us": [
+        97.37599641084671,
+        96.51199728250504,
+        93.44000369310379,
+        100.92800110578537,
+        94.01600062847137,
+        90.40000289678574,
+        92.19200164079666,
+        94.78399902582169,
+        90.33600240945816,
+        92.57599711418152
+      ]
+    }
+  ],
+  "scope": "three BF16 GEMM shapes; CUDA-event timing, no full-model coverage"
+}

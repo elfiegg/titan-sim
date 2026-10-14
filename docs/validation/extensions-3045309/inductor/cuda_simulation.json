@@ -1,0 +1,280 @@
+{
+  "timeline": [
+    {
+      "event_id": "input_allocate_0",
+      "kind": "allocate",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 0.0,
+      "lane": null,
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work"
+    },
+    {
+      "event_id": "input_allocate_1",
+      "kind": "allocate",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 0.0,
+      "lane": null,
+      "deps": [
+        "input_allocate_0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work"
+    },
+    {
+      "event_id": "inductor:slot:s0:allocate",
+      "kind": "allocate",
+      "name": "",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 0.0,
+      "lane": null,
+      "deps": [
+        "input_allocate_1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "duration_us": 0.0,
+      "source": "control",
+      "provenance": "zero device work"
+    },
+    {
+      "event_id": "inductor:execute:k0",
+      "kind": "compute",
+      "name": "extern_kernels.mm",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 0.0,
+      "end_us": 104.0,
+      "lane": "compute",
+      "deps": [
+        "inductor:slot:s0:allocate",
+        "input_allocate_0",
+        "input_allocate_1"
+      ],
+      "flops": 48,
+      "bytes_read": 80,
+      "bytes_write": 24,
+      "dtype": "float32",
+      "duration_us": 104.0,
+      "source": "roofline",
+      "provenance": "analytical lower bound; no efficiency or launch overhead",
+      "bound": "memory",
+      "compute_us": 48.0,
+      "memory_us": 104.0
+    },
+    {
+      "event_id": "inductor:execute:k1",
+      "kind": "compute",
+      "name": "triton_poi_fused_add_relu_0.run",
+      "rank": 0,
+      "stream": "default",
+      "submit_us": 0.0,
+      "start_us": 104.0,
+      "end_us": 152.0,
+      "lane": "compute",
+      "deps": [
+        "inductor:execute:k0",
+        "inductor:slot:s0:allocate"
+      ],
+      "flops": 12,
+      "bytes_read": 24,
+      "bytes_write": 24,
+      "dtype": "float32",
+      "duration_us": 48.0,
+      "source": "roofline",
+      "provenance": "analytical lower bound; no efficiency or launch overhead",
+      "bound": "memory",
+      "compute_us": 12.0,
+      "memory_us": 48.0
+    }
+  ],
+  "memory": [
+    {
+      "time_us": 0.0,
+      "rank": 0,
+      "allocated_bytes": 32,
+      "delta_bytes": 32,
+      "action": "allocate",
+      "storage_id": "inductor:input:arg0_1",
+      "generation": 0,
+      "category": "input",
+      "by_category": {
+        "input": 32
+      }
+    },
+    {
+      "time_us": 0.0,
+      "rank": 0,
+      "allocated_bytes": 80,
+      "delta_bytes": 48,
+      "action": "allocate",
+      "storage_id": "inductor:input:arg1_1",
+      "generation": 1,
+      "category": "input",
+      "by_category": {
+        "input": 80
+      }
+    },
+    {
+      "time_us": 0.0,
+      "rank": 0,
+      "allocated_bytes": 104,
+      "delta_bytes": 24,
+      "action": "allocate",
+      "storage_id": "inductor:slot:s0",
+      "generation": 2,
+      "category": "compiled_storage",
+      "by_category": {
+        "input": 80,
+        "compiled_storage": 24
+      }
+    }
+  ],
+  "logical_memory": [
+    {
+      "event_index": 0,
+      "event_id": "input_allocate_0",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "inductor:input:arg0_1",
+      "delta_bytes": 32,
+      "allocated_bytes": 32,
+      "category": "input",
+      "phase": "input",
+      "by_category": {
+        "input": 32
+      }
+    },
+    {
+      "event_index": 1,
+      "event_id": "input_allocate_1",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "inductor:input:arg1_1",
+      "delta_bytes": 48,
+      "allocated_bytes": 80,
+      "category": "input",
+      "phase": "input",
+      "by_category": {
+        "input": 80
+      }
+    },
+    {
+      "event_index": 2,
+      "event_id": "inductor:slot:s0:allocate",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "inductor:slot:s0",
+      "delta_bytes": 24,
+      "allocated_bytes": 104,
+      "category": "compiled_storage",
+      "phase": "compiled_storage",
+      "by_category": {
+        "input": 80,
+        "compiled_storage": 24
+      }
+    }
+  ],
+  "storage_lifetimes": [
+    {
+      "rank": 0,
+      "storage_id": "inductor:input:arg0_1",
+      "generation": 0,
+      "size_bytes": 32,
+      "category": "input",
+      "allocate_us": 0.0,
+      "reclaim_us": null,
+      "remaining_refs": 1
+    },
+    {
+      "rank": 0,
+      "storage_id": "inductor:input:arg1_1",
+      "generation": 1,
+      "size_bytes": 48,
+      "category": "input",
+      "allocate_us": 0.0,
+      "reclaim_us": null,
+      "remaining_refs": 1
+    },
+    {
+      "rank": 0,
+      "storage_id": "inductor:slot:s0",
+      "generation": 2,
+      "size_bytes": 24,
+      "category": "compiled_storage",
+      "allocate_us": 0.0,
+      "reclaim_us": null,
+      "remaining_refs": 1
+    }
+  ],
+  "summary": {
+    "runtime_us": 152.0,
+    "peak_allocated_bytes": 104,
+    "per_rank": {
+      "0": {
+        "runtime_us": 152.0,
+        "host_time_us": 0.0,
+        "peak_allocated_bytes": 104,
+        "final_allocated_bytes": 104,
+        "peak_by_category": {
+          "input": 80,
+          "compiled_storage": 24
+        },
+        "logical_peak_allocated_bytes": 104,
+        "capacity_exceeded": null,
+        "scheduled_capacity_exceeded": false
+      }
+    },
+    "capacity_exceeded": null,
+    "scheduled_capacity_exceeded": false,
+    "logical_peak_allocated_bytes": 104,
+    "memory_confidence": "unsupported_without_explicit_host_schedule",
+    "logical_memory_model": "program-order reference-owned GPU tensor storage; excludes CPU/meta storage, allocator reserve, kernel workspaces and deferred GPU usage",
+    "coverage": {
+      "work_events": 2,
+      "calibrated_events": 0,
+      "explicit_events": 0,
+      "fallback_events": 0,
+      "fallback_event_fraction": 0.0,
+      "fallback_flop_fraction": 0.0,
+      "fallback_duration_fraction": 0.0
+    },
+    "timing": "roofline",
+    "hardware": "synthetic-rates-for-wrapper-semantics",
+    "scheduling_model": "one serialized compute lane and one communication lane per rank",
+    "overlap_model": "ideal compute/communication overlap; explicit shared network resources serialize whole communication operations",
+    "memory_model": "physical live storage with alias references and deferred reclamation; no caching/reserved model; conservative allocation-before-free ties",
+    "limitations": [
+      "CPU/meta-device arithmetic/control durations are unmodeled and contribute no device time.",
+      "Collective participant rendezvous must be supplied as explicit dependencies.",
+      "Host launch overhead is zero unless host_time_us encodes it.",
+      "Analytical durations are lower bounds, not predicted measured runtimes.",
+      "No same-stream allocator reuse before physical reclamation."
+    ]
+  }
+}

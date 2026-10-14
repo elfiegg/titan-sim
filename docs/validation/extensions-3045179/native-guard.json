@@ -1,0 +1,58 @@
+{
+  "status": "blocked",
+  "reason": "Native guard diagnostic encountered unsupported autograd/runtime behavior",
+  "failed_phase": "backward",
+  "error_type": "RuntimeError",
+  "error": "hasPrimaryContext expects a valid device index, but got device_index=0",
+  "selected_accelerator": "cuda",
+  "torch": "2.14.0a0+b2c75dd062.nv26.09",
+  "torch_git": "Unknown",
+  "next_step": "Provide a pinned PyTorch metadata accelerator/hooks implementation with canonical CUDA streams and explicit event dependencies; a DeviceGuard plugin alone may be insufficient.",
+  "returncode": 0,
+  "diagnostics": [
+    {
+      "phase": "native_build",
+      "torch": "2.14.0a0+b2c75dd062.nv26.09",
+      "torch_git": "Unknown",
+      "selected_accelerator": "cuda"
+    },
+    {
+      "phase": "native_guard",
+      "virtual_stream_exchange": true,
+      "event_edges_recorded": true,
+      "real_generic_cuda_allocator_trapped": true,
+      "completion_queries_rejected": true
+    },
+    {
+      "phase": "allocation_safety",
+      "real_cuda_allocation_rejected": true
+    },
+    {
+      "phase": "tensor_creation",
+      "complete": true
+    },
+    {
+      "phase": "forward",
+      "complete": true
+    },
+    {
+      "phase": "native_restore",
+      "original_guard_restored": true
+    },
+    {
+      "status": "blocked",
+      "reason": "Native guard diagnostic encountered unsupported autograd/runtime behavior",
+      "failed_phase": "backward",
+      "error_type": "RuntimeError",
+      "error": "hasPrimaryContext expects a valid device index, but got device_index=0",
+      "selected_accelerator": "cuda",
+      "torch": "2.14.0a0+b2c75dd062.nv26.09",
+      "torch_git": "Unknown",
+      "next_step": "Provide a pinned PyTorch metadata accelerator/hooks implementation with canonical CUDA streams and explicit event dependencies; a DeviceGuard plugin alone may be insufficient."
+    }
+  ],
+  "stderr": "",
+  "cpu_only": true,
+  "scope": "isolated hidden-GPU native guard feasibility diagnostic; no runtime backend installed",
+  "allow_cuda_build": true
+}

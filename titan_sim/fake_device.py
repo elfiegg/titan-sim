@@ -21,7 +21,7 @@ class FakeCudaRuntime:
     they are not exported as observations or used as prediction inputs.
     """
 
-    def __init__(self, capture, *, properties: dict):
+    def __init__(self, capture, *, properties: dict, execution=None):
         self.capture = capture
         self.properties = SimpleNamespace(**properties)
         self.actions: list[dict] = []
@@ -29,6 +29,7 @@ class FakeCudaRuntime:
         self._ids = itertools.count(1)
         self._current = None
         self._device_index = 0
+        self.execution = execution
 
     def _record(self, action, *, stream=None, **fields):
         deps = []
@@ -39,13 +40,30 @@ class FakeCudaRuntime:
         if action == "synchronize" and fields.get("sync_scope", "device") == "device":
             deps.extend(self.capture._last_by_stream.values())
         self.actions.append(dict(action=action, stream=stream, event_index=len(self.capture.events), **fields))
-        return self.capture._event("host_sync" if action == "synchronize" else "wait",
+        event = self.capture._event("host_sync" if action == "synchronize" else "wait",
                                    "cuda_runtime." + action, stream=stream or self.capture.stream, deps=list(set(deps)),
                                    **fields)
+        return event
+
+    def _query(self, event_id):
+        if self.execution is None:
+            raise NotImplementedError('Completion queries require a LiveExecution backend')
+        self.execution.ingest_capture(self.capture)
+        return event_id is None or self.execution.query(event_id)
 
     def __enter__(self):
         import torch
         runtime = self
+        if self.execution is not None:
+            def on_event(event):
+                self.execution.ingest_capture(self.capture)
+                if event['kind'] == 'allocate':
+                    self.execution.revise_storage_metadata(event)
+                if event['kind'] == 'host_sync':
+                    self.execution.wait(event['event_id'])
+            self._stack.enter_context(patch.object(self.capture, '_host_time_provider',
+                                                   lambda: self.execution.host_time_us))
+            self._stack.enter_context(patch.object(self.capture, '_event_listener', on_event))
 
         class Stream:
             def __init__(self, device=None, priority=0, **kwargs):
@@ -69,7 +87,7 @@ class FakeCudaRuntime:
                 return event
 
             def query(self):
-                raise NotImplementedError("CUDA stream completion queries need a simulated completion schedule")
+                return runtime._query(runtime.capture._last_by_stream.get(self.name))
 
             def synchronize(self):
                 runtime._record("synchronize", stream=self.name, sync_scope="stream")
@@ -84,6 +102,7 @@ class FakeCudaRuntime:
             def __init__(self, enable_timing=False, blocking=False, interprocess=False, **kwargs):
                 self.event_id = next(runtime._ids)
                 self.recorded = None
+                self.enable_timing = enable_timing
 
             def record(self, stream=None):
                 stream = stream or runtime._current
@@ -93,13 +112,18 @@ class FakeCudaRuntime:
                 (stream or runtime._current).wait_event(self)
 
             def query(self):
-                raise NotImplementedError("CUDA event completion queries need a simulated completion schedule")
+                return runtime._query(self.recorded)
 
             def synchronize(self):
                 runtime._record("synchronize", stream="__host_sync__", recorded_event=self.recorded, sync_scope="event")
 
             def elapsed_time(self, end_event):
-                raise NotImplementedError("Metadata events have no measured CUDA elapsed time")
+                if runtime.execution is None:
+                    raise NotImplementedError('Modeled elapsed time requires a LiveExecution backend')
+                if not self.enable_timing or not end_event.enable_timing:
+                    raise ValueError('Timing must be enabled on both events')
+                runtime.execution.ingest_capture(runtime.capture)
+                return runtime.execution.elapsed_time_ms(self.recorded, end_event.recorded)
 
         self.Stream, self.Event = Stream, Event
         self._current = Stream()

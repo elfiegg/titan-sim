@@ -47,7 +47,7 @@ class CostTests(unittest.TestCase):
         signature = {'inputs': [{'shape': [2, 3], 'stride': [3, 1], 'layout': 'strided', 'dtype': 'float32'}],
                      'scalars': {'alpha': 1}}
         event = compute(flops=10, shape=[2, 3], signature=signature)
-        entry = {'name': 'matmul', 'signature': signature, 'duration_us': 8, 'provenance': 'GPU fixture'}
+        entry = {'name': 'matmul', 'signature': signature, 'dtype': 'float32', 'duration_us': 8, 'provenance': 'GPU fixture'}
         self.assertEqual(estimate_cost(event, HW, 'calibrated', [entry])['duration_us'], 8)
         self.assertEqual(estimate_cost(event, HW, 'calibrated', {calibration_key(event): entry})['duration_us'], 8)
         alternatives = [
@@ -139,6 +139,19 @@ class CostTests(unittest.TestCase):
                 estimate_cost(compute(**fields), HW)
         with self.assertRaises(ValueError):
             validate_hardware({**HW, 'memory_bandwidth_bytes_s': 0})
+
+    def test_list_calibration_cannot_match_a_different_signature_schema(self):
+        event = compute(flops=1e6)
+        entry = dict(name=event.get('name', ''), dtype=event.get('dtype', 'float32'),
+                     signature={'shape': [2, 2]}, duration_us=1, provenance='test')
+        with self.assertRaisesRegex(ValueError, 'missing exact calibration'):
+            estimate_cost(event, HW, 'calibrated', [entry])
+
+    def test_explicit_communication_rejects_conflicting_rank_aliases(self):
+        event = dict(event_id='comm', kind='collective', participants=[0, 1],
+                     participant_ranks=[0, 2], duration_us=1, duration_provenance='test')
+        with self.assertRaisesRegex(ValueError, 'conflicting participants'):
+            estimate_cost(event, HW)
 
 
 if __name__ == '__main__':

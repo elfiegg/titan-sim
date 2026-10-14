@@ -1,0 +1,7555 @@
+{
+  "schema_version": 1,
+  "source": "torch.distributed.pipelining.ScheduleInterleaved1F1B",
+  "metadata": {
+    "torch_version": "2.14.1",
+    "num_ranks": 2,
+    "num_stages": 4,
+    "microbatches": 4,
+    "stage_mapping": {
+      "0": 0,
+      "2": 0,
+      "1": 1,
+      "3": 1
+    },
+    "upstream_actions": {
+      "0": [
+        "0UNSHARD",
+        "2UNSHARD",
+        "0F0",
+        "0SEND_F0",
+        "2RECV_F0",
+        "0F1",
+        "0SEND_F1",
+        "2RECV_F1",
+        "2F0",
+        "2SEND_F0",
+        "2F1",
+        "2SEND_F1",
+        "2RECV_B0",
+        "0F2",
+        "0SEND_F2",
+        "2B0",
+        "2SEND_B0",
+        "2RECV_B1",
+        "0F3",
+        "0SEND_F3",
+        "2RECV_F2",
+        "2B1",
+        "2SEND_B1",
+        "0RECV_B0",
+        "2F2",
+        "2SEND_F2",
+        "2RECV_F3",
+        "0B0",
+        "0RECV_B1",
+        "2F3",
+        "2SEND_F3",
+        "0B1",
+        "2RECV_B2",
+        "2B2",
+        "2SEND_B2",
+        "2RECV_B3",
+        "2B3",
+        "2SEND_B3",
+        "2REDUCE_GRAD",
+        "2RESHARD",
+        "0RECV_B2",
+        "0B2",
+        "0RECV_B3",
+        "0B3",
+        "0REDUCE_GRAD",
+        "0RESHARD"
+      ],
+      "1": [
+        "1UNSHARD",
+        "3UNSHARD",
+        "1RECV_F0",
+        "1F0",
+        "1SEND_F0",
+        "1RECV_F1",
+        "1F1",
+        "1SEND_F1",
+        "3RECV_F0",
+        "3F0",
+        "3RECV_F1",
+        "3B0",
+        "3SEND_B0",
+        "1RECV_F2",
+        "3F1",
+        "1RECV_B0",
+        "3B1",
+        "3SEND_B1",
+        "1RECV_F3",
+        "1F2",
+        "1SEND_F2",
+        "1RECV_B1",
+        "1B0",
+        "1SEND_B0",
+        "3RECV_F2",
+        "1F3",
+        "1SEND_F3",
+        "1B1",
+        "1SEND_B1",
+        "3RECV_F3",
+        "3F2",
+        "3B2",
+        "3SEND_B2",
+        "1RECV_B2",
+        "3F3",
+        "3B3",
+        "3SEND_B3",
+        "1RECV_B3",
+        "3REDUCE_GRAD",
+        "3RESHARD",
+        "1B2",
+        "1SEND_B2",
+        "1B3",
+        "1SEND_B3",
+        "1REDUCE_GRAD",
+        "1RESHARD"
+      ]
+    },
+    "dp": 1,
+    "stage_execution": "metadata schedule extraction; explicit duration/buffer scenarios"
+  },
+  "events": [
+    {
+      "event_id": "r0:0:0UNSHARD",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "control:0",
+      "name": "UNSHARD",
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r0:1:2UNSHARD",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "control:2",
+      "name": "UNSHARD",
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "alloc:s0:m0:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m0:output",
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m0:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:2:0F0",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.forward",
+      "deps": [
+        "alloc:s0:m0:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m0:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "__dist_arrival_0_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:3:0SEND_F0",
+      "deps": [
+        "r0:2:0F0",
+        "r0:2:0F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_0",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_0",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_0_0",
+        "__dist_arrival_0_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 0,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 0
+      }
+    },
+    {
+      "event_id": "r0:3:0SEND_F0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:3:0SEND_F0",
+      "deps": [
+        "__dist_transfer_0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m0:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m0:input",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m0:input",
+      "deps": [
+        "r0:2:0F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_1_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:4:2RECV_F0",
+      "deps": [
+        "r0:2:0F0",
+        "alloc:s2:m0:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_1",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_1",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_1_0",
+        "__dist_arrival_1_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 0,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 2
+      }
+    },
+    {
+      "event_id": "r0:4:2RECV_F0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:4:2RECV_F0",
+      "deps": [
+        "__dist_transfer_1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m0:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m1:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m1:output",
+      "deps": [
+        "r0:2:0F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m1:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:5:0F1",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.forward",
+      "deps": [
+        "r0:2:0F0",
+        "alloc:s0:m1:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m1:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "__dist_arrival_2_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:6:0SEND_F1",
+      "deps": [
+        "r0:5:0F1",
+        "r0:5:0F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_2",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_2",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_2_0",
+        "__dist_arrival_2_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 1,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 0
+      }
+    },
+    {
+      "event_id": "r0:6:0SEND_F1",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:6:0SEND_F1",
+      "deps": [
+        "__dist_transfer_2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m1:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m1:input",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m1:input",
+      "deps": [
+        "r0:5:0F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_3_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:7:2RECV_F1",
+      "deps": [
+        "r0:5:0F1",
+        "alloc:s2:m1:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_3",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_3",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_3_0",
+        "__dist_arrival_3_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 1,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 2
+      }
+    },
+    {
+      "event_id": "r0:7:2RECV_F1",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:7:2RECV_F1",
+      "deps": [
+        "__dist_transfer_3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m1:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:8:2F0",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:4:2RECV_F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m0:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m0:output",
+      "deps": [
+        "r0:5:0F1",
+        "r0:4:2RECV_F0",
+        "host_wait:r0:8:2F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:8:2F0",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.forward",
+      "deps": [
+        "r0:5:0F1",
+        "r0:4:2RECV_F0",
+        "host_wait:r0:8:2F0",
+        "alloc:s2:m0:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m0:input"
+      ],
+      "write_storage_ids": [
+        "s2:m0:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "__dist_arrival_4_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:9:2SEND_F0",
+      "deps": [
+        "r0:8:2F0",
+        "r0:8:2F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_4",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_4",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_4_0",
+        "__dist_arrival_4_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 0,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 4
+      }
+    },
+    {
+      "event_id": "r0:9:2SEND_F0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:9:2SEND_F0",
+      "deps": [
+        "__dist_transfer_4"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m0:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:10:2F1",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:7:2RECV_F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m1:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m1:output",
+      "deps": [
+        "r0:8:2F0",
+        "r0:7:2RECV_F1",
+        "host_wait:r0:10:2F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:10:2F1",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.forward",
+      "deps": [
+        "r0:8:2F0",
+        "r0:7:2RECV_F1",
+        "host_wait:r0:10:2F1",
+        "alloc:s2:m1:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m1:input"
+      ],
+      "write_storage_ids": [
+        "s2:m1:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "__dist_arrival_5_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:11:2SEND_F1",
+      "deps": [
+        "r0:10:2F1",
+        "r0:10:2F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_5",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_5",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_5_0",
+        "__dist_arrival_5_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 1,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 4
+      }
+    },
+    {
+      "event_id": "r0:11:2SEND_F1",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:11:2SEND_F1",
+      "deps": [
+        "__dist_transfer_5"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m1:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m0:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m0:grad_in",
+      "deps": [
+        "r0:10:2F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_6_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:12:2RECV_B0",
+      "deps": [
+        "r0:10:2F1",
+        "alloc:s2:m0:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_6",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_6",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_6_0",
+        "__dist_arrival_6_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 0,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 5
+      }
+    },
+    {
+      "event_id": "r0:12:2RECV_B0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:12:2RECV_B0",
+      "deps": [
+        "__dist_transfer_6"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m0:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m2:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m2:output",
+      "deps": [
+        "r0:10:2F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m2:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:13:0F2",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.forward",
+      "deps": [
+        "r0:10:2F1",
+        "alloc:s0:m2:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m2:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "__dist_arrival_7_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:14:0SEND_F2",
+      "deps": [
+        "r0:13:0F2",
+        "r0:13:0F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_7",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_7",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_7_0",
+        "__dist_arrival_7_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 2,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 0
+      }
+    },
+    {
+      "event_id": "r0:14:0SEND_F2",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:14:0SEND_F2",
+      "deps": [
+        "__dist_transfer_7"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m2:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:15:2B0",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:12:2RECV_B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m0:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m0:grad_out",
+      "deps": [
+        "r0:13:0F2",
+        "r0:8:2F0",
+        "r0:12:2RECV_B0",
+        "host_wait:r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:15:2B0",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.full_backward",
+      "deps": [
+        "r0:13:0F2",
+        "r0:8:2F0",
+        "r0:12:2RECV_B0",
+        "host_wait:r0:15:2B0",
+        "alloc:s2:m0:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m0:input",
+        "s2:m0:output",
+        "s2:m0:grad_in"
+      ],
+      "write_storage_ids": [
+        "s2:m0:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "release:s2:m0:input",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m0:input",
+      "deps": [
+        "r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m0:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m0:output",
+      "deps": [
+        "r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m0:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m0:grad_in",
+      "deps": [
+        "r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_8_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:16:2SEND_B0",
+      "deps": [
+        "r0:15:2B0",
+        "r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_8",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_8",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_8_0",
+        "__dist_arrival_8_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 0,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 3
+      }
+    },
+    {
+      "event_id": "r0:16:2SEND_B0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:16:2SEND_B0",
+      "deps": [
+        "__dist_transfer_8"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m0:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s2:m0:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m0:grad_out",
+      "deps": [
+        "r0:16:2SEND_B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m0:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s2:m1:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m1:grad_in",
+      "deps": [
+        "r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_9_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:17:2RECV_B1",
+      "deps": [
+        "r0:15:2B0",
+        "alloc:s2:m1:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_9",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_9",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_9_0",
+        "__dist_arrival_9_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 1,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 5
+      }
+    },
+    {
+      "event_id": "r0:17:2RECV_B1",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:17:2RECV_B1",
+      "deps": [
+        "__dist_transfer_9"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m1:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m3:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m3:output",
+      "deps": [
+        "r0:15:2B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m3:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:18:0F3",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.forward",
+      "deps": [
+        "r0:15:2B0",
+        "alloc:s0:m3:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m3:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "__dist_arrival_10_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:19:0SEND_F3",
+      "deps": [
+        "r0:18:0F3",
+        "r0:18:0F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_10",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_10",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_10_0",
+        "__dist_arrival_10_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 3,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 0
+      }
+    },
+    {
+      "event_id": "r0:19:0SEND_F3",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:19:0SEND_F3",
+      "deps": [
+        "__dist_transfer_10"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m3:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m2:input",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m2:input",
+      "deps": [
+        "r0:18:0F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_11_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:20:2RECV_F2",
+      "deps": [
+        "r0:18:0F3",
+        "alloc:s2:m2:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_11",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_11",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_11_0",
+        "__dist_arrival_11_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 2,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 2
+      }
+    },
+    {
+      "event_id": "r0:20:2RECV_F2",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:20:2RECV_F2",
+      "deps": [
+        "__dist_transfer_11"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m2:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:21:2B1",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:17:2RECV_B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m1:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m1:grad_out",
+      "deps": [
+        "r0:18:0F3",
+        "r0:10:2F1",
+        "r0:17:2RECV_B1",
+        "host_wait:r0:21:2B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:21:2B1",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.full_backward",
+      "deps": [
+        "r0:18:0F3",
+        "r0:10:2F1",
+        "r0:17:2RECV_B1",
+        "host_wait:r0:21:2B1",
+        "alloc:s2:m1:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m1:input",
+        "s2:m1:output",
+        "s2:m1:grad_in"
+      ],
+      "write_storage_ids": [
+        "s2:m1:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "release:s2:m1:input",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m1:input",
+      "deps": [
+        "r0:21:2B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m1:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m1:output",
+      "deps": [
+        "r0:21:2B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m1:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m1:grad_in",
+      "deps": [
+        "r0:21:2B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_12_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:22:2SEND_B1",
+      "deps": [
+        "r0:21:2B1",
+        "r0:21:2B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_12",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_12",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_12_0",
+        "__dist_arrival_12_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 1,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 3
+      }
+    },
+    {
+      "event_id": "r0:22:2SEND_B1",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:22:2SEND_B1",
+      "deps": [
+        "__dist_transfer_12"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m1:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s2:m1:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m1:grad_out",
+      "deps": [
+        "r0:22:2SEND_B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m1:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s0:m0:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m0:grad_in",
+      "deps": [
+        "r0:21:2B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m0:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_13_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:23:0RECV_B0",
+      "deps": [
+        "r0:21:2B1",
+        "alloc:s0:m0:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_13",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_13",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_13_0",
+        "__dist_arrival_13_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 0,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 1
+      }
+    },
+    {
+      "event_id": "r0:23:0RECV_B0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:23:0RECV_B0",
+      "deps": [
+        "__dist_transfer_13"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m0:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:24:2F2",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:20:2RECV_F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m2:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m2:output",
+      "deps": [
+        "r0:21:2B1",
+        "r0:20:2RECV_F2",
+        "host_wait:r0:24:2F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:24:2F2",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.forward",
+      "deps": [
+        "r0:21:2B1",
+        "r0:20:2RECV_F2",
+        "host_wait:r0:24:2F2",
+        "alloc:s2:m2:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m2:input"
+      ],
+      "write_storage_ids": [
+        "s2:m2:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "__dist_arrival_14_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:25:2SEND_F2",
+      "deps": [
+        "r0:24:2F2",
+        "r0:24:2F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_14",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_14",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_14_0",
+        "__dist_arrival_14_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 2,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 4
+      }
+    },
+    {
+      "event_id": "r0:25:2SEND_F2",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:25:2SEND_F2",
+      "deps": [
+        "__dist_transfer_14"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m2:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m3:input",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m3:input",
+      "deps": [
+        "r0:24:2F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_15_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:26:2RECV_F3",
+      "deps": [
+        "r0:24:2F2",
+        "alloc:s2:m3:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_15",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_15",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_15_0",
+        "__dist_arrival_15_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 3,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 2
+      }
+    },
+    {
+      "event_id": "r0:26:2RECV_F3",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:26:2RECV_F3",
+      "deps": [
+        "__dist_transfer_15"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m3:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:27:0B0",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:23:0RECV_B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m0:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m0:grad_out",
+      "deps": [
+        "r0:24:2F2",
+        "r0:2:0F0",
+        "r0:23:0RECV_B0",
+        "host_wait:r0:27:0B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m0:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:27:0B0",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.full_backward",
+      "deps": [
+        "r0:24:2F2",
+        "r0:2:0F0",
+        "r0:23:0RECV_B0",
+        "host_wait:r0:27:0B0",
+        "alloc:s0:m0:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m0:output",
+        "s0:m0:grad_in"
+      ],
+      "write_storage_ids": [
+        "s0:m0:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "release:s0:m0:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m0:output",
+      "deps": [
+        "r0:27:0B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m0:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m0:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m0:grad_in",
+      "deps": [
+        "r0:27:0B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m0:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m0:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m0:grad_out",
+      "deps": [
+        "r0:27:0B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m0:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s0:m1:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m1:grad_in",
+      "deps": [
+        "r0:27:0B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m1:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_16_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:28:0RECV_B1",
+      "deps": [
+        "r0:27:0B0",
+        "alloc:s0:m1:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_16",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_16",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_16_0",
+        "__dist_arrival_16_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 1,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 1
+      }
+    },
+    {
+      "event_id": "r0:28:0RECV_B1",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:28:0RECV_B1",
+      "deps": [
+        "__dist_transfer_16"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m1:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:29:2F3",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:26:2RECV_F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m3:output",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m3:output",
+      "deps": [
+        "r0:27:0B0",
+        "r0:26:2RECV_F3",
+        "host_wait:r0:29:2F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:29:2F3",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.forward",
+      "deps": [
+        "r0:27:0B0",
+        "r0:26:2RECV_F3",
+        "host_wait:r0:29:2F3",
+        "alloc:s2:m3:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m3:input"
+      ],
+      "write_storage_ids": [
+        "s2:m3:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "__dist_arrival_17_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:30:2SEND_F3",
+      "deps": [
+        "r0:29:2F3",
+        "r0:29:2F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_17",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_17",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_17_0",
+        "__dist_arrival_17_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 3,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 4
+      }
+    },
+    {
+      "event_id": "r0:30:2SEND_F3",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:30:2SEND_F3",
+      "deps": [
+        "__dist_transfer_17"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m3:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:31:0B1",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:28:0RECV_B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m1:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m1:grad_out",
+      "deps": [
+        "r0:29:2F3",
+        "r0:5:0F1",
+        "r0:28:0RECV_B1",
+        "host_wait:r0:31:0B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m1:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:31:0B1",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.full_backward",
+      "deps": [
+        "r0:29:2F3",
+        "r0:5:0F1",
+        "r0:28:0RECV_B1",
+        "host_wait:r0:31:0B1",
+        "alloc:s0:m1:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m1:output",
+        "s0:m1:grad_in"
+      ],
+      "write_storage_ids": [
+        "s0:m1:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "release:s0:m1:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m1:output",
+      "deps": [
+        "r0:31:0B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m1:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m1:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m1:grad_in",
+      "deps": [
+        "r0:31:0B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m1:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m1:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m1:grad_out",
+      "deps": [
+        "r0:31:0B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m1:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s2:m2:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m2:grad_in",
+      "deps": [
+        "r0:31:0B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_18_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:32:2RECV_B2",
+      "deps": [
+        "r0:31:0B1",
+        "alloc:s2:m2:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_18",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_18",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_18_0",
+        "__dist_arrival_18_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 2,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 5
+      }
+    },
+    {
+      "event_id": "r0:32:2RECV_B2",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:32:2RECV_B2",
+      "deps": [
+        "__dist_transfer_18"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m2:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:33:2B2",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:32:2RECV_B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m2:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m2:grad_out",
+      "deps": [
+        "r0:31:0B1",
+        "r0:24:2F2",
+        "r0:32:2RECV_B2",
+        "host_wait:r0:33:2B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:33:2B2",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.full_backward",
+      "deps": [
+        "r0:31:0B1",
+        "r0:24:2F2",
+        "r0:32:2RECV_B2",
+        "host_wait:r0:33:2B2",
+        "alloc:s2:m2:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m2:input",
+        "s2:m2:output",
+        "s2:m2:grad_in"
+      ],
+      "write_storage_ids": [
+        "s2:m2:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "release:s2:m2:input",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m2:input",
+      "deps": [
+        "r0:33:2B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m2:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m2:output",
+      "deps": [
+        "r0:33:2B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m2:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m2:grad_in",
+      "deps": [
+        "r0:33:2B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_19_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:34:2SEND_B2",
+      "deps": [
+        "r0:33:2B2",
+        "r0:33:2B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_19",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_19",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_19_0",
+        "__dist_arrival_19_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 2,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 3
+      }
+    },
+    {
+      "event_id": "r0:34:2SEND_B2",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:34:2SEND_B2",
+      "deps": [
+        "__dist_transfer_19"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m2:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s2:m2:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m2:grad_out",
+      "deps": [
+        "r0:34:2SEND_B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m2:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s2:m3:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m3:grad_in",
+      "deps": [
+        "r0:33:2B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_20_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:35:2RECV_B3",
+      "deps": [
+        "r0:33:2B2",
+        "alloc:s2:m3:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_20",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_20",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_20_0",
+        "__dist_arrival_20_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 3,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 5
+      }
+    },
+    {
+      "event_id": "r0:35:2RECV_B3",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:35:2RECV_B3",
+      "deps": [
+        "__dist_transfer_20"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s2:m3:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:36:2B3",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:35:2RECV_B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s2:m3:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s2:m3:grad_out",
+      "deps": [
+        "r0:33:2B2",
+        "r0:29:2F3",
+        "r0:35:2RECV_B3",
+        "host_wait:r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:36:2B3",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage2.full_backward",
+      "deps": [
+        "r0:33:2B2",
+        "r0:29:2F3",
+        "r0:35:2RECV_B3",
+        "host_wait:r0:36:2B3",
+        "alloc:s2:m3:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m3:input",
+        "s2:m3:output",
+        "s2:m3:grad_in"
+      ],
+      "write_storage_ids": [
+        "s2:m3:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 2,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "release:s2:m3:input",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m3:input",
+      "deps": [
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m3:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m3:output",
+      "deps": [
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s2:m3:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m3:grad_in",
+      "deps": [
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_21_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:37:2SEND_B3",
+      "deps": [
+        "r0:36:2B3",
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_21",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_21",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_21_0",
+        "__dist_arrival_21_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          0,
+          1
+        ],
+        "participant_ranks": [
+          0,
+          1
+        ],
+        "group": "pipeline",
+        "sequence": 3,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 0,
+        "dst": 1,
+        "tag": 3
+      }
+    },
+    {
+      "event_id": "r0:37:2SEND_B3",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:37:2SEND_B3",
+      "deps": [
+        "__dist_transfer_21"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s2:m3:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s2:m3:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s2:m3:grad_out",
+      "deps": [
+        "r0:37:2SEND_B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s2:m3:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:38:2REDUCE_GRAD",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "control:2",
+      "name": "REDUCE_GRAD",
+      "deps": [
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r0:39:2RESHARD",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "control:2",
+      "name": "RESHARD",
+      "deps": [
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "alloc:s0:m2:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m2:grad_in",
+      "deps": [
+        "r0:36:2B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m2:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_22_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:40:0RECV_B2",
+      "deps": [
+        "r0:36:2B3",
+        "alloc:s0:m2:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_22",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_22",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_22_0",
+        "__dist_arrival_22_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 2,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 1
+      }
+    },
+    {
+      "event_id": "r0:40:0RECV_B2",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:40:0RECV_B2",
+      "deps": [
+        "__dist_transfer_22"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m2:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:41:0B2",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:40:0RECV_B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m2:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m2:grad_out",
+      "deps": [
+        "r0:36:2B3",
+        "r0:13:0F2",
+        "r0:40:0RECV_B2",
+        "host_wait:r0:41:0B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m2:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:41:0B2",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.full_backward",
+      "deps": [
+        "r0:36:2B3",
+        "r0:13:0F2",
+        "r0:40:0RECV_B2",
+        "host_wait:r0:41:0B2",
+        "alloc:s0:m2:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m2:output",
+        "s0:m2:grad_in"
+      ],
+      "write_storage_ids": [
+        "s0:m2:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "release:s0:m2:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m2:output",
+      "deps": [
+        "r0:41:0B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m2:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m2:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m2:grad_in",
+      "deps": [
+        "r0:41:0B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m2:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m2:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m2:grad_out",
+      "deps": [
+        "r0:41:0B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m2:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s0:m3:grad_in",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m3:grad_in",
+      "deps": [
+        "r0:41:0B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m3:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_23_0",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:42:0RECV_B3",
+      "deps": [
+        "r0:41:0B2",
+        "alloc:s0:m3:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "__dist_transfer_23",
+      "kind": "collective",
+      "rank": 0,
+      "stream": "__dist_network_23",
+      "name": "p2p",
+      "dtype": "float32",
+      "deps": [
+        "__dist_arrival_23_0",
+        "__dist_arrival_23_1"
+      ],
+      "bytes_read": 1024,
+      "metadata": {
+        "collective": "p2p",
+        "participants": [
+          1,
+          0
+        ],
+        "participant_ranks": [
+          1,
+          0
+        ],
+        "group": "pipeline",
+        "sequence": 3,
+        "distributed_lowered": true,
+        "message_bytes": 1024,
+        "src": 1,
+        "dst": 0,
+        "tag": 1
+      }
+    },
+    {
+      "event_id": "r0:42:0RECV_B3",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "p2p:r0:42:0RECV_B3",
+      "deps": [
+        "__dist_transfer_23"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s0:m3:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r0:43:0B3",
+      "kind": "host_sync",
+      "rank": 0,
+      "stream": "host",
+      "deps": [
+        "r0:42:0RECV_B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s0:m3:grad_out",
+      "kind": "allocate",
+      "rank": 0,
+      "stream": "memory:s0:m3:grad_out",
+      "deps": [
+        "r0:41:0B2",
+        "r0:18:0F3",
+        "r0:42:0RECV_B3",
+        "host_wait:r0:43:0B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m3:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:43:0B3",
+      "kind": "compute",
+      "rank": 0,
+      "stream": "compute",
+      "name": "stage0.full_backward",
+      "deps": [
+        "r0:41:0B2",
+        "r0:18:0F3",
+        "r0:42:0RECV_B3",
+        "host_wait:r0:43:0B3",
+        "alloc:s0:m3:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s0:m3:output",
+        "s0:m3:grad_in"
+      ],
+      "write_storage_ids": [
+        "s0:m3:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 0,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "release:s0:m3:output",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m3:output",
+      "deps": [
+        "r0:43:0B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m3:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m3:grad_in",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m3:grad_in",
+      "deps": [
+        "r0:43:0B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m3:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s0:m3:grad_out",
+      "kind": "release",
+      "rank": 0,
+      "stream": "memory:s0:m3:grad_out",
+      "deps": [
+        "r0:43:0B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s0:m3:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r0:44:0REDUCE_GRAD",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "control:0",
+      "name": "REDUCE_GRAD",
+      "deps": [
+        "r0:43:0B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r0:45:0RESHARD",
+      "kind": "wait",
+      "rank": 0,
+      "stream": "control:0",
+      "name": "RESHARD",
+      "deps": [
+        "r0:43:0B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r1:0:1UNSHARD",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "control:1",
+      "name": "UNSHARD",
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r1:1:3UNSHARD",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "control:3",
+      "name": "UNSHARD",
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "alloc:s1:m0:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m0:input",
+      "deps": [],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_0_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:2:1RECV_F0",
+      "deps": [
+        "alloc:s1:m0:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:2:1RECV_F0",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:2:1RECV_F0",
+      "deps": [
+        "__dist_transfer_0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m0:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:3:1F0",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:2:1RECV_F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m0:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m0:output",
+      "deps": [
+        "r1:2:1RECV_F0",
+        "host_wait:r1:3:1F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:3:1F0",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.forward",
+      "deps": [
+        "r1:2:1RECV_F0",
+        "host_wait:r1:3:1F0",
+        "alloc:s1:m0:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 30.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m0:input"
+      ],
+      "write_storage_ids": [
+        "s1:m0:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "__dist_arrival_1_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:4:1SEND_F0",
+      "deps": [
+        "r1:3:1F0",
+        "r1:3:1F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:4:1SEND_F0",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:4:1SEND_F0",
+      "deps": [
+        "__dist_transfer_1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m0:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m1:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m1:input",
+      "deps": [
+        "r1:3:1F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_2_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:5:1RECV_F1",
+      "deps": [
+        "r1:3:1F0",
+        "alloc:s1:m1:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:5:1RECV_F1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:5:1RECV_F1",
+      "deps": [
+        "__dist_transfer_2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m1:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:6:1F1",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:5:1RECV_F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m1:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m1:output",
+      "deps": [
+        "r1:3:1F0",
+        "r1:5:1RECV_F1",
+        "host_wait:r1:6:1F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:6:1F1",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.forward",
+      "deps": [
+        "r1:3:1F0",
+        "r1:5:1RECV_F1",
+        "host_wait:r1:6:1F1",
+        "alloc:s1:m1:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 30.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m1:input"
+      ],
+      "write_storage_ids": [
+        "s1:m1:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "__dist_arrival_3_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:7:1SEND_F1",
+      "deps": [
+        "r1:6:1F1",
+        "r1:6:1F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:7:1SEND_F1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:7:1SEND_F1",
+      "deps": [
+        "__dist_transfer_3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m1:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m0:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m0:input",
+      "deps": [
+        "r1:6:1F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m0:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_4_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:8:3RECV_F0",
+      "deps": [
+        "r1:6:1F1",
+        "alloc:s3:m0:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:8:3RECV_F0",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:8:3RECV_F0",
+      "deps": [
+        "__dist_transfer_4"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s3:m0:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:9:3F0",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:8:3RECV_F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m0:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m0:output",
+      "deps": [
+        "r1:6:1F1",
+        "r1:8:3RECV_F0",
+        "host_wait:r1:9:3F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m0:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:9:3F0",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.forward",
+      "deps": [
+        "r1:6:1F1",
+        "r1:8:3RECV_F0",
+        "host_wait:r1:9:3F0",
+        "alloc:s3:m0:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m0:input"
+      ],
+      "write_storage_ids": [
+        "s3:m0:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "alloc:s3:m1:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m1:input",
+      "deps": [
+        "r1:9:3F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m1:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_5_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:10:3RECV_F1",
+      "deps": [
+        "r1:9:3F0",
+        "alloc:s3:m1:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:10:3RECV_F1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:10:3RECV_F1",
+      "deps": [
+        "__dist_transfer_5"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s3:m1:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m0:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m0:grad_out",
+      "deps": [
+        "r1:9:3F0",
+        "r1:9:3F0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m0:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:11:3B0",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.full_backward",
+      "deps": [
+        "r1:9:3F0",
+        "r1:9:3F0",
+        "alloc:s3:m0:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m0:input",
+        "s3:m0:output"
+      ],
+      "write_storage_ids": [
+        "s3:m0:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "release:s3:m0:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m0:input",
+      "deps": [
+        "r1:11:3B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m0:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s3:m0:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m0:output",
+      "deps": [
+        "r1:11:3B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m0:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_6_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:12:3SEND_B0",
+      "deps": [
+        "r1:11:3B0",
+        "r1:11:3B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:12:3SEND_B0",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:12:3SEND_B0",
+      "deps": [
+        "__dist_transfer_6"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m0:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s3:m0:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m0:grad_out",
+      "deps": [
+        "r1:12:3SEND_B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m0:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s1:m2:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m2:input",
+      "deps": [
+        "r1:11:3B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_7_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:13:1RECV_F2",
+      "deps": [
+        "r1:11:3B0",
+        "alloc:s1:m2:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:13:1RECV_F2",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:13:1RECV_F2",
+      "deps": [
+        "__dist_transfer_7"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m2:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:14:3F1",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:10:3RECV_F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m1:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m1:output",
+      "deps": [
+        "r1:11:3B0",
+        "r1:10:3RECV_F1",
+        "host_wait:r1:14:3F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m1:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:14:3F1",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.forward",
+      "deps": [
+        "r1:11:3B0",
+        "r1:10:3RECV_F1",
+        "host_wait:r1:14:3F1",
+        "alloc:s3:m1:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m1:input"
+      ],
+      "write_storage_ids": [
+        "s3:m1:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "alloc:s1:m0:grad_in",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m0:grad_in",
+      "deps": [
+        "r1:14:3F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_8_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:15:1RECV_B0",
+      "deps": [
+        "r1:14:3F1",
+        "alloc:s1:m0:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:15:1RECV_B0",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:15:1RECV_B0",
+      "deps": [
+        "__dist_transfer_8"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m0:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m1:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m1:grad_out",
+      "deps": [
+        "r1:14:3F1",
+        "r1:14:3F1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m1:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:16:3B1",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.full_backward",
+      "deps": [
+        "r1:14:3F1",
+        "r1:14:3F1",
+        "alloc:s3:m1:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m1:input",
+        "s3:m1:output"
+      ],
+      "write_storage_ids": [
+        "s3:m1:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "release:s3:m1:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m1:input",
+      "deps": [
+        "r1:16:3B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m1:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s3:m1:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m1:output",
+      "deps": [
+        "r1:16:3B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m1:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_9_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:17:3SEND_B1",
+      "deps": [
+        "r1:16:3B1",
+        "r1:16:3B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:17:3SEND_B1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:17:3SEND_B1",
+      "deps": [
+        "__dist_transfer_9"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m1:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s3:m1:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m1:grad_out",
+      "deps": [
+        "r1:17:3SEND_B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m1:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s1:m3:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m3:input",
+      "deps": [
+        "r1:16:3B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_10_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:18:1RECV_F3",
+      "deps": [
+        "r1:16:3B1",
+        "alloc:s1:m3:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:18:1RECV_F3",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:18:1RECV_F3",
+      "deps": [
+        "__dist_transfer_10"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m3:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:19:1F2",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:13:1RECV_F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m2:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m2:output",
+      "deps": [
+        "r1:16:3B1",
+        "r1:13:1RECV_F2",
+        "host_wait:r1:19:1F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:19:1F2",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.forward",
+      "deps": [
+        "r1:16:3B1",
+        "r1:13:1RECV_F2",
+        "host_wait:r1:19:1F2",
+        "alloc:s1:m2:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 30.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m2:input"
+      ],
+      "write_storage_ids": [
+        "s1:m2:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "__dist_arrival_11_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:20:1SEND_F2",
+      "deps": [
+        "r1:19:1F2",
+        "r1:19:1F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:20:1SEND_F2",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:20:1SEND_F2",
+      "deps": [
+        "__dist_transfer_11"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m2:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m1:grad_in",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m1:grad_in",
+      "deps": [
+        "r1:19:1F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_12_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:21:1RECV_B1",
+      "deps": [
+        "r1:19:1F2",
+        "alloc:s1:m1:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:21:1RECV_B1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:21:1RECV_B1",
+      "deps": [
+        "__dist_transfer_12"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m1:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:22:1B0",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:15:1RECV_B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m0:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m0:grad_out",
+      "deps": [
+        "r1:19:1F2",
+        "r1:3:1F0",
+        "r1:15:1RECV_B0",
+        "host_wait:r1:22:1B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:22:1B0",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.full_backward",
+      "deps": [
+        "r1:19:1F2",
+        "r1:3:1F0",
+        "r1:15:1RECV_B0",
+        "host_wait:r1:22:1B0",
+        "alloc:s1:m0:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 60.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m0:input",
+        "s1:m0:output",
+        "s1:m0:grad_in"
+      ],
+      "write_storage_ids": [
+        "s1:m0:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 0
+      }
+    },
+    {
+      "event_id": "release:s1:m0:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m0:input",
+      "deps": [
+        "r1:22:1B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m0:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m0:output",
+      "deps": [
+        "r1:22:1B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m0:grad_in",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m0:grad_in",
+      "deps": [
+        "r1:22:1B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_13_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:23:1SEND_B0",
+      "deps": [
+        "r1:22:1B0",
+        "r1:22:1B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:23:1SEND_B0",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:23:1SEND_B0",
+      "deps": [
+        "__dist_transfer_13"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m0:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s1:m0:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m0:grad_out",
+      "deps": [
+        "r1:23:1SEND_B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m0:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s3:m2:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m2:input",
+      "deps": [
+        "r1:22:1B0"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m2:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_14_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:24:3RECV_F2",
+      "deps": [
+        "r1:22:1B0",
+        "alloc:s3:m2:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:24:3RECV_F2",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:24:3RECV_F2",
+      "deps": [
+        "__dist_transfer_14"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s3:m2:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:25:1F3",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:18:1RECV_F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m3:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m3:output",
+      "deps": [
+        "r1:22:1B0",
+        "r1:18:1RECV_F3",
+        "host_wait:r1:25:1F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:25:1F3",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.forward",
+      "deps": [
+        "r1:22:1B0",
+        "r1:18:1RECV_F3",
+        "host_wait:r1:25:1F3",
+        "alloc:s1:m3:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 30.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m3:input"
+      ],
+      "write_storage_ids": [
+        "s1:m3:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "__dist_arrival_15_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:26:1SEND_F3",
+      "deps": [
+        "r1:25:1F3",
+        "r1:25:1F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:26:1SEND_F3",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:26:1SEND_F3",
+      "deps": [
+        "__dist_transfer_15"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m3:output"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:27:1B1",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:21:1RECV_B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m1:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m1:grad_out",
+      "deps": [
+        "r1:25:1F3",
+        "r1:6:1F1",
+        "r1:21:1RECV_B1",
+        "host_wait:r1:27:1B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:27:1B1",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.full_backward",
+      "deps": [
+        "r1:25:1F3",
+        "r1:6:1F1",
+        "r1:21:1RECV_B1",
+        "host_wait:r1:27:1B1",
+        "alloc:s1:m1:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 60.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m1:input",
+        "s1:m1:output",
+        "s1:m1:grad_in"
+      ],
+      "write_storage_ids": [
+        "s1:m1:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 1
+      }
+    },
+    {
+      "event_id": "release:s1:m1:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m1:input",
+      "deps": [
+        "r1:27:1B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m1:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m1:output",
+      "deps": [
+        "r1:27:1B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m1:grad_in",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m1:grad_in",
+      "deps": [
+        "r1:27:1B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_16_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:28:1SEND_B1",
+      "deps": [
+        "r1:27:1B1",
+        "r1:27:1B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:28:1SEND_B1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:28:1SEND_B1",
+      "deps": [
+        "__dist_transfer_16"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m1:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s1:m1:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m1:grad_out",
+      "deps": [
+        "r1:28:1SEND_B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m1:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s3:m3:input",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m3:input",
+      "deps": [
+        "r1:27:1B1"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m3:input",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_17_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:29:3RECV_F3",
+      "deps": [
+        "r1:27:1B1",
+        "alloc:s3:m3:input"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:29:3RECV_F3",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:29:3RECV_F3",
+      "deps": [
+        "__dist_transfer_17"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s3:m3:input"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:30:3F2",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:24:3RECV_F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m2:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m2:output",
+      "deps": [
+        "r1:27:1B1",
+        "r1:24:3RECV_F2",
+        "host_wait:r1:30:3F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m2:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:30:3F2",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.forward",
+      "deps": [
+        "r1:27:1B1",
+        "r1:24:3RECV_F2",
+        "host_wait:r1:30:3F2",
+        "alloc:s3:m2:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m2:input"
+      ],
+      "write_storage_ids": [
+        "s3:m2:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "alloc:s3:m2:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m2:grad_out",
+      "deps": [
+        "r1:30:3F2",
+        "r1:30:3F2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m2:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:31:3B2",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.full_backward",
+      "deps": [
+        "r1:30:3F2",
+        "r1:30:3F2",
+        "alloc:s3:m2:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m2:input",
+        "s3:m2:output"
+      ],
+      "write_storage_ids": [
+        "s3:m2:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "release:s3:m2:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m2:input",
+      "deps": [
+        "r1:31:3B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m2:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s3:m2:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m2:output",
+      "deps": [
+        "r1:31:3B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m2:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_18_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:32:3SEND_B2",
+      "deps": [
+        "r1:31:3B2",
+        "r1:31:3B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:32:3SEND_B2",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:32:3SEND_B2",
+      "deps": [
+        "__dist_transfer_18"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m2:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s3:m2:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m2:grad_out",
+      "deps": [
+        "r1:32:3SEND_B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m2:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s1:m2:grad_in",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m2:grad_in",
+      "deps": [
+        "r1:31:3B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_19_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:33:1RECV_B2",
+      "deps": [
+        "r1:31:3B2",
+        "alloc:s1:m2:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:33:1RECV_B2",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:33:1RECV_B2",
+      "deps": [
+        "__dist_transfer_19"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m2:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "host_wait:r1:34:3F3",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:29:3RECV_F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s3:m3:output",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m3:output",
+      "deps": [
+        "r1:31:3B2",
+        "r1:29:3RECV_F3",
+        "host_wait:r1:34:3F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m3:output",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:34:3F3",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.forward",
+      "deps": [
+        "r1:31:3B2",
+        "r1:29:3RECV_F3",
+        "host_wait:r1:34:3F3",
+        "alloc:s3:m3:output"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 10.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m3:input"
+      ],
+      "write_storage_ids": [
+        "s3:m3:output"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "alloc:s3:m3:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s3:m3:grad_out",
+      "deps": [
+        "r1:34:3F3",
+        "r1:34:3F3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m3:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:35:3B3",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage3.full_backward",
+      "deps": [
+        "r1:34:3F3",
+        "r1:34:3F3",
+        "alloc:s3:m3:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 20.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m3:input",
+        "s3:m3:output"
+      ],
+      "write_storage_ids": [
+        "s3:m3:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 3,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "release:s3:m3:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m3:input",
+      "deps": [
+        "r1:35:3B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m3:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s3:m3:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m3:output",
+      "deps": [
+        "r1:35:3B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m3:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_20_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:36:3SEND_B3",
+      "deps": [
+        "r1:35:3B3",
+        "r1:35:3B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:36:3SEND_B3",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:36:3SEND_B3",
+      "deps": [
+        "__dist_transfer_20"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s3:m3:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s3:m3:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s3:m3:grad_out",
+      "deps": [
+        "r1:36:3SEND_B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s3:m3:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "alloc:s1:m3:grad_in",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m3:grad_in",
+      "deps": [
+        "r1:35:3B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:grad_in",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_21_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:37:1RECV_B3",
+      "deps": [
+        "r1:35:3B3",
+        "alloc:s1:m3:grad_in"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:37:1RECV_B3",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:37:1RECV_B3",
+      "deps": [
+        "__dist_transfer_21"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [
+        "s1:m3:grad_in"
+      ],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "r1:38:3REDUCE_GRAD",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "control:3",
+      "name": "REDUCE_GRAD",
+      "deps": [
+        "r1:35:3B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r1:39:3RESHARD",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "control:3",
+      "name": "RESHARD",
+      "deps": [
+        "r1:35:3B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "host_wait:r1:40:1B2",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:33:1RECV_B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m2:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m2:grad_out",
+      "deps": [
+        "r1:35:3B3",
+        "r1:19:1F2",
+        "r1:33:1RECV_B2",
+        "host_wait:r1:40:1B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:40:1B2",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.full_backward",
+      "deps": [
+        "r1:35:3B3",
+        "r1:19:1F2",
+        "r1:33:1RECV_B2",
+        "host_wait:r1:40:1B2",
+        "alloc:s1:m2:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 60.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m2:input",
+        "s1:m2:output",
+        "s1:m2:grad_in"
+      ],
+      "write_storage_ids": [
+        "s1:m2:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 2
+      }
+    },
+    {
+      "event_id": "release:s1:m2:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m2:input",
+      "deps": [
+        "r1:40:1B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m2:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m2:output",
+      "deps": [
+        "r1:40:1B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m2:grad_in",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m2:grad_in",
+      "deps": [
+        "r1:40:1B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_22_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:41:1SEND_B2",
+      "deps": [
+        "r1:40:1B2",
+        "r1:40:1B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:41:1SEND_B2",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:41:1SEND_B2",
+      "deps": [
+        "__dist_transfer_22"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m2:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s1:m2:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m2:grad_out",
+      "deps": [
+        "r1:41:1SEND_B2"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m2:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "host_wait:r1:42:1B3",
+      "kind": "host_sync",
+      "rank": 1,
+      "stream": "host",
+      "deps": [
+        "r1:37:1RECV_B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "sync_scope": "event",
+        "pipeline_recv_wait": true
+      }
+    },
+    {
+      "event_id": "alloc:s1:m3:grad_out",
+      "kind": "allocate",
+      "rank": 1,
+      "stream": "memory:s1:m3:grad_out",
+      "deps": [
+        "r1:40:1B2",
+        "r1:25:1F3",
+        "r1:37:1RECV_B3",
+        "host_wait:r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:grad_out",
+      "size_bytes": 1024,
+      "category": "pipeline_activation",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:42:1B3",
+      "kind": "compute",
+      "rank": 1,
+      "stream": "compute",
+      "name": "stage1.full_backward",
+      "deps": [
+        "r1:40:1B2",
+        "r1:25:1F3",
+        "r1:37:1RECV_B3",
+        "host_wait:r1:42:1B3",
+        "alloc:s1:m3:grad_out"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": 60.0,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m3:input",
+        "s1:m3:output",
+        "s1:m3:grad_in"
+      ],
+      "write_storage_ids": [
+        "s1:m3:grad_out"
+      ],
+      "metadata": {
+        "duration_provenance": "explicit pipeline stage scenario",
+        "stage": 1,
+        "microbatch": 3
+      }
+    },
+    {
+      "event_id": "release:s1:m3:input",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m3:input",
+      "deps": [
+        "r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:input",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m3:output",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m3:output",
+      "deps": [
+        "r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:output",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "release:s1:m3:grad_in",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m3:grad_in",
+      "deps": [
+        "r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:grad_in",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "__dist_arrival_23_1",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:43:1SEND_B3",
+      "deps": [
+        "r1:42:1B3",
+        "r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_arrival": true
+      }
+    },
+    {
+      "event_id": "r1:43:1SEND_B3",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "p2p:r1:43:1SEND_B3",
+      "deps": [
+        "__dist_transfer_23"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [
+        "s1:m3:grad_out"
+      ],
+      "write_storage_ids": [],
+      "metadata": {
+        "distributed_completion": true
+      }
+    },
+    {
+      "event_id": "release:s1:m3:grad_out",
+      "kind": "release",
+      "rank": 1,
+      "stream": "memory:s1:m3:grad_out",
+      "deps": [
+        "r1:43:1SEND_B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": "s1:m3:grad_out",
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {}
+    },
+    {
+      "event_id": "r1:44:1REDUCE_GRAD",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "control:1",
+      "name": "REDUCE_GRAD",
+      "deps": [
+        "r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    },
+    {
+      "event_id": "r1:45:1RESHARD",
+      "kind": "wait",
+      "rank": 1,
+      "stream": "control:1",
+      "name": "RESHARD",
+      "deps": [
+        "r1:42:1B3"
+      ],
+      "flops": 0,
+      "bytes_read": 0,
+      "bytes_write": 0,
+      "dtype": "float32",
+      "storage_id": null,
+      "size_bytes": 0,
+      "category": "unclassified",
+      "duration_us": null,
+      "host_time_us": 0,
+      "read_storage_ids": [],
+      "write_storage_ids": [],
+      "metadata": {
+        "scenario": "unsharded stages and DP=1; no hook work"
+      }
+    }
+  ],
+  "limitations": [
+    "Upstream schedule and P2P actions execute as metadata; model kernels are scenario durations.",
+    "Unsharded stages, DP=1; no FSDP hooks, optimizer, or TorchTitan model execution.",
+    "Buffer sizes are explicit scenarios; no caching allocator or kernel workspaces."
+  ]
+}

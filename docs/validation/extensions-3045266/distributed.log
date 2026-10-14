@@ -1,0 +1,10 @@
+/workspace/titan-sim/scripts/distributed_probe.py:113: FutureWarning: `torch.distributed._functional_collectives.all_gather_tensor` is deprecated. Please use `torch.distributed._functional_collectives.all_gather_single` instead.
+  gathered = funcol.all_gather_tensor(fake, 0, pg)
+/workspace/titan-sim/scripts/distributed_probe.py:113: FutureWarning: `torch.distributed._functional_collectives.all_gather_tensor` is deprecated. Please use `torch.distributed._functional_collectives.all_gather_single` instead.
+  gathered = funcol.all_gather_tensor(fake, 0, pg)
+/workspace/titan-sim/scripts/distributed_probe.py:115: FutureWarning: `torch.distributed._functional_collectives.reduce_scatter_tensor` is deprecated. Please use `torch.distributed._functional_collectives.reduce_scatter_single` instead.
+  scattered = funcol.reduce_scatter_tensor(gathered, 'sum', 0, pg)
+/workspace/titan-sim/scripts/distributed_probe.py:115: FutureWarning: `torch.distributed._functional_collectives.reduce_scatter_tensor` is deprecated. Please use `torch.distributed._functional_collectives.reduce_scatter_single` instead.
+  scattered = funcol.reduce_scatter_tensor(gathered, 'sum', 0, pg)
+{"registered_workers": 2, "virtual_completion_us": 27.36, "functional_collectives_require_dispatch_mode": true, "checks_passed": true}
+{"out": "/workspace/results/extensions-3045266/distributed", "pipeline_events": 300, "pipeline_runtime_us": 528.144, "cpu_wait_completion_us": 106.048, "checks_passed": true}

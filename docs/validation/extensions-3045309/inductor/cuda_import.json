@@ -1,0 +1,1253 @@
+{
+  "manifest": {
+    "schema_version": 1,
+    "id": "inductor",
+    "device": "cuda",
+    "plan_source": "compiler_artifact",
+    "provenance": {
+      "source": "actual_torch_compile_debug_output",
+      "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+      "device": "cuda",
+      "fullgraph": true,
+      "numeric_execution_verified": true,
+      "function": "relu(x @ weight) + 1",
+      "input_shapes": [
+        [
+          2,
+          4
+        ],
+        [
+          4,
+          3
+        ]
+      ],
+      "output_shape": [
+        2,
+        3
+      ],
+      "output_all_elements": 5.0,
+      "tf32": false,
+      "cuda_version": "13.4",
+      "measured_device": "NVIDIA GB200",
+      "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing",
+      "input_alignment": {
+        "arg0_1": {
+          "alignment_bytes": 16,
+          "pointer_mod_alignment": 0,
+          "copy_if_misaligned_returns_same_storage": true,
+          "provenance": {
+            "source": "actual_runtime_input_observation",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+            "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+            "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+          }
+        },
+        "arg1_1": {
+          "alignment_bytes": 16,
+          "pointer_mod_alignment": 0,
+          "copy_if_misaligned_returns_same_storage": true,
+          "provenance": {
+            "source": "actual_runtime_input_observation",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+            "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+            "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+          }
+        }
+      },
+      "allocation_scope": "conditional on recorded aligned no-copy input path"
+    },
+    "external_storages": {
+      "inductor:input:arg0_1": 32,
+      "inductor:input:arg1_1": 48
+    },
+    "slots": [
+      {
+        "id": "s0",
+        "size_bytes": 24,
+        "category": "compiled_storage"
+      }
+    ],
+    "buffers": [
+      {
+        "id": "__backing_s0",
+        "slot": "s0",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "first_kernel": "k0",
+        "last_kernel": "k1"
+      },
+      {
+        "id": "buf0@4",
+        "slot": "s0",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "first_kernel": "k0",
+        "last_kernel": "k0",
+        "alias_of": "__backing_s0"
+      },
+      {
+        "id": "buf1@5",
+        "slot": "s0",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "first_kernel": "k1",
+        "last_kernel": "k1",
+        "alias_of": "__backing_s0"
+      }
+    ],
+    "kernels": [
+      {
+        "id": "k0",
+        "name": "extern_kernels.mm",
+        "dtype": "float32",
+        "flops": 48,
+        "bytes_read": 80,
+        "bytes_write": 24,
+        "provenance": "Benchmark-declared 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+        "reads": [
+          "inductor:input:arg0_1",
+          "inductor:input:arg1_1"
+        ],
+        "writes": [
+          "__backing_s0",
+          "buf0@4"
+        ],
+        "logical_ops": [
+          "k0"
+        ]
+      },
+      {
+        "id": "k1",
+        "name": "triton_poi_fused_add_relu_0.run",
+        "dtype": "float32",
+        "flops": 12,
+        "bytes_read": 24,
+        "bytes_write": 24,
+        "provenance": "Benchmark-declared six ReLU comparisons plus six adds; one fused read/write pass. CUDA pointer access verified from generated tl.load/tl.store AST.",
+        "reads": [
+          "__backing_s0",
+          "buf1@5"
+        ],
+        "writes": [
+          "__backing_s0",
+          "buf1@5"
+        ],
+        "logical_ops": [
+          "k1"
+        ]
+      }
+    ],
+    "retained_buffers": [
+      "__backing_s0"
+    ],
+    "graph": {
+      "mode": "none"
+    },
+    "calibration_context": {
+      "backend": "inductor_static_wrapper",
+      "device": "cuda",
+      "wrapper_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+      "kernel_cost_manifest_sha256": "56858a54db96e1d10d075a2fe47188f96e43e5fd9a92d876dc75ab49214a0de1"
+    },
+    "artifact_sha256": "9d4cdd833321a807694a20e04eb0e046354356c4672841aaa53da6868d981102"
+  },
+  "artifact": {
+    "kind": "inductor_wrapper_allocation_plan",
+    "source_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+    "source_text": "# AOT ID: ['0_inference']\nfrom ctypes import c_void_p, c_long, c_int\nimport torch\nimport math\nimport random\nimport os\nimport tempfile\nfrom math import inf, nan\nfrom cmath import nanj\nfrom torch._inductor.hooks import run_intermediate_hooks\nfrom torch._inductor.utils import maybe_profile\nfrom torch._inductor.codegen.memory_planning import _align as align\nfrom torch import device, empty_strided\nfrom torch._inductor.async_compile import AsyncCompile\nfrom torch._inductor.select_algorithm import extern_kernels\nfrom torch._C._dynamo.guards import copy_if_misaligned\nimport triton\nimport triton.language as tl\nfrom torch._inductor.runtime.triton_heuristics import start_graph, end_graph\nfrom torch._C import _cuda_getCurrentRawStream as get_raw_stream\n\naten = torch.ops.aten\ninductor_ops = torch.ops.inductor\n_quantized = torch.ops._quantized\nassert_size_stride = torch._C._dynamo.guards.assert_size_stride\nassert_size_stride_grouped = torch._C._dynamo.guards.assert_size_stride_grouped\nassert_alignment = torch._C._dynamo.guards.assert_alignment\nempty_strided_cpu = torch._C._dynamo.guards._empty_strided_cpu\nempty_strided_cpu_pinned = torch._C._dynamo.guards._empty_strided_cpu_pinned\nempty_strided_cuda = torch._C._dynamo.guards._empty_strided_cuda\nempty_strided_xpu = torch._C._dynamo.guards._empty_strided_xpu\nempty_strided_mtia = torch._C._dynamo.guards._empty_strided_mtia\nreinterpret_tensor = torch._C._dynamo.guards._reinterpret_tensor\nalloc_from_pool = torch.ops.inductor._alloc_from_pool\nasync_compile = AsyncCompile()\nempty_strided_p2p = torch._C._distributed_c10d._SymmetricMemory.empty_strided_p2p\n\n\n# kernel path: /tmp/torchinductor_elfieg/tmp7u0yks94/wg/cwghk43knk6dfwviyi4r2ecwoudxbryso42oqmmm53dpj3herpnf.py\n# Topologically Sorted Source Nodes: [relu, add], Original ATen: [aten.relu, aten.add]\n# Source node to ATen node mapping:\n#   add => add\n#   relu => relu\n# Graph fragment:\n#   %mm : Tensor \"f32[2, 3][3, 1]cuda:0\" = PlaceHolder[target=mm]\n#   %relu : Tensor \"f32[2, 3][3, 1]cuda:0\"[num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%mm,), kwargs = {})\n#   %add : Tensor \"f32[2, 3][3, 1]cuda:0\"[num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%relu, 1), kwargs = {})\n#   return %add\ntriton_poi_fused_add_relu_0 = async_compile.triton('triton_poi_fused_add_relu_0', '''\nimport triton\nimport triton.language as tl\n\nfrom torch._inductor.runtime import triton_helpers, triton_heuristics\nfrom torch._inductor.runtime.triton_helpers import libdevice, math as tl_math\nfrom torch._inductor.runtime.hints import AutotuneHint, ReductionHint, TileHint, DeviceProperties\ntriton_helpers.set_driver_to_gpu()\n\n@triton_heuristics.pointwise(\n    size_hints={'x': 8}, \n    filename=__file__,\n    triton_meta={'signature': {'in_out_ptr0': '*fp32', 'xnumel': 'i32', 'XBLOCK': 'constexpr'}, 'device': DeviceProperties(type='cuda', index=0, multi_processor_count=152, cc=100, major=10, regs_per_multiprocessor=65536, max_threads_per_multi_processor=2048, max_threads_per_block=1024, warp_size=32), 'constants': {}, 'native_matmul': False, 'enable_fp_fusion': True, 'launch_pdl': False, 'disable_ftz': False, 'configs': [{(0,): [['tt.divisibility', 16]]}]},\n    inductor_meta={'grid_type': 'Grid1D', 'kernel_name': 'triton_poi_fused_add_relu_0', 'mutated_arg_names': ['in_out_ptr0'], 'optimize_mem': True, 'no_x_dim': False, 'atomic_add_found': False, 'num_load': 1, 'num_store': 1, 'num_reduction': 0, 'autotune_hints': set(), 'tiling_scores': {'x': 54}, 'backend_hash': '31B034A420C76A0655CDA417C23024AA45F649E6155911223A6A1B36628CA1CE', 'assert_indirect_indexing': True, 'autotune_local_cache': True, 'autotune_pointwise': True, 'autotune_remote_cache': None, 'force_disable_caches': True, 'dynamic_scale_rblock': True, 'incremental_autotune': False, 'max_autotune': False, 'max_autotune_pointwise': False, 'min_split_scan_rblock': 256, 'spill_threshold': 16, 'store_cubin': False, 'deterministic': False, 'batch_invariant': False, 'force_filter_reduction_configs': False, 'mix_order_reduction_allow_multi_stages': True, 'dynamic_disable_pipelining': True, 'are_deterministic_algorithms_enabled': False},\n    min_elem_per_thread=0\n)\n@triton.jit\ndef triton_poi_fused_add_relu_0(in_out_ptr0, xnumel, XBLOCK : tl.constexpr):\n    xnumel = 6\n    xoffset = tl.program_id(0) * XBLOCK\n    xindex = xoffset + tl.arange(0, XBLOCK)[:]\n    xmask = xindex < xnumel\n    x0 = xindex\n    tmp0 = tl.load(in_out_ptr0 + (x0), xmask)\n    tmp1 = tl.full([1], 0, tl.int32)\n    tmp2 = tl.maximum(tmp1, tmp0, tl.PropagateNan.ALL)\n    tmp3 = tl.full([1], 1.0, tl.float32)\n    tmp4 = tmp2 + tmp3\n    tl.store(in_out_ptr0 + (x0), tmp4, xmask)\n''', device_str='cuda')\n\n\nasync_compile.wait(globals())\ndel async_compile\n\nclass Runner:\n    def __init__(self, partitions):\n        self.partitions = partitions\n\n    def recursively_apply_fns(self, fns):\n        new_callables = []\n        for fn, c in zip(fns, self.partitions):\n            new_callables.append(fn(c))\n        self.partitions = new_callables\n\n    def call(self, args):\n        arg0_1, arg1_1 = args\n        args.clear()\n        assert_size_stride_grouped((arg0_1, arg1_1), ((2, 4), (4, 3)), ((4, 1), (3, 1)), 'input')\n        with torch.cuda._DeviceGuard(0):\n            torch.cuda.set_device(0)\n            arg0_1 = copy_if_misaligned(arg0_1)\n            arg1_1 = copy_if_misaligned(arg1_1)\n            buf0 = empty_strided_cuda((2, 3), (3, 1), torch.float32)\n            # Topologically Sorted Source Nodes: [matmul], Original ATen: [aten.mm]\n            extern_kernels.mm(arg0_1, arg1_1, out=buf0)\n            del arg0_1\n            del arg1_1\n            buf1 = buf0; del buf0  # reuse\n            # Topologically Sorted Source Nodes: [relu, add], Original ATen: [aten.relu, aten.add]\n            raw_stream0 = get_raw_stream(0)\n            triton_poi_fused_add_relu_0.run(buf1, 6, stream=raw_stream0)\n        return (buf1, )\n\nrunner = Runner(partitions=[])\ncall = runner.call\nrecursively_apply_fns = runner.recursively_apply_fns\n\n\ndef get_args():\n    from torch._dynamo.testing import rand_strided\n    arg0_1 = rand_strided((2, 4), (4, 1), device='cuda:0', dtype=torch.float32)\n    arg1_1 = rand_strided((4, 3), (3, 1), device='cuda:0', dtype=torch.float32)\n    return [arg0_1, arg1_1]\n\n\ndef benchmark_compiled_module(args, times=10, repeat=10):\n    from torch._inductor.utils import print_performance\n    fn = lambda: call(list(args))\n    return print_performance(fn, times=times, repeat=repeat, device='cuda')\n\n\nif __name__ == \"__main__\":\n    from torch._inductor.wrapper_benchmark import compiled_module_main\n    args = get_args()\n    compiled_module_main('None', lambda times, repeat: benchmark_compiled_module(args, times=times, repeat=repeat))\n",
+    "provenance": {
+      "source": "actual_torch_compile_debug_output",
+      "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+      "device": "cuda",
+      "fullgraph": true,
+      "numeric_execution_verified": true,
+      "function": "relu(x @ weight) + 1",
+      "input_shapes": [
+        [
+          2,
+          4
+        ],
+        [
+          4,
+          3
+        ]
+      ],
+      "output_shape": [
+        2,
+        3
+      ],
+      "output_all_elements": 5.0,
+      "tf32": false,
+      "cuda_version": "13.4",
+      "measured_device": "NVIDIA GB200",
+      "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing",
+      "input_alignment": {
+        "arg0_1": {
+          "alignment_bytes": 16,
+          "pointer_mod_alignment": 0,
+          "copy_if_misaligned_returns_same_storage": true,
+          "provenance": {
+            "source": "actual_runtime_input_observation",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+            "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+            "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+          }
+        },
+        "arg1_1": {
+          "alignment_bytes": 16,
+          "pointer_mod_alignment": 0,
+          "copy_if_misaligned_returns_same_storage": true,
+          "provenance": {
+            "source": "actual_runtime_input_observation",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+            "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+            "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+          }
+        }
+      },
+      "allocation_scope": "conditional on recorded aligned no-copy input path"
+    },
+    "device": "cuda",
+    "input_metadata_source": "wrapper_get_args",
+    "input_specs": {
+      "arg0_1": {
+        "shape": [
+          2,
+          4
+        ],
+        "stride": [
+          4,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 32,
+        "device": "cuda"
+      },
+      "arg1_1": {
+        "shape": [
+          4,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 48,
+        "device": "cuda"
+      }
+    },
+    "kernel_costs": {
+      "source_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+      "kernels": {
+        "k0": {
+          "target": "extern_kernels.mm",
+          "dtype": "float32",
+          "flops": 48,
+          "bytes_read": 80,
+          "bytes_write": 24,
+          "reads": [
+            0,
+            1
+          ],
+          "writes": [
+            "out"
+          ],
+          "provenance": "Benchmark-declared 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic"
+        },
+        "k1": {
+          "target": "triton_poi_fused_add_relu_0.run",
+          "dtype": "float32",
+          "flops": 12,
+          "bytes_read": 24,
+          "bytes_write": 24,
+          "reads": [
+            0
+          ],
+          "writes": [
+            0
+          ],
+          "provenance": "Benchmark-declared six ReLU comparisons plus six adds; one fused read/write pass. CUDA pointer access verified from generated tl.load/tl.store AST."
+        }
+      },
+      "input_alignment": {
+        "arg0_1": {
+          "alignment_bytes": 16,
+          "pointer_mod_alignment": 0,
+          "copy_if_misaligned_returns_same_storage": true,
+          "provenance": {
+            "source": "actual_runtime_input_observation",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+            "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+            "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+          }
+        },
+        "arg1_1": {
+          "alignment_bytes": 16,
+          "pointer_mod_alignment": 0,
+          "copy_if_misaligned_returns_same_storage": true,
+          "provenance": {
+            "source": "actual_runtime_input_observation",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+            "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+            "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+          }
+        }
+      }
+    },
+    "plan": {
+      "external_storages": {
+        "inductor:input:arg0_1": 32,
+        "inductor:input:arg1_1": 48
+      },
+      "slots": [
+        {
+          "id": "s0",
+          "size_bytes": 24,
+          "category": "compiled_storage"
+        }
+      ],
+      "buffers": [
+        {
+          "id": "__backing_s0",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k1"
+        },
+        {
+          "id": "buf0@4",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k0",
+          "alias_of": "__backing_s0"
+        },
+        {
+          "id": "buf1@5",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k1",
+          "last_kernel": "k1",
+          "alias_of": "__backing_s0"
+        }
+      ],
+      "kernels": [
+        {
+          "id": "k0",
+          "name": "extern_kernels.mm",
+          "dtype": "float32",
+          "flops": 48,
+          "bytes_read": 80,
+          "bytes_write": 24,
+          "provenance": "Benchmark-declared 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+          "reads": [
+            "inductor:input:arg0_1",
+            "inductor:input:arg1_1"
+          ],
+          "writes": [
+            "__backing_s0",
+            "buf0@4"
+          ],
+          "logical_ops": [
+            "k0"
+          ]
+        },
+        {
+          "id": "k1",
+          "name": "triton_poi_fused_add_relu_0.run",
+          "dtype": "float32",
+          "flops": 12,
+          "bytes_read": 24,
+          "bytes_write": 24,
+          "provenance": "Benchmark-declared six ReLU comparisons plus six adds; one fused read/write pass. CUDA pointer access verified from generated tl.load/tl.store AST.",
+          "reads": [
+            "__backing_s0",
+            "buf1@5"
+          ],
+          "writes": [
+            "__backing_s0",
+            "buf1@5"
+          ],
+          "logical_ops": [
+            "k1"
+          ]
+        }
+      ],
+      "graph": {
+        "mode": "none"
+      },
+      "device": "cuda",
+      "retained_buffers": [
+        "__backing_s0"
+      ]
+    }
+  },
+  "capture": {
+    "schema_version": 1,
+    "source": "compiled_region_manifest",
+    "metadata": {
+      "plan_source": "compiler_artifact",
+      "provenance": {
+        "source": "actual_torch_compile_debug_output",
+        "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+        "device": "cuda",
+        "fullgraph": true,
+        "numeric_execution_verified": true,
+        "function": "relu(x @ weight) + 1",
+        "input_shapes": [
+          [
+            2,
+            4
+          ],
+          [
+            4,
+            3
+          ]
+        ],
+        "output_shape": [
+          2,
+          3
+        ],
+        "output_all_elements": 5.0,
+        "tf32": false,
+        "cuda_version": "13.4",
+        "measured_device": "NVIDIA GB200",
+        "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing",
+        "input_alignment": {
+          "arg0_1": {
+            "alignment_bytes": 16,
+            "pointer_mod_alignment": 0,
+            "copy_if_misaligned_returns_same_storage": true,
+            "provenance": {
+              "source": "actual_runtime_input_observation",
+              "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+              "device": "cuda",
+              "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+              "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+              "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+            }
+          },
+          "arg1_1": {
+            "alignment_bytes": 16,
+            "pointer_mod_alignment": 0,
+            "copy_if_misaligned_returns_same_storage": true,
+            "provenance": {
+              "source": "actual_runtime_input_observation",
+              "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+              "device": "cuda",
+              "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+              "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+              "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+            }
+          }
+        },
+        "allocation_scope": "conditional on recorded aligned no-copy input path"
+      },
+      "artifact_sha256": "9d4cdd833321a807694a20e04eb0e046354356c4672841aaa53da6868d981102",
+      "calibration_context": {
+        "backend": "inductor_static_wrapper",
+        "device": "cuda",
+        "wrapper_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+        "kernel_cost_manifest_sha256": "56858a54db96e1d10d075a2fe47188f96e43e5fd9a92d876dc75ab49214a0de1"
+      },
+      "graph": {
+        "mode": "none"
+      },
+      "external_storages": {
+        "inductor:input:arg0_1": 32,
+        "inductor:input:arg1_1": 48
+      },
+      "device": "cuda",
+      "retained_storage_ids": [
+        "inductor:slot:s0"
+      ],
+      "buffer_to_storage": {
+        "__backing_s0": "inductor:slot:s0",
+        "buf0@4": "inductor:slot:s0",
+        "buf1@5": "inductor:slot:s0"
+      },
+      "logical_buffer_lifetimes": [
+        {
+          "id": "__backing_s0",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k1",
+          "first": 0,
+          "last": 1
+        },
+        {
+          "id": "buf0@4",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k0",
+          "last_kernel": "k0",
+          "alias_of": "__backing_s0",
+          "first": 0,
+          "last": 0
+        },
+        {
+          "id": "buf1@5",
+          "slot": "s0",
+          "size_bytes": 24,
+          "offset_bytes": 0,
+          "first_kernel": "k1",
+          "last_kernel": "k1",
+          "alias_of": "__backing_s0",
+          "first": 1,
+          "last": 1
+        }
+      ],
+      "inductor_import": {
+        "source_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+        "device": "cuda",
+        "allocation_count": 1,
+        "physical_allocation_bytes": 24,
+        "output_storage_ids": [
+          "inductor:slot:s0"
+        ],
+        "conditional_alignment_paths": [
+          {
+            "input": "arg0_1",
+            "source_line": 100,
+            "alignment_bytes": 16,
+            "pointer_mod_alignment": 0,
+            "copy_if_misaligned_returns_same_storage": true,
+            "provenance": {
+              "source": "actual_runtime_input_observation",
+              "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+              "device": "cuda",
+              "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+              "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+              "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+            },
+            "interpretation": "conditional aligned no-copy path; not a general allocation prediction"
+          },
+          {
+            "input": "arg1_1",
+            "source_line": 101,
+            "alignment_bytes": 16,
+            "pointer_mod_alignment": 0,
+            "copy_if_misaligned_returns_same_storage": true,
+            "provenance": {
+              "source": "actual_runtime_input_observation",
+              "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+              "device": "cuda",
+              "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+              "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+              "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+            },
+            "interpretation": "conditional aligned no-copy path; not a general allocation prediction"
+          }
+        ],
+        "logical_views": [
+          {
+            "id": "arg0_1@0",
+            "variable": "arg0_1",
+            "storage": "inductor:input:arg0_1",
+            "shape": [
+              2,
+              4
+            ],
+            "stride": [
+              4,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 32,
+            "device": "cuda",
+            "offset_bytes": 0,
+            "external": true,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": -1,
+            "uses": []
+          },
+          {
+            "id": "arg1_1@1",
+            "variable": "arg1_1",
+            "storage": "inductor:input:arg1_1",
+            "shape": [
+              4,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 48,
+            "device": "cuda",
+            "offset_bytes": 0,
+            "external": true,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": -1,
+            "uses": []
+          },
+          {
+            "id": "arg0_1@2",
+            "variable": "arg0_1",
+            "storage": "inductor:input:arg0_1",
+            "shape": [
+              2,
+              4
+            ],
+            "stride": [
+              4,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 32,
+            "offset_bytes": 0,
+            "external": true,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": 0,
+            "uses": [
+              0
+            ]
+          },
+          {
+            "id": "arg1_1@3",
+            "variable": "arg1_1",
+            "storage": "inductor:input:arg1_1",
+            "shape": [
+              4,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 48,
+            "offset_bytes": 0,
+            "external": true,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": 0,
+            "uses": [
+              0
+            ]
+          },
+          {
+            "id": "buf0@4",
+            "variable": "buf0",
+            "storage": "s0",
+            "shape": [
+              2,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 24,
+            "offset_bytes": 0,
+            "external": false,
+            "created_before_kernel": 0,
+            "deleted_after_kernel": 0,
+            "uses": [
+              0
+            ]
+          },
+          {
+            "id": "buf1@5",
+            "variable": "buf1",
+            "storage": "s0",
+            "shape": [
+              2,
+              3
+            ],
+            "stride": [
+              3,
+              1
+            ],
+            "dtype": "float32",
+            "size_bytes": 24,
+            "offset_bytes": 0,
+            "external": false,
+            "created_before_kernel": 1,
+            "deleted_after_kernel": null,
+            "uses": [
+              1,
+              1
+            ]
+          }
+        ],
+        "parsed_statements": [
+          {
+            "line": 95,
+            "kind": "Assign"
+          },
+          {
+            "line": 96,
+            "kind": "Expr"
+          },
+          {
+            "line": 97,
+            "kind": "Expr"
+          },
+          {
+            "line": 98,
+            "kind": "With"
+          },
+          {
+            "line": 99,
+            "kind": "Expr"
+          },
+          {
+            "line": 100,
+            "kind": "Assign"
+          },
+          {
+            "line": 101,
+            "kind": "Assign"
+          },
+          {
+            "line": 102,
+            "kind": "Assign"
+          },
+          {
+            "line": 104,
+            "kind": "Expr"
+          },
+          {
+            "line": 105,
+            "kind": "Delete"
+          },
+          {
+            "line": 106,
+            "kind": "Delete"
+          },
+          {
+            "line": 107,
+            "kind": "Assign"
+          },
+          {
+            "line": 107,
+            "kind": "Delete"
+          },
+          {
+            "line": 109,
+            "kind": "Assign"
+          },
+          {
+            "line": 110,
+            "kind": "Expr"
+          },
+          {
+            "line": 111,
+            "kind": "Return"
+          }
+        ],
+        "allocation_provenance": "derived by static AST interpretation of supplied compiler wrapper",
+        "cost_provenance": "explicit exact call-index kernel manifest; not inferred from wrapper or measured",
+        "limitations": [
+          "Static one-device Python wrappers only; dynamic shapes/control flow, pools and unknown syntax fail.",
+          "CPU wrapper import proves CPU compiler storage derivation, not CUDA fusion or allocations.",
+          "Source is parsed, never executed; authenticity of supplied wrapper requires external capture provenance.",
+          "Returned physical storage stays allocated until a caller emits its release.",
+          "copy_if_misaligned supports only an explicit aligned/no-copy scenario; unknown or misaligned paths fail."
+        ]
+      }
+    },
+    "events": [
+      {
+        "event_id": "input_allocate_0",
+        "kind": "allocate",
+        "storage_id": "inductor:input:arg0_1",
+        "size_bytes": 32,
+        "category": "input",
+        "metadata": {
+          "device": "cuda"
+        }
+      },
+      {
+        "event_id": "input_allocate_1",
+        "kind": "allocate",
+        "storage_id": "inductor:input:arg1_1",
+        "size_bytes": 48,
+        "category": "input",
+        "metadata": {
+          "device": "cuda"
+        }
+      },
+      {
+        "event_id": "inductor:slot:s0:allocate",
+        "kind": "allocate",
+        "rank": 0,
+        "stream": "default",
+        "metadata": {
+          "provenance": {
+            "source": "actual_torch_compile_debug_output",
+            "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+            "device": "cuda",
+            "fullgraph": true,
+            "numeric_execution_verified": true,
+            "function": "relu(x @ weight) + 1",
+            "input_shapes": [
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                3
+              ]
+            ],
+            "output_shape": [
+              2,
+              3
+            ],
+            "output_all_elements": 5.0,
+            "tf32": false,
+            "cuda_version": "13.4",
+            "measured_device": "NVIDIA GB200",
+            "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing",
+            "input_alignment": {
+              "arg0_1": {
+                "alignment_bytes": 16,
+                "pointer_mod_alignment": 0,
+                "copy_if_misaligned_returns_same_storage": true,
+                "provenance": {
+                  "source": "actual_runtime_input_observation",
+                  "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+                  "device": "cuda",
+                  "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+                  "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+                  "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+                }
+              },
+              "arg1_1": {
+                "alignment_bytes": 16,
+                "pointer_mod_alignment": 0,
+                "copy_if_misaligned_returns_same_storage": true,
+                "provenance": {
+                  "source": "actual_runtime_input_observation",
+                  "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+                  "device": "cuda",
+                  "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+                  "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+                  "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+                }
+              }
+            },
+            "allocation_scope": "conditional on recorded aligned no-copy input path"
+          },
+          "plan_source": "compiler_artifact",
+          "device": "cuda"
+        },
+        "storage_id": "inductor:slot:s0",
+        "size_bytes": 24,
+        "category": "compiled_storage",
+        "deps": []
+      },
+      {
+        "event_id": "inductor:execute:k0",
+        "kind": "compute",
+        "rank": 0,
+        "stream": "default",
+        "metadata": {
+          "provenance": "Benchmark-declared 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+          "plan_source": "compiler_artifact",
+          "graph_phase": "execute",
+          "logical_ops": [
+            "k0"
+          ],
+          "artifact_sha256": "9d4cdd833321a807694a20e04eb0e046354356c4672841aaa53da6868d981102",
+          "calibration_context": {
+            "backend": "inductor_static_wrapper",
+            "device": "cuda",
+            "wrapper_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+            "kernel_cost_manifest_sha256": "56858a54db96e1d10d075a2fe47188f96e43e5fd9a92d876dc75ab49214a0de1"
+          },
+          "signature": {
+            "kind": "compiled_kernel",
+            "kernel": {
+              "id": "k0",
+              "name": "extern_kernels.mm",
+              "dtype": "float32",
+              "flops": 48,
+              "bytes_read": 80,
+              "bytes_write": 24,
+              "provenance": "Benchmark-declared 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic",
+              "reads": [
+                "inductor:input:arg0_1",
+                "inductor:input:arg1_1"
+              ],
+              "writes": [
+                "__backing_s0",
+                "buf0@4"
+              ],
+              "logical_ops": [
+                "k0"
+              ]
+            },
+            "artifact_sha256": "9d4cdd833321a807694a20e04eb0e046354356c4672841aaa53da6868d981102",
+            "plan_sha256": "30ef386403696cb79fbd8bceaf2f93a6a250ae8cd2d62dcbf1eaaacdbbead2e3",
+            "context": {
+              "backend": "inductor_static_wrapper",
+              "device": "cuda",
+              "wrapper_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+              "kernel_cost_manifest_sha256": "56858a54db96e1d10d075a2fe47188f96e43e5fd9a92d876dc75ab49214a0de1"
+            }
+          },
+          "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+          "device": "cuda"
+        },
+        "name": "extern_kernels.mm",
+        "dtype": "float32",
+        "flops": 48,
+        "bytes_read": 80,
+        "bytes_write": 24,
+        "read_storage_ids": [
+          "inductor:input:arg0_1",
+          "inductor:input:arg1_1"
+        ],
+        "write_storage_ids": [
+          "inductor:slot:s0"
+        ]
+      },
+      {
+        "event_id": "inductor:execute:k1",
+        "kind": "compute",
+        "rank": 0,
+        "stream": "default",
+        "metadata": {
+          "provenance": "Benchmark-declared six ReLU comparisons plus six adds; one fused read/write pass. CUDA pointer access verified from generated tl.load/tl.store AST.",
+          "plan_source": "compiler_artifact",
+          "graph_phase": "execute",
+          "logical_ops": [
+            "k1"
+          ],
+          "artifact_sha256": "9d4cdd833321a807694a20e04eb0e046354356c4672841aaa53da6868d981102",
+          "calibration_context": {
+            "backend": "inductor_static_wrapper",
+            "device": "cuda",
+            "wrapper_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+            "kernel_cost_manifest_sha256": "56858a54db96e1d10d075a2fe47188f96e43e5fd9a92d876dc75ab49214a0de1"
+          },
+          "signature": {
+            "kind": "compiled_kernel",
+            "kernel": {
+              "id": "k1",
+              "name": "triton_poi_fused_add_relu_0.run",
+              "dtype": "float32",
+              "flops": 12,
+              "bytes_read": 24,
+              "bytes_write": 24,
+              "provenance": "Benchmark-declared six ReLU comparisons plus six adds; one fused read/write pass. CUDA pointer access verified from generated tl.load/tl.store AST.",
+              "reads": [
+                "__backing_s0",
+                "buf1@5"
+              ],
+              "writes": [
+                "__backing_s0",
+                "buf1@5"
+              ],
+              "logical_ops": [
+                "k1"
+              ]
+            },
+            "artifact_sha256": "9d4cdd833321a807694a20e04eb0e046354356c4672841aaa53da6868d981102",
+            "plan_sha256": "30ef386403696cb79fbd8bceaf2f93a6a250ae8cd2d62dcbf1eaaacdbbead2e3",
+            "context": {
+              "backend": "inductor_static_wrapper",
+              "device": "cuda",
+              "wrapper_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+              "kernel_cost_manifest_sha256": "56858a54db96e1d10d075a2fe47188f96e43e5fd9a92d876dc75ab49214a0de1"
+            }
+          },
+          "traffic_basis": "declared fused kernel HBM traffic; no unfused intermediate traffic added",
+          "device": "cuda"
+        },
+        "name": "triton_poi_fused_add_relu_0.run",
+        "dtype": "float32",
+        "flops": 12,
+        "bytes_read": 24,
+        "bytes_write": 24,
+        "read_storage_ids": [
+          "inductor:slot:s0"
+        ],
+        "write_storage_ids": [
+          "inductor:slot:s0"
+        ]
+      }
+    ],
+    "limitations": [
+      "Serial kernel order only; host/compiler latency and launch overhead are not inferred.",
+      "Capture executes the declared work once; replay repeats it without additional pool allocations.",
+      "FX/export graphs establish graph provenance, not GPU fusion or allocator equivalence.",
+      "Physical slots/private pool include declared reservation; general allocator caching is not modeled.",
+      "release_pool drops logical pool ownership; allocator replay can retain graph-pool cached segments."
+    ]
+  },
+  "report": {
+    "source_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+    "device": "cuda",
+    "allocation_count": 1,
+    "physical_allocation_bytes": 24,
+    "output_storage_ids": [
+      "inductor:slot:s0"
+    ],
+    "conditional_alignment_paths": [
+      {
+        "input": "arg0_1",
+        "source_line": 100,
+        "alignment_bytes": 16,
+        "pointer_mod_alignment": 0,
+        "copy_if_misaligned_returns_same_storage": true,
+        "provenance": {
+          "source": "actual_runtime_input_observation",
+          "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+          "device": "cuda",
+          "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+          "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+          "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+        },
+        "interpretation": "conditional aligned no-copy path; not a general allocation prediction"
+      },
+      {
+        "input": "arg1_1",
+        "source_line": 101,
+        "alignment_bytes": 16,
+        "pointer_mod_alignment": 0,
+        "copy_if_misaligned_returns_same_storage": true,
+        "provenance": {
+          "source": "actual_runtime_input_observation",
+          "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+          "device": "cuda",
+          "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+          "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+          "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+        },
+        "interpretation": "conditional aligned no-copy path; not a general allocation prediction"
+      }
+    ],
+    "logical_views": [
+      {
+        "id": "arg0_1@0",
+        "variable": "arg0_1",
+        "storage": "inductor:input:arg0_1",
+        "shape": [
+          2,
+          4
+        ],
+        "stride": [
+          4,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 32,
+        "device": "cuda",
+        "offset_bytes": 0,
+        "external": true,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": -1,
+        "uses": []
+      },
+      {
+        "id": "arg1_1@1",
+        "variable": "arg1_1",
+        "storage": "inductor:input:arg1_1",
+        "shape": [
+          4,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 48,
+        "device": "cuda",
+        "offset_bytes": 0,
+        "external": true,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": -1,
+        "uses": []
+      },
+      {
+        "id": "arg0_1@2",
+        "variable": "arg0_1",
+        "storage": "inductor:input:arg0_1",
+        "shape": [
+          2,
+          4
+        ],
+        "stride": [
+          4,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 32,
+        "offset_bytes": 0,
+        "external": true,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": 0,
+        "uses": [
+          0
+        ]
+      },
+      {
+        "id": "arg1_1@3",
+        "variable": "arg1_1",
+        "storage": "inductor:input:arg1_1",
+        "shape": [
+          4,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 48,
+        "offset_bytes": 0,
+        "external": true,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": 0,
+        "uses": [
+          0
+        ]
+      },
+      {
+        "id": "buf0@4",
+        "variable": "buf0",
+        "storage": "s0",
+        "shape": [
+          2,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "external": false,
+        "created_before_kernel": 0,
+        "deleted_after_kernel": 0,
+        "uses": [
+          0
+        ]
+      },
+      {
+        "id": "buf1@5",
+        "variable": "buf1",
+        "storage": "s0",
+        "shape": [
+          2,
+          3
+        ],
+        "stride": [
+          3,
+          1
+        ],
+        "dtype": "float32",
+        "size_bytes": 24,
+        "offset_bytes": 0,
+        "external": false,
+        "created_before_kernel": 1,
+        "deleted_after_kernel": null,
+        "uses": [
+          1,
+          1
+        ]
+      }
+    ],
+    "parsed_statements": [
+      {
+        "line": 95,
+        "kind": "Assign"
+      },
+      {
+        "line": 96,
+        "kind": "Expr"
+      },
+      {
+        "line": 97,
+        "kind": "Expr"
+      },
+      {
+        "line": 98,
+        "kind": "With"
+      },
+      {
+        "line": 99,
+        "kind": "Expr"
+      },
+      {
+        "line": 100,
+        "kind": "Assign"
+      },
+      {
+        "line": 101,
+        "kind": "Assign"
+      },
+      {
+        "line": 102,
+        "kind": "Assign"
+      },
+      {
+        "line": 104,
+        "kind": "Expr"
+      },
+      {
+        "line": 105,
+        "kind": "Delete"
+      },
+      {
+        "line": 106,
+        "kind": "Delete"
+      },
+      {
+        "line": 107,
+        "kind": "Assign"
+      },
+      {
+        "line": 107,
+        "kind": "Delete"
+      },
+      {
+        "line": 109,
+        "kind": "Assign"
+      },
+      {
+        "line": 110,
+        "kind": "Expr"
+      },
+      {
+        "line": 111,
+        "kind": "Return"
+      }
+    ],
+    "allocation_provenance": "derived by static AST interpretation of supplied compiler wrapper",
+    "cost_provenance": "explicit exact call-index kernel manifest; not inferred from wrapper or measured",
+    "limitations": [
+      "Static one-device Python wrappers only; dynamic shapes/control flow, pools and unknown syntax fail.",
+      "CPU wrapper import proves CPU compiler storage derivation, not CUDA fusion or allocations.",
+      "Source is parsed, never executed; authenticity of supplied wrapper requires external capture provenance.",
+      "Returned physical storage stays allocated until a caller emits its release.",
+      "copy_if_misaligned supports only an explicit aligned/no-copy scenario; unknown or misaligned paths fail."
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "quant",
+  "provenance": "Declared MXFP8 storage and conversion example; not native TE capture",
+  "calibration_context": {
+    "torch_version": "2.14.1",
+    "backend": "declared_gpu_plan_for_exported_graph",
+    "compiler_version": "not_observed",
+    "torchtitan_commit": "not_applicable_cpu_export_example"
+  },
+  "tensors": [
+    {
+      "name": "weight",
+      "layout": {
+        "format": "mxfp8",
+        "shape": [
+          4,
+          3
+        ],
+        "orientations": [
+          "rowwise"
+        ],
+        "layout": "rowwise_block",
+        "data_alignment_elements": 32,
+        "scale_row_alignment": 1,
+        "scale_column_alignment": 1
+      },
+      "states": {
+        "parameter": "bfloat16",
+        "master_parameter": "float32",
+        "gradient": "bfloat16",
+        "first_moment": "float32",
+        "second_moment": "float32"
+      },
+      "conversion": {
+        "source_state": "parameter",
+        "execution_dtype": "float32",
+        "flops": 36,
+        "scratch_bytes": 64,
+        "scratch_read_bytes": 64,
+        "scratch_write_bytes": 64,
+        "provenance": "Declared arithmetic and explicit one-pass physical-payload traffic; no measured conversion kernel"
+      }
+    }
+  ]
+}

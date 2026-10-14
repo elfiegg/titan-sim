@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--hardware', type=Path, required=True)
     parser.add_argument('--timing', choices=['roofline', 'calibrated', 'hybrid'], default='roofline')
     parser.add_argument('--calibrations', type=Path)
+    parser.add_argument('--allocator', type=Path, help='Explicit allocator policy JSON; separate from logical tensor bytes')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--allow-partial', action='store_true', help='Explicitly export a blocked partial trace; not a complete-model estimate')
     args = parser.parse_args()
@@ -25,7 +26,12 @@ def main():
     calibrations = json.loads(args.calibrations.read_text()) if args.calibrations else None
     if args.timing in ('calibrated', 'hybrid') and document.get('source') == 'cpu_projection':
         validate_calibration_context(document.get('metadata', {}), hardware, calibrations)
-    result = simulate(document['events'], hardware, args.timing, calibrations)
+    events = document['events']
+    if 'distributed_groups' in document:
+        from .distributed import lower_distributed_events
+        events = lower_distributed_events(events, document['distributed_groups'])
+    allocator = json.loads(args.allocator.read_text()) if args.allocator else None
+    result = simulate(events, hardware, args.timing, calibrations, allocator=allocator)
     result['metadata'] = document.get('metadata', {})
     result['capture_coverage'] = document.get('coverage', {})
     result['unknown_flop_ops'] = document.get('unknown_flop_ops', {})

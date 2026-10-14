@@ -1,0 +1,34 @@
+{
+  "source_sha256": "9522dbcc7d35a1203e0a9a3da67861cc7c57186b1727ff9c13a809e4431446b8",
+  "kernels": {
+    "k0": {
+      "target": "extern_kernels.mm",
+      "dtype": "float32",
+      "flops": 48,
+      "bytes_read": 80,
+      "bytes_write": 24,
+      "reads": [
+        0,
+        1
+      ],
+      "writes": [
+        "out"
+      ],
+      "provenance": "Explicit 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic"
+    },
+    "k1": {
+      "target": "cpp_fused_add_relu_0",
+      "dtype": "float32",
+      "flops": 12,
+      "bytes_read": 24,
+      "bytes_write": 24,
+      "reads": [
+        0
+      ],
+      "writes": [
+        0
+      ],
+      "provenance": "Explicit six ReLU comparisons plus six additions; one fused read/write pass, no intermediate traffic added"
+    }
+  }
+}

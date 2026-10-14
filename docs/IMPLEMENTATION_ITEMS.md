@@ -25,14 +25,19 @@ not validated merely because a module imports or a reduced model runs.
 | COST-02 | Calibrated lookup and explicit fallback coverage | Runtime agent | Strict misses rejected; hybrid provenance reported |
 | DIST-01 | Fake ProcessGroup, Work/future and collective ordering | Follow-up distributed agent | Backend-specific host/stream waits; all participants matched |
 | DIST-02 | Actual pipeline and P2P schedule execution | Follow-up distributed agent | Upstream schedules, stage imbalance, buffer lifetime and deadlock tests |
+| DIST-03 | Connect all-rank model capture and FSDP to the metadata backend | Distributed integration agent | Real DeviceMesh/FSDP hooks; capture compute/storage across processes; registered P2P; no rank-zero extrapolation |
 | GPU-01 | Actual TrainingEngine synthetic benchmark harness | Integration lead: gpu_compare.py | Original model/optimizer policies, >=10 steps, initialized optimizer states |
 | GPU-02 | GPU memory history and phase trajectory collection | Integration lead | Valid completed allocation trace; unsynchronized and synchronized observations labeled |
 | VAL-01 | Compare CPU projection with independent GPU observations | Integration lead | Same config and phase; peak and trajectory errors; no copying actual allocations into prediction |
 | REP-01 | JSON/CSV/timeline exports and comparison plots | Integration lead: reporting.py, cli.py | Reproducible reports; scope/provenance visible |
 | COMP-01 | Compiled-region manifests and graph replay | Follow-up compiler agent | Actual fused allocation/lifetime plan; no eager-as-compiled claims |
+| COMP-02 | Dynamic compiler branches and full training-region capture | Compiler integration agent | Explicit conditional allocation paths, backward/optimizer regions and unsupported-operation coverage |
+| QUANT-01 | Capture native quantized training operations | Quantization integration agent | Actual backend payload/scale layout, conversions, backward/optimizer, amax communication and scratch; independent allocator comparison |
+| MEM-03 | Native caching and CUDA async allocator fidelity | Allocator integration agent | Versioned policy, stream arenas and reuse, expandable segments, graph pool destruction, measured fragmentation comparisons |
 | MOE-01 | Routing scenario/replay and expert load distributions | Capture/distributed owners sequentially | Explicit source of routing values and equal comparison workload |
 | HOST-01 | Host overhead and optional wall-clock pacing | Follow-up runtime agent | Metadata/tracing overhead excluded; real blocking semantics preserved |
 | CAL-01 | GPU kernel/collective calibration collection | Follow-up calibration agent | Version/shape keys and held-out accuracy results |
+| CAL-02 | Topology and concurrent-work validation | Calibration integration agent | Independent collective timings, compute/communication contention, launch overhead and held-out full-step errors |
 | QA-01 | Independent specification and code-quality reviews | Review agents | No open correctness findings; CPU/GPU checks scoped |
 | PUB-01 | GitHub repository and reproducible public artifacts | Integration lead | No credentials/private cluster data; published commit and reports |
 
@@ -64,14 +69,22 @@ ENV-01 registry/runtime versions are verified; cached-image byte-for-byte OCI pr
 ENV-02 now selects the requested native-API revision; historical compatibility
 adapters are opt-in and are not used for target validation.
 GPU-01/GPU-02 and CAP-02/CAP-03 have entry points but are not target-validated.
-HOST-01 has a saved-timeline pacing demonstration only, not live interception.
-DIST-01 has partial control emulation, not collective participant simulation.
+HOST-01 now intercepts Python-level live submissions and host waits using a
+coordinated virtual clock; native interception and independent host clocks remain.
+DIST-01 now has collective participant matching, a simulated ProcessGroup and
+Work/Future interface, and a registered metadata-only CPU multiprocess backend.
 MOE-01 has a declared balanced-split scenario, not measured routing replay.
 CAP-05 has explicit post-initialization sampling omission and full-comparison
 rejection; a scoped steady-state comparison contract remains outstanding.
 CAP-04 has diagnostic probes only. VAL-01 now has gated named-phase/explicit
 correspondence exports; it has no matched DeepSeek projection/observation pair.
-MEM-02, DIST-02, COMP-01, CAL-01, and VAL-01 remain substantial independent work.
+MEM-02 now has ideal and configurable caching allocator scenarios; exact CUDA
+allocator equivalence remains unproven. DIST-02 lowers an actual upstream
+interleaved 1F1B schedule with declared stage costs and buffers. COMP-01 supports
+static compiler plans and graph replay, with separate explicit quantization
+layouts. CAL-01 has a real CUDA-event collection and held-out comparison tool.
+These component implementations do not complete their full-model acceptance
+checks. VAL-01 still needs a matched full-model CPU/GPU pair.
 QA-01 is iterative; review findings require fixes and new verification before
 scope can be promoted. PUB-01 publishes this scope explicitly.
 
@@ -87,8 +100,8 @@ budget with rank ownership, storage aliasing, host/GPU separation and capacity
 scenarios. Logged buffer geometry remains observation evidence and cannot be
 submitted as an independent predicted component.
 
-This work provides tests and conditional examples for partial memory budgets.
-It does not complete MEM-02 allocator fidelity, DIST-02 pipeline execution,
-COMP-01 compiled capture, or VAL-01 matched full-model validation. Those still
-require actual allocation/free and stream lifetimes, upstream execution across
+This log-analysis work provides tests and conditional examples for partial
+memory budgets. Subsequent [execution extensions](EXECUTION_EXTENSIONS.md) add
+allocator, pipeline, compiler, and runtime components. Full-model fidelity still
+requires actual allocation/free and stream lifetimes, upstream execution across
 ranks, matching compiler policies, and independent GPU observations.

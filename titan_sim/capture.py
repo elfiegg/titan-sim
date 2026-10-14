@@ -58,6 +58,8 @@ class TensorCapture(TorchDispatchMode):
         self._last_by_stream: dict[str, str] = {}
         self._writers: dict[str, str] = {}
         self._readers: dict[str, set[str]] = {}
+        self._host_time_provider = None
+        self._event_listener = None
 
     def __enter__(self):
         self._stack.enter_context(self._tracker)
@@ -80,6 +82,7 @@ class TensorCapture(TorchDispatchMode):
             self._phase = previous
 
     def _event(self, kind: str, name: str, **fields):
+        defer_notify = fields.pop('_defer_notify', False)
         event_id = f"r{self.rank}:e{len(self.events)}"
         event = dict(event_id=event_id, kind=kind, rank=self.rank, stream=self.stream,
                      name=name, deps=[],
@@ -87,6 +90,8 @@ class TensorCapture(TorchDispatchMode):
                      category=self._phase, reads=[], writes=[], phase=self._phase,
                      module_scope=sorted(self._tracker.parents), device=self.modeled_device or "cpu")
         event.update(fields)
+        if self._host_time_provider is not None:
+            event['host_time_us'] = self._host_time_provider()
         deps = set(event["deps"])
         stream = event["stream"]
         if stream in self._last_by_stream:
@@ -109,7 +114,13 @@ class TensorCapture(TorchDispatchMode):
             self._readers[sid] = set()
         if kind == "allocate":
             self._writers[event["storage_id"]] = event_id
+        if not defer_notify:
+            self._notify_event(event)
         return event
+
+    def _notify_event(self, event):
+        if self._event_listener is not None:
+            self._event_listener(event)
 
     def register_tensor(self, tensor, *, category: str | None = None, name: str | None = None, modeled_device: str | None = None):
         tensor = _local_tensor(tensor)
@@ -147,6 +158,8 @@ class TensorCapture(TorchDispatchMode):
         if modeled_device is not None:
             entry["device"] = modeled_device
             self.events[entry["allocation_event"]]["device"] = modeled_device
+        if category is not None or modeled_device is not None:
+            self._notify_event(self.events[entry["allocation_event"]])
         return sid
 
     def register_model(self, model):
@@ -239,7 +252,7 @@ class TensorCapture(TorchDispatchMode):
         kind = "collective" if any(word in name for word in ("all_reduce", "all_gather", "reduce_scatter", "all_to_all")) else "compute"
         if "wait_tensor" in name:
             kind = "wait"
-        event = self._event(kind, name, reads=reads, writes=writes, flops=float(flops),
+        event = self._event(kind, name, _defer_notify=True, reads=reads, writes=writes, flops=float(flops),
                            stream="__host_control__" if scalar_read and not scalar_on_cuda else self.stream,
                            bytes_read=0 if is_alias or metadata_only else self._payload_bytes(inputs),
                            bytes_write=0 if is_alias or metadata_only else self._payload_bytes(outputs + mutated_tensors),
@@ -259,6 +272,7 @@ class TensorCapture(TorchDispatchMode):
             sid = (output_ids or reads)[0]
             event["device"] = self.storages[sid]["device"]
         devices = {self.storages[sid]["device"].split(":")[0] for sid in reads + output_ids}
+        blocking_copy = False
         if "cpu" in devices and "cuda" in devices and func._schema.name in {"aten::_to_copy", "aten::copy_"}:
             event["traffic_domain"] = "host_device"
             event["device"] = next(self.storages[sid]["device"] for sid in reads + output_ids
@@ -269,13 +283,13 @@ class TensorCapture(TorchDispatchMode):
                 for index, argument in enumerate(func._schema.arguments)
                 if argument.name == "non_blocking"
             )
-            if not non_blocking:
-                self._event("host_sync", "blocking_host_device_copy", stream="__host_control__",
-                            deps=[event["event_id"]], sync_scope="event", device="cpu")
+            blocking_copy = not non_blocking
         if scalar_on_cuda:
             event["traffic_domain"] = "host_device"
             event["host_device_transfer_bytes"] = event["bytes_read"]
-            self._event("host_sync", "cuda_scalar_read", stream="__host_control__",
+        self._notify_event(event)
+        if blocking_copy or scalar_on_cuda:
+            self._event("host_sync", "blocking_host_device_copy" if blocking_copy else "cuda_scalar_read", stream="__host_control__",
                         deps=[event["event_id"]], sync_scope="event", device="cpu")
         return output
 

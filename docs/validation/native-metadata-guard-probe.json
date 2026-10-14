@@ -1,0 +1,58 @@
+{
+  "status": "blocked",
+  "reason": "DeviceGuard registration alone does not provide a CUDA accelerator backend: Node::stream selects the compiled accelerator and cannot select CUDA input streams when getAccelerator() returns mps.",
+  "failed_phase": "backward",
+  "error_type": "RuntimeError",
+  "error": "opt_ready_stream && opt_parent_stream INTERNAL ASSERT FAILED at \"/Users/runner/work/pytorch/pytorch/torch/csrc/autograd/engine.cpp\":1141, please report a bug to PyTorch. ",
+  "selected_accelerator": "mps",
+  "torch": "2.14.1",
+  "torch_git": "5c4886908584029761b579af026dcfb627c84070",
+  "next_step": "Provide a pinned PyTorch metadata accelerator/hooks implementation with canonical CUDA streams and explicit event dependencies; a DeviceGuard plugin alone may be insufficient.",
+  "returncode": 0,
+  "diagnostics": [
+    {
+      "phase": "native_build",
+      "torch": "2.14.1",
+      "torch_git": "5c4886908584029761b579af026dcfb627c84070",
+      "selected_accelerator": "mps"
+    },
+    {
+      "phase": "native_guard",
+      "virtual_stream_exchange": true,
+      "event_edges_recorded": true,
+      "real_generic_cuda_allocator_trapped": true,
+      "completion_queries_rejected": true
+    },
+    {
+      "phase": "allocation_safety",
+      "real_cuda_allocation_rejected": true
+    },
+    {
+      "phase": "tensor_creation",
+      "complete": true
+    },
+    {
+      "phase": "forward",
+      "complete": true
+    },
+    {
+      "phase": "native_restore",
+      "original_guard_restored": true
+    },
+    {
+      "status": "blocked",
+      "reason": "DeviceGuard registration alone does not provide a CUDA accelerator backend: Node::stream selects the compiled accelerator and cannot select CUDA input streams when getAccelerator() returns mps.",
+      "failed_phase": "backward",
+      "error_type": "RuntimeError",
+      "error": "opt_ready_stream && opt_parent_stream INTERNAL ASSERT FAILED at \"/Users/runner/work/pytorch/pytorch/torch/csrc/autograd/engine.cpp\":1141, please report a bug to PyTorch. ",
+      "selected_accelerator": "mps",
+      "torch": "2.14.1",
+      "torch_git": "5c4886908584029761b579af026dcfb627c84070",
+      "next_step": "Provide a pinned PyTorch metadata accelerator/hooks implementation with canonical CUDA streams and explicit event dependencies; a DeviceGuard plugin alone may be insufficient."
+    }
+  ],
+  "stderr": "",
+  "cpu_only": true,
+  "scope": "isolated hidden-GPU native guard feasibility diagnostic; no runtime backend installed",
+  "allow_cuda_build": false
+}

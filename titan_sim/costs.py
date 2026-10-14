@@ -39,9 +39,30 @@ def calibration_key(event: Event | dict) -> str:
     event = Event.from_dict(event) if isinstance(event, dict) else event
     if 'signature' in event.metadata:
         signature = json.loads(_signature(event.metadata['signature']))
-        return json.dumps([event.name, {'signature': signature}], separators=(',', ':'), sort_keys=True)
-    return json.dumps([event.name, event.metadata.get('shape', event.metadata.get('shapes', [])),
-                       event.dtype], separators=(',', ':'), sort_keys=True)
+        parts = [event.name, {'signature': signature}, event.dtype]
+    else:
+        parts = [event.name, event.metadata.get('shape', event.metadata.get('shapes', [])), event.dtype]
+    communication = communication_signature(event)
+    if communication is not None:
+        parts.append({'communication': communication})
+    return json.dumps(parts, separators=(',', ':'), sort_keys=True, allow_nan=False)
+
+
+def communication_signature(event):
+    """Participant count, rank placement and split sizes are calibration inputs."""
+    if event.kind != 'collective' or not any(key in event.metadata for key in ('participants', 'participant_ranks')):
+        return None
+    if ('participants' in event.metadata and 'participant_ranks' in event.metadata
+            and event.metadata['participants'] != event.metadata['participant_ranks']):
+        raise ValueError('conflicting participants and participant_ranks')
+    participants = event.metadata.get('participants', event.metadata.get('participant_ranks'))
+    if (not isinstance(participants, (list, tuple)) or not participants
+            or any(isinstance(rank, bool) or not isinstance(rank, int) or rank < 0 for rank in participants)
+            or len(set(participants)) != len(participants)):
+        raise ValueError('participants must be distinct nonnegative ranks')
+    return {key: event.metadata.get(key) for key in ('collective', 'op', 'reduce_op', 'algorithm', 'message_bytes',
+            'input_splits', 'output_splits', 'split_element_bytes', 'src', 'dst')} | {
+                'participants': event.metadata.get('participants', event.metadata.get('participant_ranks'))}
 
 
 def _calibration(event, calibrations):
@@ -61,10 +82,16 @@ def _calibration(event, calibrations):
         for entry in entries:
             if not isinstance(entry, dict):
                 raise ValueError('calibration entries must be objects')
+            communication = communication_signature(event)
+            if entry.get('communication') != communication:
+                continue
             if 'signature' in event.metadata:
                 if (entry.get('name') == event.name and 'signature' in entry
+                        and entry.get('dtype') == event.dtype
                         and _signature(entry['signature']) == _signature(event.metadata['signature'])):
                     return entry
+                continue
+            if 'signature' in entry:
                 continue
             if (entry.get('name') == event.name and entry.get('dtype') == event.dtype
                     and entry.get('shape', entry.get('shapes', [])) == event.metadata.get('shape', event.metadata.get('shapes', []))):
@@ -76,6 +103,7 @@ def _calibration(event, calibrations):
 def estimate_cost(event: Event | dict, hardware: dict, timing='roofline', calibrations=None) -> dict:
     event = Event.from_dict(event) if isinstance(event, dict) else event
     validate_hardware(hardware)
+    communication_signature(event)  # Validate rank aliases even for explicit durations.
     if timing not in ('roofline', 'calibrated', 'hybrid'):
         raise ValueError(f'unknown timing mode: {timing}')
     if event.metadata.get('metadata_only') or event.metadata.get('execution_kind') == 'metadata':
@@ -90,19 +118,36 @@ def estimate_cost(event: Event | dict, hardware: dict, timing='roofline', calibr
         raise ValueError('sparse work requires an explicit supported cost model')
     if event.metadata.get('mixed_precision') or event.metadata.get('work_components'):
         raise ValueError('mixed execution work must be split into separate dtype events')
+    network = None
+    distributed = event.kind == 'collective' and any(
+        key in event.metadata for key in ('participants', 'participant_ranks'))
+    if distributed and 'network_topology' in hardware:
+        from .network import estimate_network
+        network = estimate_network(event, hardware)
+    network_context = ({key: network[key] for key in ('network_resources', 'network_participants',
+                                                     'network_algorithm', 'network_operation')}
+                       if network is not None else {})
     # A user-provided event duration is trusted only with a traceable source.
     explicit = event.metadata.get('duration_provenance', event.metadata.get('provenance'))
     if event.duration_us is not None:
         if not explicit:
             raise ValueError(f'{event.event_id}: duration_us requires duration_provenance')
-        return {'duration_us': event.duration_us, 'source': 'explicit', 'provenance': explicit}
+        return {'duration_us': event.duration_us, 'source': 'explicit', 'provenance': explicit,
+                **network_context}
     if timing in ('calibrated', 'hybrid'):
         measured = _calibration(event, calibrations)
         if measured is not None:
             if not measured.get('provenance') or 'duration_us' not in measured:
                 raise ValueError('calibration requires duration_us and provenance')
             duration = nonnegative(measured['duration_us'], 'calibrated duration_us')
-            return {'duration_us': duration, 'source': 'calibrated', 'provenance': measured['provenance']}
+            return {'duration_us': duration, 'source': 'calibrated', 'provenance': measured['provenance'],
+                    **network_context}
+    if distributed:
+        if timing == 'calibrated':
+            raise ValueError(f'{event.event_id}: missing exact calibration for {calibration_key(event)}')
+        if network is None:
+            raise ValueError('Distributed communication requires network_topology or exact measured timing')
+        return {**network, 'source': 'network_analytical_fallback' if timing == 'hybrid' else 'network_analytical'}
     host_device = event.metadata.get('traffic_domain') == 'host_device'
     transfer_bytes = nonnegative(event.metadata.get('host_device_transfer_bytes', max(event.bytes_read, event.bytes_write)),
                                  'host_device_transfer_bytes') if host_device else 0

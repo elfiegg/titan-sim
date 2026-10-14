@@ -1,0 +1,3 @@
+# Preserve compiler output verbatim: source hashes bind these evidence files.
+examples/inductor/*_output_code.py -whitespace
+docs/validation/extensions-*/inductor/*_output_code.py -whitespace

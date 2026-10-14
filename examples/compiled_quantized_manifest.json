@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "id": "compiled",
+  "plan_source": "declared",
+  "provenance": "Actual exported matmul/relu graph; GPU kernels, physical allocation plan, quantized lowering and pool capacity explicitly declared. This artifact does not establish compiler equivalence.",
+  "artifact_sha256": "aa1b5289d1b7370e96b11b79714bfa791b3e21a3db9d0da624b8c758995af298",
+  "calibration_context": {
+    "torch_version": "2.14.1",
+    "backend": "declared_gpu_plan_for_exported_graph",
+    "compiler_version": "not_observed",
+    "torchtitan_commit": "not_applicable_cpu_export_example"
+  },
+  "external_storages": {
+    "quant:weight:parameter": 24,
+    "quant:weight:master_parameter": 48,
+    "quant:weight:gradient": 24,
+    "quant:weight:first_moment": 48,
+    "quant:weight:second_moment": 48,
+    "quant:weight:rowwise:payload": 128,
+    "quant:weight:rowwise:scale": 4,
+    "input": 16,
+    "output": 12
+  },
+  "slots": [
+    {
+      "id": "intermediate",
+      "size_bytes": 12,
+      "category": "activation"
+    },
+    {
+      "id": "workspace",
+      "size_bytes": 32,
+      "category": "workspace"
+    }
+  ],
+  "buffers": [
+    {
+      "id": "product",
+      "slot": "intermediate",
+      "offset_bytes": 0,
+      "size_bytes": 12,
+      "first_kernel": "mm",
+      "last_kernel": "relu"
+    },
+    {
+      "id": "scratch",
+      "slot": "workspace",
+      "offset_bytes": 0,
+      "size_bytes": 32,
+      "first_kernel": "mm",
+      "last_kernel": "mm"
+    }
+  ],
+  "kernels": [
+    {
+      "id": "mm",
+      "name": "declared_quantized_matmul",
+      "dtype": "mxfp8",
+      "flops": 48,
+      "bytes_read": 180,
+      "bytes_write": 44,
+      "reads": [
+        "input",
+        "quant:weight:rowwise:payload",
+        "quant:weight:rowwise:scale",
+        "scratch"
+      ],
+      "writes": [
+        "product",
+        "scratch"
+      ],
+      "logical_ops": [
+        "matmul"
+      ],
+      "provenance": "2*M*N*K=48 MXFP8 arithmetic; input16+packed132+workspace32 read, product12+workspace32 write"
+    },
+    {
+      "id": "relu",
+      "name": "declared_relu",
+      "dtype": "bfloat16",
+      "flops": 6,
+      "bytes_read": 12,
+      "bytes_write": 12,
+      "reads": [
+        "product"
+      ],
+      "writes": [
+        "output"
+      ],
+      "logical_ops": [
+        "relu"
+      ],
+      "provenance": "6 BF16 comparisons and one input/output pass; materialized intermediate explicitly declared"
+    }
+  ],
+  "graph": {
+    "mode": "capture_replay",
+    "replays": 2,
+    "private_pool": {
+      "id": "graph0",
+      "size_bytes": 64,
+      "slot_offsets": {
+        "intermediate": 0,
+        "workspace": 16
+      }
+    },
+    "release_pool": false
+  }
+}

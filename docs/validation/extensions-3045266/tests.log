@@ -1,0 +1,16 @@
+........................................................................../usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+....................................................................................................................................................WARNING:absl:Failed to load jax profiler: No module named 'jax'
+/opt/pytorch/ao/torchao/quantization/quant_api.py:1542: SyntaxWarning: invalid escape sequence '\.'
+  """Configuration class for applying different quantization configs to modules or parameters based on their fully qualified names (FQNs).
+W1014 15:56:36.835000 3395962 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W1014 15:56:37.020000 3395962 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+...
+----------------------------------------------------------------------
+Ran 225 tests in 17.169s
+
+OK
+{"status": "complete", "aligned_comparisons": 2}
+{"coverage_complete": true, "max_over_ranks_known_bytes": 100, "required_max_over_ranks_bytes": 100}

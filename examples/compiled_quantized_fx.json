@@ -1,0 +1,26 @@
+{
+  "kind": "torch_export_fx",
+  "torch_version": "2.14.1",
+  "nodes": [
+    {
+      "name": "matmul",
+      "target": "aten.matmul.default",
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "name": "relu",
+      "target": "aten.relu.default",
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "torch.float32"
+    }
+  ],
+  "graph_code": "\n\n\ndef forward(self, x, weight):\n    matmul = torch.ops.aten.matmul.default(x, weight);  x = weight = None\n    relu = torch.ops.aten.relu.default(matmul);  matmul = None\n    return (relu,)\n    ",
+  "provenance": "actual torch.export invocation on CPU; graph metadata only, no GPU allocation or fusion plan"
+}

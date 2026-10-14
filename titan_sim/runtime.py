@@ -57,11 +57,12 @@ def logical_memory_events(events: list[dict]) -> list[dict]:
     return samples
 
 
-def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations=None) -> dict:
+def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations=None, *, allocator=None) -> dict:
     validate_hardware(hardware)
     if timing not in ('roofline', 'calibrated', 'hybrid'):
         raise ValueError(f'unknown timing mode: {timing}')
     parsed = [e if isinstance(e, Event) else Event.from_dict(e) for e in events]
+    costs = {e.event_id: estimate_cost(e, hardware, timing, calibrations) for e in parsed}
     explicit_host_schedule = bool(events) and all(isinstance(e, dict) and 'host_time_us' in e for e in events)
     logical_memory = logical_memory_events(parsed)
     logical_peaks = defaultdict(int)
@@ -98,6 +99,10 @@ def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations
             barrier[e.rank] = e.event_id
         stream_last[stream] = e.event_id
         previous_rank[e.rank].append(e.event_id)
+        if e.kind == 'collective':
+            for participant in e.metadata.get('participant_ranks', e.metadata.get('participants', [])):
+                if participant != e.rank:
+                    previous_rank[participant].append(e.event_id)
 
     # Determine physical-storage generations and Python-side reference ownership
     # in submission order. A released generation remains resident until use ends.
@@ -144,14 +149,27 @@ def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations
     ready = [position[event_id] for event_id, count in pending.items() if not count]
     lane_end = defaultdict(float)
     timeline, completed = [], {}
+    def resources(event):
+        cost = costs[event.event_id]
+        if cost['source'] in ('host_unmodeled', 'meta_unmodeled', 'metadata_only'):
+            return []
+        if event.kind == 'compute':
+            return [('compute', event.rank)]
+        if event.kind != 'collective':
+            return []
+        ranks = event.metadata.get('participant_ranks', event.metadata.get('participants', [event.rank]))
+        if (not isinstance(ranks, (list, tuple)) or not ranks or len(set(ranks)) != len(ranks)
+                or any(isinstance(rank, bool) or not isinstance(rank, int) or rank < 0 for rank in ranks)):
+            raise ValueError('Collective participants must be distinct nonnegative ranks')
+        return [('communication', rank) for rank in ranks] + [
+            ('global', resource) for resource in cost.get('network_resources', [])]
     def eligible_start(index):
         candidate = parsed[index]
         prior = submit_barrier[candidate.event_id]
         submit = max(submit_floor[candidate.event_id], completed[prior]['end_us'] if prior else 0.0)
         start = max([submit] + [completed[d]['end_us'] for d in deps[candidate.event_id]])
-        lane = 'compute' if candidate.kind == 'compute' else 'communication' if candidate.kind == 'collective' else None
-        if lane:
-            start = max(start, lane_end[(candidate.rank, lane)])
+        for resource in resources(candidate):
+            start = max(start, lane_end[resource])
         return start, index
 
     while ready:
@@ -163,15 +181,16 @@ def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations
         prior_barrier = submit_barrier[e.event_id]
         submit_us = max(submit_floor[e.event_id], completed[prior_barrier]['end_us'] if prior_barrier else 0.0)
         start_us = max([submit_us] + [completed[d]['end_us'] for d in deps[e.event_id]])
-        cost = estimate_cost(e, hardware, timing, calibrations)
+        cost = costs[e.event_id]
         lane = 'compute' if e.kind == 'compute' else 'communication' if e.kind == 'collective' else None
         if cost['source'] in ('host_unmodeled', 'meta_unmodeled'):
             lane = None
-        if lane:
-            start_us = max(start_us, lane_end[(e.rank, lane)])
+        reserved_resources = resources(e)
+        for resource in reserved_resources:
+            start_us = max(start_us, lane_end[resource])
         end_us = start_us + cost['duration_us']
-        if lane:
-            lane_end[(e.rank, lane)] = end_us
+        for resource in reserved_resources:
+            lane_end[resource] = end_us
         record = {'event_id': e.event_id, 'kind': e.kind, 'name': e.name,
                   'rank': e.rank, 'stream': e.stream, 'submit_us': submit_us,
                   'start_us': start_us, 'end_us': end_us, 'lane': lane,
@@ -223,13 +242,14 @@ def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations
                        'storage_id': detail['storage_id'], 'generation': generation,
                        'category': detail['category'], 'by_category': dict(categories[rank])})
     work = [r for r in timeline if r['kind'] in ('compute', 'collective') and r['source'] not in ('host_unmodeled', 'meta_unmodeled', 'metadata_only')]
-    fallback = [r for r in work if r['source'] == 'roofline_fallback']
+    fallback = [r for r in work if r['source'] in ('roofline_fallback', 'network_analytical_fallback')]
     calibrated = [r for r in work if r['source'] == 'calibrated']
     explicit = [r for r in work if r['source'] == 'explicit']
     total_flops = sum(r['flops'] for r in work)
     total_work_us = sum(r['duration_us'] for r in work)
-    ranks = sorted({e.rank for e in parsed})
-    per_rank = {str(rank): {'runtime_us': max((r['end_us'] for r in timeline if r['rank'] == rank), default=0.0),
+    ranks = sorted(set(previous_rank))
+    rank_events = {rank: set(previous_rank[rank]) for rank in ranks}
+    per_rank = {str(rank): {'runtime_us': max((r['end_us'] for r in timeline if r['event_id'] in rank_events[rank]), default=0.0),
                             'host_time_us': max((r['end_us'] if r['kind'] == 'host_sync' else r['submit_us']
                                                  for r in timeline if r['rank'] == rank), default=0.0),
                             'peak_allocated_bytes': peaks[rank],
@@ -255,12 +275,16 @@ def simulate(events: list[dict], hardware: dict, timing='roofline', calibrations
                             'fallback_duration_fraction': sum(r['duration_us'] for r in fallback) / total_work_us if total_work_us else 0.0},
                'timing': timing, 'hardware': hardware.get('name', 'unnamed'),
                'scheduling_model': 'one serialized compute lane and one communication lane per rank',
-               'overlap_model': 'ideal compute/communication overlap scenario; contention is not modeled',
+               'overlap_model': 'ideal compute/communication overlap; explicit shared network resources serialize whole communication operations',
                'memory_model': 'physical live storage with alias references and deferred reclamation; no caching/reserved model; conservative allocation-before-free ties',
                'limitations': ['CPU/meta-device arithmetic/control durations are unmodeled and contribute no device time.',
                                'Collective participant rendezvous must be supplied as explicit dependencies.',
                                'Host launch overhead is zero unless host_time_us encodes it.',
                                'Analytical durations are lower bounds, not predicted measured runtimes.',
                                'No same-stream allocator reuse before physical reclamation.']}
-    return {'timeline': timeline, 'memory': memory, 'logical_memory': logical_memory,
-            'storage_lifetimes': lifetimes, 'summary': summary}
+    result = {'timeline': timeline, 'memory': memory, 'logical_memory': logical_memory,
+              'storage_lifetimes': lifetimes, 'summary': summary}
+    if allocator is not None:
+        from .allocator import replay_allocator
+        result['allocator'] = replay_allocator(result, hardware, allocator, events=parsed)
+    return result

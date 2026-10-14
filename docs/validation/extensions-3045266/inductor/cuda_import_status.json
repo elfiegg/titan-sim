@@ -1,0 +1,33 @@
+{
+  "status": "unsupported_wrapper",
+  "actual_compile_and_execution": true,
+  "error_type": "ValueError",
+  "error": "unsupported tensor expression in wrapper",
+  "provenance": {
+    "source": "actual_torch_compile_debug_output",
+    "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+    "device": "cuda",
+    "fullgraph": true,
+    "numeric_execution_verified": true,
+    "function": "relu(x @ weight) + 1",
+    "input_shapes": [
+      [
+        2,
+        4
+      ],
+      [
+        4,
+        3
+      ]
+    ],
+    "output_shape": [
+      2,
+      3
+    ],
+    "output_all_elements": 5.0,
+    "tf32": false,
+    "cuda_version": "13.4",
+    "measured_device": "NVIDIA GB200",
+    "costs": "explicit mathematical FLOPs and logical boundary bytes; no measured cache traffic/timing"
+  }
+}

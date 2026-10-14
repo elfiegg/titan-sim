@@ -1,0 +1,19 @@
+/usr/local/lib/python3.12/dist-packages/torch/_dynamo/pgo.py:605: UserWarning: dynamo_pgo force disabled by torch.compiler.config.force_disable_caches
+  warn_once(
+W1014 15:57:01.054000 3396650 torch/_inductor/debug.py:587] [0/0] model__0_inference_0 debug trace: /tmp/titan-inductor-debug-d9q90pw9/torchinductor/model__0_inference_0.0
+Traceback (most recent call last):
+  File "/workspace/titan-sim/scripts/generate_inductor_example.py", line 174, in <module>
+    main()
+  File "/workspace/titan-sim/scripts/generate_inductor_example.py", line 148, in main
+    imported = import_inductor_wrapper(source, kernel_costs=cost_document, provenance=provenance, input_specs=inputs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/titan-sim/titan_sim/inductor.py", line 334, in import_inductor_wrapper
+    parse(function.body)
+  File "/workspace/titan-sim/titan_sim/inductor.py", line 248, in parse
+    parse(statement.body)
+  File "/workspace/titan-sim/titan_sim/inductor.py", line 290, in parse
+    previous = resolve(rhs, name)
+               ^^^^^^^^^^^^^^^^^^
+  File "/workspace/titan-sim/titan_sim/inductor.py", line 168, in resolve
+    raise ValueError('unsupported tensor expression in wrapper')
+ValueError: unsupported tensor expression in wrapper

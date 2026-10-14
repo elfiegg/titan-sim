@@ -13,6 +13,11 @@ For a human-readable explanation of the design, governing calculations,
 TorchTitan fidelity, and evidence limits, read the
 [implementation analysis](docs/IMPLEMENTATION_ANALYSIS.md).
 
+The newer [execution extensions](docs/EXECUTION_EXTENSIONS.md) describe the CPU
+distributed backend, upstream pipeline schedule lowering, live host waits,
+compiler/quantization plans, and allocator/network scenarios, with their current
+coverage boundaries. Full-model validation remains separate.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.

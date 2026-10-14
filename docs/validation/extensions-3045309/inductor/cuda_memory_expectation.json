@@ -1,0 +1,14 @@
+{
+  "scope": "one tiny compiled forward after warmup, inputs and prior output retained",
+  "compiler_new_allocation_payload_bytes": 24,
+  "compiler_fresh_output_payload_bytes": 24,
+  "generic_alignment_bytes": 512,
+  "generic_fresh_output_allocated_bytes": 512,
+  "generic_all_new_allocations_bytes": 512,
+  "assumptions": [
+    "Fixed 512-byte allocator rounding scenario, declared before measurement.",
+    "Prior output remains alive; fresh output must not alias it.",
+    "Cache reserve and hidden/library workspaces are not predicted.",
+    "This is a single tiny forward, not full-model training validation."
+  ]
+}

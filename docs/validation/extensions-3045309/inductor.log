@@ -1,0 +1,15 @@
+/usr/local/lib/python3.12/dist-packages/torch/_dynamo/pgo.py:605: UserWarning: dynamo_pgo force disabled by torch.compiler.config.force_disable_caches
+  warn_once(
+W1014 16:04:04.945000 519277 torch/_inductor/debug.py:587] [0/0] model__0_inference_0 debug trace: /tmp/titan-inductor-debug-_n0slq6p/torchinductor/model__0_inference_0.0
+{
+  "status": "complete",
+  "actual_compile_and_execution": true,
+  "device": "cuda",
+  "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+  "derived_allocations": 1,
+  "derived_physical_bytes": 24,
+  "output_storage_ids": [
+    "inductor:slot:s0"
+  ],
+  "timing": "synthetic analytical rates; not GPU timing validation"
+}

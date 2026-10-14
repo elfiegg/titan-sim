@@ -1,0 +1,62 @@
+{
+  "source_sha256": "6a8ec2d6b0843c776c8c919bd5f7f96ce5241b406792abc40ea4ffaa0a9912d3",
+  "kernels": {
+    "k0": {
+      "target": "extern_kernels.mm",
+      "dtype": "float32",
+      "flops": 48,
+      "bytes_read": 80,
+      "bytes_write": 24,
+      "reads": [
+        0,
+        1
+      ],
+      "writes": [
+        "out"
+      ],
+      "provenance": "Benchmark-declared 2x4 times 4x3 GEMM formula and one logical input/output pass; not measured cache traffic"
+    },
+    "k1": {
+      "target": "triton_poi_fused_add_relu_0.run",
+      "dtype": "float32",
+      "flops": 12,
+      "bytes_read": 24,
+      "bytes_write": 24,
+      "reads": [
+        0
+      ],
+      "writes": [
+        0
+      ],
+      "provenance": "Benchmark-declared six ReLU comparisons plus six adds; one fused read/write pass. CUDA pointer access verified from generated tl.load/tl.store AST."
+    }
+  },
+  "input_alignment": {
+    "arg0_1": {
+      "alignment_bytes": 16,
+      "pointer_mod_alignment": 0,
+      "copy_if_misaligned_returns_same_storage": true,
+      "provenance": {
+        "source": "actual_runtime_input_observation",
+        "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+        "device": "cuda",
+        "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+        "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+        "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+      }
+    },
+    "arg1_1": {
+      "alignment_bytes": 16,
+      "pointer_mod_alignment": 0,
+      "copy_if_misaligned_returns_same_storage": true,
+      "provenance": {
+        "source": "actual_runtime_input_observation",
+        "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+        "device": "cuda",
+        "helper": "torch._C._dynamo.guards.copy_if_misaligned",
+        "alignment_constant": "torch._inductor.utils.ALIGNMENT",
+        "scope": "same retained input tensors used in verified compiled invocation; pointer remainder only"
+      }
+    }
+  }
+}

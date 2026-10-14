@@ -1,0 +1,20 @@
+{
+  "name": "explicit synthetic two-rank network scenario",
+  "peak_flops": {
+    "float32": 1000000000000.0
+  },
+  "memory_bandwidth_bytes_s": 1000000000000.0,
+  "memory_capacity_bytes": 1000000,
+  "network_topology": {
+    "links": [
+      {
+        "id": "r0-r1",
+        "src": 0,
+        "dst": 1,
+        "bandwidth_bytes_s": 1000000000.0,
+        "latency_us": 2,
+        "bidirectional": true
+      }
+    ]
+  }
+}

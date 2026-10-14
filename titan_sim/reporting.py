@@ -59,6 +59,8 @@ def export_result(result, output):
     (output/'simulation.json').write_text(json.dumps(result, indent=2)+'\n')
     for name in ('timeline', 'memory', 'logical_memory'):
         write_csv(output/f'{name}.csv', result[name])
+    if 'allocator' in result:
+        write_csv(output/'allocator.csv', result['allocator']['samples'])
     for rank in result['summary']['per_rank']:
         rows = [row for row in result['logical_memory'] if row['rank'] == int(rank)]
         (output/f'logical-memory-rank{rank}.svg').write_text(memory_svg(

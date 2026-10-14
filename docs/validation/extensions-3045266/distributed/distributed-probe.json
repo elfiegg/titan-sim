@@ -1,0 +1,344 @@
+{
+  "torch_version": "2.14.0a0+b2c75dd062.nv26.09",
+  "cpu_only": true,
+  "real_torch_distributed_api": true,
+  "numerical_transport": false,
+  "missing_peer_diagnostic": "missing distributed participants: submit every rank asynchronously before waiting",
+  "completed_work": true,
+  "completed_future": true,
+  "live_result": {
+    "timeline": [
+      {
+        "event_id": "fake_gpu_producer",
+        "kind": "compute",
+        "name": "",
+        "rank": 0,
+        "stream": "default",
+        "submit_us": 0.0,
+        "start_us": 0.0,
+        "end_us": 100.0,
+        "lane": "compute",
+        "deps": [],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 100,
+        "source": "explicit",
+        "provenance": "explicit demonstration scenario"
+      },
+      {
+        "event_id": "pg_tx0:__dist_arrival_0_1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "pg:world",
+        "submit_us": 0.0,
+        "start_us": 0.0,
+        "end_us": 0.0,
+        "lane": null,
+        "deps": [],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "pg_tx0:__dist_arrival_0_0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "pg:world",
+        "submit_us": 0.0,
+        "start_us": 100.0,
+        "end_us": 100.0,
+        "lane": null,
+        "deps": [
+          "fake_gpu_producer"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "pg_tx0:__dist_transfer_0",
+        "kind": "collective",
+        "name": "all_reduce",
+        "rank": 0,
+        "stream": "pg_tx0:__dist_network_0",
+        "submit_us": 0.0,
+        "start_us": 100.0,
+        "end_us": 106.048,
+        "lane": "communication",
+        "deps": [
+          "pg_tx0:__dist_arrival_0_0",
+          "pg_tx0:__dist_arrival_0_1"
+        ],
+        "flops": 0,
+        "bytes_read": 1024,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 6.048,
+        "source": "network_analytical",
+        "bound": "network",
+        "compute_us": 0.0,
+        "memory_us": 6.048,
+        "traffic_bytes": 2048.0,
+        "network_resources": [
+          "network:r0-r1"
+        ],
+        "network_phases": [
+          {
+            "phase": 0,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          },
+          {
+            "phase": 1,
+            "transfers": [
+              {
+                "src": 0,
+                "dst": 1,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              },
+              {
+                "src": 1,
+                "dst": 0,
+                "bytes": 512.0,
+                "route": [
+                  "r0-r1"
+                ]
+              }
+            ],
+            "resource_bytes": {
+              "r0-r1": 1024.0
+            },
+            "latency_us": 2.0,
+            "serialization_us": 1.024,
+            "duration_us": 3.024
+          }
+        ],
+        "network_participants": [
+          0,
+          1
+        ],
+        "network_algorithm": "ring",
+        "network_operation": "all_reduce",
+        "provenance": "explicit-topology latency + phase link-load/bandwidth analytical scenario",
+        "assumptions": [
+          "One logical collective counted once across all participants.",
+          "Ring rank order follows participants; pairwise all-to-all uses cyclic destination offsets.",
+          "Routes use explicit paths or deterministic minimum-hop routing; no adaptive routing.",
+          "Per-phase pipelined links, summed hop latencies and shared-resource serialization.",
+          "Scheduler reserves all network resources for the full operation; conservative inter-operation contention.",
+          "Bidirectional links share capacity; full duplex requires separate directed resources.",
+          "No NCCL protocol, packet overhead, GPU reduction kernel or memory-bandwidth interference model."
+        ]
+      },
+      {
+        "event_id": "pg:0:r0",
+        "kind": "wait",
+        "name": "",
+        "rank": 0,
+        "stream": "pg:world",
+        "submit_us": 0.0,
+        "start_us": 106.048,
+        "end_us": 106.048,
+        "lane": null,
+        "deps": [
+          "pg_tx0:__dist_arrival_0_0",
+          "pg_tx0:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      },
+      {
+        "event_id": "pg:1:r1",
+        "kind": "wait",
+        "name": "",
+        "rank": 1,
+        "stream": "pg:world",
+        "submit_us": 0.0,
+        "start_us": 106.048,
+        "end_us": 106.048,
+        "lane": null,
+        "deps": [
+          "pg_tx0:__dist_arrival_0_1",
+          "pg_tx0:__dist_transfer_0"
+        ],
+        "flops": 0,
+        "bytes_read": 0,
+        "bytes_write": 0,
+        "dtype": "float32",
+        "duration_us": 0.0,
+        "source": "control",
+        "provenance": "zero device work"
+      }
+    ],
+    "memory": [],
+    "logical_memory": [],
+    "storage_lifetimes": [],
+    "summary": {
+      "runtime_us": 106.048,
+      "peak_allocated_bytes": 0,
+      "per_rank": {
+        "0": {
+          "runtime_us": 106.048,
+          "host_time_us": 0.0,
+          "peak_allocated_bytes": 0,
+          "final_allocated_bytes": 0,
+          "peak_by_category": {},
+          "logical_peak_allocated_bytes": 0,
+          "capacity_exceeded": false,
+          "scheduled_capacity_exceeded": false
+        },
+        "1": {
+          "runtime_us": 106.048,
+          "host_time_us": 0.0,
+          "peak_allocated_bytes": 0,
+          "final_allocated_bytes": 0,
+          "peak_by_category": {},
+          "logical_peak_allocated_bytes": 0,
+          "capacity_exceeded": false,
+          "scheduled_capacity_exceeded": false
+        }
+      },
+      "capacity_exceeded": false,
+      "scheduled_capacity_exceeded": false,
+      "logical_peak_allocated_bytes": 0,
+      "memory_confidence": "explicit_host_schedule_scenario",
+      "logical_memory_model": "program-order reference-owned GPU tensor storage; excludes CPU/meta storage, allocator reserve, kernel workspaces and deferred GPU usage",
+      "coverage": {
+        "work_events": 2,
+        "calibrated_events": 0,
+        "explicit_events": 1,
+        "fallback_events": 0,
+        "fallback_event_fraction": 0.0,
+        "fallback_flop_fraction": 0.0,
+        "fallback_duration_fraction": 0.0
+      },
+      "timing": "roofline",
+      "hardware": "explicit synthetic two-rank network scenario",
+      "scheduling_model": "one serialized compute lane and one communication lane per rank",
+      "overlap_model": "ideal compute/communication overlap; explicit shared network resources serialize whole communication operations",
+      "memory_model": "physical live storage with alias references and deferred reclamation; no caching/reserved model; conservative allocation-before-free ties",
+      "limitations": [
+        "CPU/meta-device arithmetic/control durations are unmodeled and contribute no device time.",
+        "Collective participant rendezvous must be supplied as explicit dependencies.",
+        "Host launch overhead is zero unless host_time_us encodes it.",
+        "Analytical durations are lower bounds, not predicted measured runtimes.",
+        "No same-stream allocator reuse before physical reclamation."
+      ]
+    },
+    "live_execution": {
+      "python_control_interception": true,
+      "native_cuda_interception": false,
+      "host_clock_scope": "one coordinated host clock",
+      "host_time_us": 106.048,
+      "waits": [
+        {
+          "event_id": "pg:1:r1",
+          "wait_us": 106.048,
+          "host_time_us": 106.048,
+          "realtime": false
+        }
+      ],
+      "realtime": false,
+      "limitation": "Closed submitted event graphs only; no native GPU kernels or full-model coverage implied."
+    }
+  },
+  "pipeline_summary": {
+    "runtime_us": 528.144,
+    "peak_allocated_bytes": 14336,
+    "per_rank": {
+      "0": {
+        "runtime_us": 528.144,
+        "host_time_us": 508.144,
+        "peak_allocated_bytes": 12288,
+        "final_allocated_bytes": 0,
+        "peak_by_category": {
+          "pipeline_activation": 12288
+        },
+        "logical_peak_allocated_bytes": 9216,
+        "capacity_exceeded": null,
+        "scheduled_capacity_exceeded": false
+      },
+      "1": {
+        "runtime_us": 508.144,
+        "host_time_us": 411.168,
+        "peak_allocated_bytes": 14336,
+        "final_allocated_bytes": 0,
+        "peak_by_category": {
+          "pipeline_activation": 14336
+        },
+        "logical_peak_allocated_bytes": 10240,
+        "capacity_exceeded": null,
+        "scheduled_capacity_exceeded": false
+      }
+    },
+    "capacity_exceeded": null,
+    "scheduled_capacity_exceeded": false,
+    "logical_peak_allocated_bytes": 10240,
+    "memory_confidence": "unsupported_without_explicit_host_schedule",
+    "logical_memory_model": "program-order reference-owned GPU tensor storage; excludes CPU/meta storage, allocator reserve, kernel workspaces and deferred GPU usage",
+    "coverage": {
+      "work_events": 56,
+      "calibrated_events": 0,
+      "explicit_events": 32,
+      "fallback_events": 0,
+      "fallback_event_fraction": 0.0,
+      "fallback_flop_fraction": 0.0,
+      "fallback_duration_fraction": 0.0
+    },
+    "timing": "roofline",
+    "hardware": "explicit synthetic two-rank network scenario",
+    "scheduling_model": "one serialized compute lane and one communication lane per rank",
+    "overlap_model": "ideal compute/communication overlap; explicit shared network resources serialize whole communication operations",
+    "memory_model": "physical live storage with alias references and deferred reclamation; no caching/reserved model; conservative allocation-before-free ties",
+    "limitations": [
+      "CPU/meta-device arithmetic/control durations are unmodeled and contribute no device time.",
+      "Collective participant rendezvous must be supplied as explicit dependencies.",
+      "Host launch overhead is zero unless host_time_us encodes it.",
+      "Analytical durations are lower bounds, not predicted measured runtimes.",
+      "No same-stream allocator reuse before physical reclamation."
+    ]
+  },
+  "scope": "CPU metadata ProcessGroup and upstream pipeline schedule extraction; no TorchTitan model execution"
+}

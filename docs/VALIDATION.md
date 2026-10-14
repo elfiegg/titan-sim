@@ -168,3 +168,12 @@ payloads are reconstructed from logged geometry; separate conditional budgets
 use declared shapes and lifetimes without fitting observed totals. All five
 historical runs fail the matching-context gate for the selected target.
 There is still no independent full-model CPU/GPU memory-error result.
+
+## Execution extensions
+
+The [execution extension results](validation/EXECUTION_EXTENSION_RESULTS.md)
+record the new distributed, allocator, compiler, quantization and live-runtime
+checks, real GB200 eager-GEMM calibration, and the native CUDA-hooks blocker.
+These extend component coverage without promoting the full-model validation
+status. [Architecture and implementation scope](EXECUTION_EXTENSIONS.md) explain
+how the components fit together and what remains unsupported.
