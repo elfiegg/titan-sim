@@ -50,6 +50,13 @@ unexplained. A retrospective factor transfer still misses larger-run current
 memory by 5.6–7.4%, illustrating the limits of a single multiplier. Training peaks remain
 unmodeled; the actual CPU dispatch probe stops at FlexAttention backward support.
 
+The [GPT-OSS allocation experiment](docs/GPT_OSS_ALLOCATION_EXPERIMENT.md)
+completed eight six-step runs on four/eight GB200s with MXFP8/NVFP4. Snapshots
+confirm optimizer-gradient release and identify retained quantized caches,
+allocator slack, dummy gradients and GEMM workspaces. A retrospective transfer
+of fixed overhead components from four to eight GPUs predicts current allocation
+within 0.6%; this does not validate a full CPU training peak model.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.

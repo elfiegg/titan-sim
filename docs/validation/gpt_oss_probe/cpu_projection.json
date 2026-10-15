@@ -1,0 +1,524 @@
+{
+  "source": "cpu_projection",
+  "scope": "unpadded persistent-state subtotal",
+  "full_training_prediction": false,
+  "local_parameter_elements": 6157545024,
+  "local_elements_by_group": {
+    "dense": 1378311744,
+    "expert": 4779233280
+  },
+  "optimizer_group_sizes": {
+    "dense": 8,
+    "expert": 2
+  },
+  "components_bytes": {
+    "dense.parameters": 2756623488,
+    "expert.parameters": 9558466560,
+    "dense.gradients": 2756623488,
+    "expert.gradients": 9558466560,
+    "dense.master_weights": 689155872,
+    "expert.master_weights": 9558466560,
+    "dense.optimizer_gradients": 689155872,
+    "expert.optimizer_gradients": 9558466560,
+    "dense.adam_first_moment": 689155872,
+    "expert.adam_first_moment": 9558466560,
+    "dense.adam_second_moment": 689155872,
+    "expert.adam_second_moment": 9558466560
+  },
+  "events": [
+    {
+      "event_id": "dense.parameters",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.parameters",
+      "size_bytes": 2756623488,
+      "category": "parameters",
+      "metadata": {
+        "phase": "model_and_ddp_setup",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "expert.parameters",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.parameters",
+      "size_bytes": 9558466560,
+      "category": "parameters",
+      "metadata": {
+        "phase": "model_and_ddp_setup",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "dense.gradients",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.gradients",
+      "size_bytes": 2756623488,
+      "category": "gradients",
+      "metadata": {
+        "phase": "model_and_ddp_setup",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "expert.gradients",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.gradients",
+      "size_bytes": 9558466560,
+      "category": "gradients",
+      "metadata": {
+        "phase": "model_and_ddp_setup",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "dense.master_weights",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.master_weights",
+      "size_bytes": 689155872,
+      "category": "master_weights",
+      "metadata": {
+        "phase": "optimizer_initialized",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "expert.master_weights",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.master_weights",
+      "size_bytes": 9558466560,
+      "category": "master_weights",
+      "metadata": {
+        "phase": "optimizer_initialized",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "dense.optimizer_gradients",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.optimizer_gradients",
+      "size_bytes": 689155872,
+      "category": "optimizer_gradients",
+      "metadata": {
+        "phase": "first_optimizer_gradient_copy",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "expert.optimizer_gradients",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.optimizer_gradients",
+      "size_bytes": 9558466560,
+      "category": "optimizer_gradients",
+      "metadata": {
+        "phase": "first_optimizer_gradient_copy",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "dense.adam_first_moment",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.adam_first_moment",
+      "size_bytes": 689155872,
+      "category": "adam_first_moment",
+      "metadata": {
+        "phase": "first_optimizer_step",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "expert.adam_first_moment",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.adam_first_moment",
+      "size_bytes": 9558466560,
+      "category": "adam_first_moment",
+      "metadata": {
+        "phase": "first_optimizer_step",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "dense.adam_second_moment",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.adam_second_moment",
+      "size_bytes": 689155872,
+      "category": "adam_second_moment",
+      "metadata": {
+        "phase": "first_optimizer_step",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "expert.adam_second_moment",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.adam_second_moment",
+      "size_bytes": 9558466560,
+      "category": "adam_second_moment",
+      "metadata": {
+        "phase": "first_optimizer_step",
+        "device": "cuda:0",
+        "provenance": "CPU meta inventory and reviewed storage policy"
+      }
+    },
+    {
+      "event_id": "iteration_2_zero_grad.dense",
+      "kind": "release",
+      "rank": 0,
+      "storage_id": "dense.optimizer_gradients",
+      "size_bytes": 689155872,
+      "category": "optimizer_gradients",
+      "metadata": {
+        "phase": "iteration_2_zero_grad",
+        "device": "cuda:0"
+      }
+    },
+    {
+      "event_id": "iteration_2_zero_grad.expert",
+      "kind": "release",
+      "rank": 0,
+      "storage_id": "expert.optimizer_gradients",
+      "size_bytes": 9558466560,
+      "category": "optimizer_gradients",
+      "metadata": {
+        "phase": "iteration_2_zero_grad",
+        "device": "cuda:0"
+      }
+    },
+    {
+      "event_id": "iteration_2_optimizer_gradient_copy.dense",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "dense.optimizer_gradients",
+      "size_bytes": 689155872,
+      "category": "optimizer_gradients",
+      "metadata": {
+        "phase": "iteration_2_optimizer_gradient_copy",
+        "device": "cuda:0"
+      }
+    },
+    {
+      "event_id": "iteration_2_optimizer_gradient_copy.expert",
+      "kind": "allocate",
+      "rank": 0,
+      "storage_id": "expert.optimizer_gradients",
+      "size_bytes": 9558466560,
+      "category": "optimizer_gradients",
+      "metadata": {
+        "phase": "iteration_2_optimizer_gradient_copy",
+        "device": "cuda:0"
+      }
+    }
+  ],
+  "trajectory": [
+    {
+      "event_index": 0,
+      "event_id": "dense.parameters",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.parameters",
+      "delta_bytes": 2756623488,
+      "allocated_bytes": 2756623488,
+      "category": "parameters",
+      "phase": "model_and_ddp_setup",
+      "by_category": {
+        "parameters": 2756623488
+      }
+    },
+    {
+      "event_index": 1,
+      "event_id": "expert.parameters",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.parameters",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 12315090048,
+      "category": "parameters",
+      "phase": "model_and_ddp_setup",
+      "by_category": {
+        "parameters": 12315090048
+      }
+    },
+    {
+      "event_index": 2,
+      "event_id": "dense.gradients",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.gradients",
+      "delta_bytes": 2756623488,
+      "allocated_bytes": 15071713536,
+      "category": "gradients",
+      "phase": "model_and_ddp_setup",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 2756623488
+      }
+    },
+    {
+      "event_index": 3,
+      "event_id": "expert.gradients",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.gradients",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 24630180096,
+      "category": "gradients",
+      "phase": "model_and_ddp_setup",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048
+      }
+    },
+    {
+      "event_index": 4,
+      "event_id": "dense.master_weights",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.master_weights",
+      "delta_bytes": 689155872,
+      "allocated_bytes": 25319335968,
+      "category": "master_weights",
+      "phase": "optimizer_initialized",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 689155872
+      }
+    },
+    {
+      "event_index": 5,
+      "event_id": "expert.master_weights",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.master_weights",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 34877802528,
+      "category": "master_weights",
+      "phase": "optimizer_initialized",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432
+      }
+    },
+    {
+      "event_index": 6,
+      "event_id": "dense.optimizer_gradients",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.optimizer_gradients",
+      "delta_bytes": 689155872,
+      "allocated_bytes": 35566958400,
+      "category": "optimizer_gradients",
+      "phase": "first_optimizer_gradient_copy",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 689155872
+      }
+    },
+    {
+      "event_index": 7,
+      "event_id": "expert.optimizer_gradients",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.optimizer_gradients",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 45125424960,
+      "category": "optimizer_gradients",
+      "phase": "first_optimizer_gradient_copy",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 10247622432
+      }
+    },
+    {
+      "event_index": 8,
+      "event_id": "dense.adam_first_moment",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.adam_first_moment",
+      "delta_bytes": 689155872,
+      "allocated_bytes": 45814580832,
+      "category": "adam_first_moment",
+      "phase": "first_optimizer_step",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 10247622432,
+        "adam_first_moment": 689155872
+      }
+    },
+    {
+      "event_index": 9,
+      "event_id": "expert.adam_first_moment",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.adam_first_moment",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 55373047392,
+      "category": "adam_first_moment",
+      "phase": "first_optimizer_step",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 10247622432,
+        "adam_first_moment": 10247622432
+      }
+    },
+    {
+      "event_index": 10,
+      "event_id": "dense.adam_second_moment",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.adam_second_moment",
+      "delta_bytes": 689155872,
+      "allocated_bytes": 56062203264,
+      "category": "adam_second_moment",
+      "phase": "first_optimizer_step",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 10247622432,
+        "adam_first_moment": 10247622432,
+        "adam_second_moment": 689155872
+      }
+    },
+    {
+      "event_index": 11,
+      "event_id": "expert.adam_second_moment",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.adam_second_moment",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 65620669824,
+      "category": "adam_second_moment",
+      "phase": "first_optimizer_step",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 10247622432,
+        "adam_first_moment": 10247622432,
+        "adam_second_moment": 10247622432
+      }
+    },
+    {
+      "event_index": 12,
+      "event_id": "iteration_2_zero_grad.dense",
+      "rank": 0,
+      "action": "release",
+      "storage_id": "dense.optimizer_gradients",
+      "delta_bytes": -689155872,
+      "allocated_bytes": 64931513952,
+      "category": "optimizer_gradients",
+      "phase": "iteration_2_zero_grad",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 9558466560,
+        "adam_first_moment": 10247622432,
+        "adam_second_moment": 10247622432
+      }
+    },
+    {
+      "event_index": 13,
+      "event_id": "iteration_2_zero_grad.expert",
+      "rank": 0,
+      "action": "release",
+      "storage_id": "expert.optimizer_gradients",
+      "delta_bytes": -9558466560,
+      "allocated_bytes": 55373047392,
+      "category": "optimizer_gradients",
+      "phase": "iteration_2_zero_grad",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 0,
+        "adam_first_moment": 10247622432,
+        "adam_second_moment": 10247622432
+      }
+    },
+    {
+      "event_index": 14,
+      "event_id": "iteration_2_optimizer_gradient_copy.dense",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "dense.optimizer_gradients",
+      "delta_bytes": 689155872,
+      "allocated_bytes": 56062203264,
+      "category": "optimizer_gradients",
+      "phase": "iteration_2_optimizer_gradient_copy",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 689155872,
+        "adam_first_moment": 10247622432,
+        "adam_second_moment": 10247622432
+      }
+    },
+    {
+      "event_index": 15,
+      "event_id": "iteration_2_optimizer_gradient_copy.expert",
+      "rank": 0,
+      "action": "allocate",
+      "storage_id": "expert.optimizer_gradients",
+      "delta_bytes": 9558466560,
+      "allocated_bytes": 65620669824,
+      "category": "optimizer_gradients",
+      "phase": "iteration_2_optimizer_gradient_copy",
+      "by_category": {
+        "parameters": 12315090048,
+        "gradients": 12315090048,
+        "master_weights": 10247622432,
+        "optimizer_gradients": 10247622432,
+        "adam_first_moment": 10247622432,
+        "adam_second_moment": 10247622432
+      }
+    }
+  ],
+  "persistent_state_bytes": 55373047392,
+  "end_step_state_bytes": 65620669824,
+  "unknown_components": [
+    "DDP bucket padding and optimizer shard imbalance",
+    "quantized weight caches, transposes and scales",
+    "saved activations and recomputation",
+    "routing, dispatch and communication buffers",
+    "kernel and compiler workspaces",
+    "CUDA graph pools",
+    "allocator cache and fragmentation",
+    "external CUDA/NCCL allocations"
+  ],
+  "capacity_verdict": "unknown",
+  "runtime_prediction": null
+}

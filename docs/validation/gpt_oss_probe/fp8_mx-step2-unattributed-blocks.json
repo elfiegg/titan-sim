@@ -1,0 +1,384 @@
+{
+  "scope": "four-GPU MXFP8 rank0 after step2; requested allocation bytes not matched to storage owners",
+  "total_bytes": 1085406924,
+  "bytes_by_first_python_frame": {
+    "get_dummy_wgrad": 841605120,
+    "_get_grouped_cublas_workspace": 100666368,
+    "get_cublas_workspace": 33555456,
+    "layers.py:forward:501": 33554432,
+    "layers.py:backward:544": 33554432,
+    "dispatch_with_permute": 25463232,
+    "dispatch": 12582912,
+    "topk_routing_with_score_function": 3145728,
+    "get_pos_emb_on_this_cp_rank": 1048576,
+    "copy_tensors_in_struct": 229376,
+    "_get_grouped_gemm_setup_workspace": 992,
+    "__rdiv__": 128,
+    "__init__": 40,
+    "_get_fp32_ones_tensor": 32,
+    "_get_fp32_zeros_tensor": 32,
+    "call": 32,
+    "_get_cu_seqlens": 8,
+    "masked_next_token_loss": 8,
+    "flash_attn_a2a_communicate_softmax_offset": 8,
+    "training_log": 4,
+    "train_step": 4,
+    "finish_mpu_init": 4
+  },
+  "largest_allocation_examples": [
+    {
+      "unknown_bytes": 738754560,
+      "block_bytes": 738754560,
+      "requested": 738754560,
+      "frames": [
+        {
+          "name": "get_dummy_wgrad",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/base.py",
+          "line": 140
+        },
+        {
+          "name": "backward",
+          "filename": "/workspace/Megatron-LM/megatron/core/tensor_parallel/layers.py",
+          "line": 631
+        },
+        {
+          "name": "decorate_bwd",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/amp/autocast_mode.py",
+          "line": 527
+        },
+        {
+          "name": "apply",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/autograd/function.py",
+          "line": 366
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33555456,
+      "block_bytes": 33555456,
+      "requested": 33555456,
+      "frames": [
+        {
+          "name": "_get_grouped_cublas_workspace",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 565
+        },
+        {
+          "name": "general_grouped_gemm_for_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 665
+        },
+        {
+          "name": "_fuser_backward_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1847
+        },
+        {
+          "name": "fuser_backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1500
+        },
+        {
+          "name": "backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/fuser.py",
+          "line": 330
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33555456,
+      "block_bytes": 33555456,
+      "requested": 33555456,
+      "frames": [
+        {
+          "name": "_get_grouped_cublas_workspace",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 565
+        },
+        {
+          "name": "general_grouped_gemm_for_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 665
+        },
+        {
+          "name": "_fuser_backward_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1923
+        },
+        {
+          "name": "fuser_backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1500
+        },
+        {
+          "name": "backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/fuser.py",
+          "line": 330
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33555456,
+      "block_bytes": 33555456,
+      "requested": 33555456,
+      "frames": [
+        {
+          "name": "get_cublas_workspace",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 67
+        },
+        {
+          "name": "general_gemm",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 227
+        },
+        {
+          "name": "forward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/layernorm_linear.py",
+          "line": 410
+        },
+        {
+          "name": "forward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/layernorm_linear.py",
+          "line": 1809
+        },
+        {
+          "name": "_fn",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/eval_frame.py",
+          "line": 1548
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33555456,
+      "block_bytes": 33555456,
+      "requested": 33555456,
+      "frames": [
+        {
+          "name": "_get_grouped_cublas_workspace",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 565
+        },
+        {
+          "name": "general_grouped_gemm_for_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/cpp_extensions/gemm.py",
+          "line": 665
+        },
+        {
+          "name": "_fuser_forward_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1441
+        },
+        {
+          "name": "fuser_forward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1073
+        },
+        {
+          "name": "forward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/fuser.py",
+          "line": 156
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33554432,
+      "block_bytes": 33554432,
+      "requested": 33554432,
+      "frames": [
+        {
+          "name": "forward",
+          "filename": "/workspace/Megatron-LM/megatron/core/tensor_parallel/layers.py",
+          "line": 501
+        },
+        {
+          "name": "decorate_fwd",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/amp/autocast_mode.py",
+          "line": 481
+        },
+        {
+          "name": "linear_with_grad_accumulation_and_async_allreduce",
+          "filename": "/workspace/Megatron-LM/megatron/core/tensor_parallel/layers.py",
+          "line": 764
+        },
+        {
+          "name": "_forward_impl",
+          "filename": "/workspace/Megatron-LM/megatron/core/tensor_parallel/layers.py",
+          "line": 984
+        },
+        {
+          "name": "forward",
+          "filename": "/workspace/Megatron-LM/megatron/core/tensor_parallel/layers.py",
+          "line": 1054
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33554432,
+      "block_bytes": 33554432,
+      "requested": 33554432,
+      "frames": [
+        {
+          "name": "backward",
+          "filename": "/workspace/Megatron-LM/megatron/core/tensor_parallel/layers.py",
+          "line": 544
+        },
+        {
+          "name": "decorate_bwd",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/amp/autocast_mode.py",
+          "line": 527
+        },
+        {
+          "name": "apply",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/autograd/function.py",
+          "line": 366
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 33177600,
+      "block_bytes": 33177600,
+      "requested": 33177600,
+      "frames": [
+        {
+          "name": "get_dummy_wgrad",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/base.py",
+          "line": 140
+        },
+        {
+          "name": "get_dummy_wgrads_for_params",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/_common.py",
+          "line": 214
+        },
+        {
+          "name": "_fuser_backward_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1935
+        },
+        {
+          "name": "fuser_backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1500
+        },
+        {
+          "name": "backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/fuser.py",
+          "line": 330
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 29491200,
+      "block_bytes": 29491200,
+      "requested": 29491200,
+      "frames": [
+        {
+          "name": "get_dummy_wgrad",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/base.py",
+          "line": 140
+        },
+        {
+          "name": "backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/layernorm_linear.py",
+          "line": 1178
+        },
+        {
+          "name": "apply",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/autograd/function.py",
+          "line": 366
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 23592960,
+      "block_bytes": 23592960,
+      "requested": 23592960,
+      "frames": [
+        {
+          "name": "get_dummy_wgrad",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/base.py",
+          "line": 140
+        },
+        {
+          "name": "_linear_backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/linear.py",
+          "line": 1371
+        },
+        {
+          "name": "backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/linear.py",
+          "line": 1461
+        },
+        {
+          "name": "apply",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/autograd/function.py",
+          "line": 366
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 16588800,
+      "block_bytes": 16588800,
+      "requested": 16588800,
+      "frames": [
+        {
+          "name": "get_dummy_wgrad",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/module/base.py",
+          "line": 140
+        },
+        {
+          "name": "get_dummy_wgrads_for_params",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/_common.py",
+          "line": 214
+        },
+        {
+          "name": "_fuser_backward_grouped_tensor",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1935
+        },
+        {
+          "name": "fuser_backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/basic/grouped_linear.py",
+          "line": 1500
+        },
+        {
+          "name": "backward",
+          "filename": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/ops/fuser.py",
+          "line": 330
+        }
+      ]
+    },
+    {
+      "unknown_bytes": 1048576,
+      "block_bytes": 1048576,
+      "requested": 1048576,
+      "frames": [
+        {
+          "name": "get_pos_emb_on_this_cp_rank",
+          "filename": "/workspace/Megatron-LM/megatron/core/models/common/embeddings/rope_utils.py",
+          "line": 68
+        },
+        {
+          "name": "forward",
+          "filename": "/workspace/Megatron-LM/megatron/core/models/common/embeddings/rotary_pos_embedding.py",
+          "line": 204
+        },
+        {
+          "name": "_call_impl",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py",
+          "line": 1791
+        },
+        {
+          "name": "_wrapped_call_impl",
+          "filename": "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py",
+          "line": 1780
+        },
+        {
+          "name": "_preprocess",
+          "filename": "/workspace/Megatron-LM/megatron/core/models/gpt/gpt_model.py",
+          "line": 389
+        }
+      ]
+    }
+  ]
+}

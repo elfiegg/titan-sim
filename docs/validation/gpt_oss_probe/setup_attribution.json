@@ -1,0 +1,546 @@
+{
+  "source": "GPU allocator snapshot evidence",
+  "rows": [
+    {
+      "rank": 0,
+      "step": 0,
+      "phase": "before_model_setup",
+      "sequence": 1,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 0,
+        "allocated_bytes.all.peak": 0,
+        "reserved_bytes.all.current": 0,
+        "reserved_bytes.all.peak": 0,
+        "active_bytes.all.current": 0,
+        "inactive_split_bytes.all.current": 0
+      },
+      "device_wide_used_bytes": 1505230848,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "001-step0-before_model_setup.pickle",
+      "inventory": "001-step0-before_model_setup-inventory.json",
+      "attribution": {},
+      "trace_entries": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 0,
+      "phase": "after_model_optimizer_setup",
+      "sequence": 2,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "002-step0-after_model_optimizer_setup.pickle",
+      "inventory": "002-step0-after_model_optimizer_setup-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7492,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "step_start",
+      "sequence": 3,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "003-step1-step_start.pickle",
+      "inventory": "003-step1-step_start-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7493,
+        6,
+        6,
+        6
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_optimizer_zero_grad",
+      "sequence": 4,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "004-step1-before_optimizer_zero_grad.pickle",
+      "inventory": "004-step1-before_optimizer_zero_grad-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7494,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_optimizer_zero_grad",
+      "sequence": 5,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "005-step1-after_optimizer_zero_grad.pickle",
+      "inventory": "005-step1-after_optimizer_zero_grad-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7495,
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_optimizer_zero_grad",
+      "sequence": 6,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "006-step1-before_optimizer_zero_grad.pickle",
+      "inventory": "006-step1-before_optimizer_zero_grad-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7496,
+        9,
+        9,
+        9
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_optimizer_zero_grad",
+      "sequence": 7,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "007-step1-after_optimizer_zero_grad.pickle",
+      "inventory": "007-step1-after_optimizer_zero_grad-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7497,
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "failure",
+      "sequence": 8,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "008-step1-failure.pickle",
+      "inventory": "008-step1-failure-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7498,
+        11,
+        11,
+        11
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "finished",
+      "sequence": 9,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid3133516.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "009-step1-finished.pickle",
+      "inventory": "009-step1-finished-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7499,
+        12,
+        12,
+        12
+      ]
+    }
+  ],
+  "timing_validated": false,
+  "limitations": [
+    "allocation stack hints are not exact ownership",
+    "history is bounded and may wrap",
+    "device usage includes external allocations and is not process-specific",
+    "snapshot CPU overhead may change overlap; compare counters-only control",
+    "HybridEP direct-allocation probe covers ExtendedMemoryAllocator, not every direct CUDA allocation"
+  ]
+}

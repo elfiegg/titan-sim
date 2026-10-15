@@ -1,0 +1,54 @@
+{
+  "torch": "2.14.0a0+b2c75dd062.nv26.09",
+  "cuda": "13.4",
+  "nccl": [
+    2,
+    31,
+    2
+  ],
+  "gpu": "NVIDIA GB200",
+  "device_total_bytes": 197897617408,
+  "packages": {
+    "transformer-engine": "2.19.0+5e52befd",
+    "transformers": "5.8.1",
+    "megatron-core": null,
+    "megatron-bridge": null,
+    "flash-attn": "2.8.3.post1+git91ffc2ac7c.63064690",
+    "nemo-run": null,
+    "nvidia-modelopt": "0.46.0",
+    "torch-hybrid-ep": null
+  },
+  "imports": {
+    "transformer_engine.pytorch": {
+      "ok": true,
+      "file": "/usr/local/lib/python3.12/dist-packages/transformer_engine/pytorch/__init__.py"
+    },
+    "megatron.core": {
+      "ok": true,
+      "file": "/workspace/Megatron-LM/megatron/core/__init__.py"
+    },
+    "megatron.bridge": {
+      "ok": true,
+      "file": "/workspace/Megatron-Bridge/src/megatron/bridge/__init__.py"
+    },
+    "megatron.bridge.recipes.gpt_oss": {
+      "ok": true,
+      "file": "/workspace/Megatron-Bridge/src/megatron/bridge/recipes/gpt_oss/__init__.py"
+    },
+    "deep_ep": {
+      "ok": true,
+      "file": "/workspace/venv/lib/python3.12/site-packages/deep_ep/__init__.py",
+      "has_HybridEPBuffer": true
+    }
+  },
+  "record_memory_history_signature": "(enabled: str | None = 'all', context: str | None = 'all', stacks: str = 'all', max_entries: int = 9223372036854775807, device: 'Device' = None, clear_history: bool = False, compile_context: bool = False, global_record_annotations: bool = False, skip_actions: list[str] | None = None, record_pinned_host_memory: bool = False, record_cuda: bool = True)",
+  "gradient_lifetime_probe": {
+    "scope": "PyTorch Adam sanity check, not Megatron training",
+    "gradient_bytes": 4194304,
+    "before_zero_grad_bytes": 18874368,
+    "after_zero_grad_bytes": 14680064,
+    "released_bytes": 4194304,
+    "grad_is_none": true,
+    "matches_expected_release": true
+  }
+}

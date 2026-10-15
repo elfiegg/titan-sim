@@ -1,0 +1,1852 @@
+{
+  "source": "GPU allocator snapshot evidence",
+  "rows": [
+    {
+      "rank": 0,
+      "step": 0,
+      "phase": "before_model_setup",
+      "sequence": 1,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 0,
+        "allocated_bytes.all.peak": 0,
+        "reserved_bytes.all.current": 0,
+        "reserved_bytes.all.peak": 0,
+        "active_bytes.all.current": 0,
+        "inactive_split_bytes.all.current": 0
+      },
+      "device_wide_used_bytes": 1505230848,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 0,
+      "phase": "after_model_optimizer_setup",
+      "sequence": 2,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot": "002-step0-after_model_optimizer_setup.pickle",
+      "inventory": "002-step0-after_model_optimizer_setup-inventory.json",
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 49964646400,
+            "active_allocated": 45334017024,
+            "inactive": 4630629376
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 208588500,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "unattributed": 172
+          },
+          "unattributed_stack_hints_bytes": {
+            "unknown": 148,
+            "communication_or_routing_candidate": 24
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 20703128576,
+              "inactive": 4628370432
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        7492,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "step_start",
+      "sequence": 3,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_optimizer_zero_grad",
+      "sequence": 4,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_optimizer_zero_grad",
+      "sequence": 5,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_optimizer_zero_grad",
+      "sequence": 6,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_optimizer_zero_grad",
+      "sequence": 7,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334017024,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49964646400,
+        "reserved_bytes.all.peak": 49964646400,
+        "active_bytes.all.current": 45334017024,
+        "inactive_split_bytes.all.current": 39963648
+      },
+      "device_wide_used_bytes": 53806170112,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_model_forward",
+      "sequence": 8,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 45334361600,
+        "allocated_bytes.all.peak": 45360887296,
+        "reserved_bytes.all.current": 49966743552,
+        "reserved_bytes.all.peak": 49966743552,
+        "active_bytes.all.current": 45334361600,
+        "inactive_split_bytes.all.current": 41716224
+      },
+      "device_wide_used_bytes": 53808267264,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 0,
+      "snapshot_omitted_from_export": true
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_model_forward",
+      "sequence": 9,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 96786992640,
+        "allocated_bytes.all.peak": 97837665792,
+        "reserved_bytes.all.current": 100344528896,
+        "reserved_bytes.all.peak": 100344528896,
+        "active_bytes.all.current": 96786992640,
+        "inactive_split_bytes.all.current": 1089188352
+      },
+      "device_wide_used_bytes": 105754787840,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_fp32_gradient_copy",
+      "sequence": 10,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 47746520576,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 47746520576,
+        "inactive_split_bytes.all.current": 8450861568
+      },
+      "device_wide_used_bytes": 106287464448,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_fp32_gradient_copy",
+      "sequence": 11,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 49125760000,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 49125760000,
+        "inactive_split_bytes.all.current": 8151655424
+      },
+      "device_wide_used_bytes": 106287464448,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_fp32_gradient_copy",
+      "sequence": 12,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 49125760000,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 49125760000,
+        "inactive_split_bytes.all.current": 8151655424
+      },
+      "device_wide_used_bytes": 106287464448,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_fp32_gradient_copy",
+      "sequence": 13,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 68243872768,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 68243872768,
+        "inactive_split_bytes.all.current": 2350457856
+      },
+      "device_wide_used_bytes": 106287464448,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_adam_update",
+      "sequence": 14,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 68243873280,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 68243873280,
+        "inactive_split_bytes.all.current": 2350457344
+      },
+      "device_wide_used_bytes": 106952261632,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_adam_update",
+      "sequence": 15,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 71000663552,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 71000663552,
+        "inactive_split_bytes.all.current": 2424822272
+      },
+      "device_wide_used_bytes": 106952261632,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "before_adam_update",
+      "sequence": 16,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 71000663552,
+        "allocated_bytes.all.peak": 98518998016,
+        "reserved_bytes.all.current": 100399054848,
+        "reserved_bytes.all.peak": 100399054848,
+        "active_bytes.all.current": 71000663552,
+        "inactive_split_bytes.all.current": 2424822272
+      },
+      "device_wide_used_bytes": 106952261632,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "after_adam_update",
+      "sequence": 17,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450552832,
+        "allocated_bytes.all.peak": 109450552832,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 109450552832,
+        "inactive_split_bytes.all.current": 2182945280
+      },
+      "device_wide_used_bytes": 126181048320,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 1,
+      "phase": "step_end",
+      "sequence": 18,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450552832,
+        "allocated_bytes.all.peak": 109450553344,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 109450552832,
+        "inactive_split_bytes.all.current": 2182945280
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "step_start",
+      "sequence": 19,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553344,
+        "allocated_bytes.all.peak": 109450554368,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 109450553344,
+        "inactive_split_bytes.all.current": 2182944768
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_optimizer_zero_grad",
+      "sequence": 20,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553344,
+        "allocated_bytes.all.peak": 109450554368,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 109450553344,
+        "inactive_split_bytes.all.current": 2182944768
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "020-step2-before_optimizer_zero_grad.pickle",
+      "inventory": "020-step2-before_optimizer_zero_grad-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 119625744384,
+            "active_allocated": 109450553344,
+            "inactive": 10175191040
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 439265588,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "optimizer_gradients": 20495244928,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 84819664896,
+              "inactive": 10172932096
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        27375,
+        23,
+        23,
+        23
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_optimizer_zero_grad",
+      "sequence": 21,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 108071313920,
+        "allocated_bytes.all.peak": 109450554368,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 108071313920,
+        "inactive_split_bytes.all.current": 2482150912
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "021-step2-after_optimizer_zero_grad.pickle",
+      "inventory": "021-step2-after_optimizer_zero_grad-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 119625744384,
+            "active_allocated": 108071313920,
+            "inactive": 11554430464
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 438337972,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "optimizer_gradients": 19116933120,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 83440425472,
+              "inactive": 11552171520
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        27486,
+        24,
+        24,
+        24
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_optimizer_zero_grad",
+      "sequence": 22,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 108071313920,
+        "allocated_bytes.all.peak": 109450554368,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 108071313920,
+        "inactive_split_bytes.all.current": 2482150912
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "022-step2-before_optimizer_zero_grad.pickle",
+      "inventory": "022-step2-before_optimizer_zero_grad-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 119625744384,
+            "active_allocated": 108071313920,
+            "inactive": 11554430464
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 438337972,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "optimizer_gradients": 19116933120,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 83440425472,
+              "inactive": 11552171520
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        27487,
+        25,
+        25,
+        25
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_optimizer_zero_grad",
+      "sequence": 23,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 88953201152,
+        "allocated_bytes.all.peak": 109450554368,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 88953201152,
+        "inactive_split_bytes.all.current": 9698926080
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "023-step2-after_optimizer_zero_grad.pickle",
+      "inventory": "023-step2-after_optimizer_zero_grad-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 119625744384,
+            "active_allocated": 88953201152,
+            "inactive": 30672543232
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 437158324,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 64322312704,
+              "inactive": 30670284288
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        29024,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_model_forward",
+      "sequence": 24,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 88953316352,
+        "allocated_bytes.all.peak": 109450554368,
+        "reserved_bytes.all.current": 119625744384,
+        "reserved_bytes.all.peak": 119625744384,
+        "active_bytes.all.current": 88953316352,
+        "inactive_split_bytes.all.current": 9698810880
+      },
+      "device_wide_used_bytes": 126587895808,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_model_forward",
+      "sequence": 25,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 138932886528,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 138932886528,
+        "inactive_split_bytes.all.current": 2058642432
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "025-step2-after_model_forward.pickle",
+      "inventory": "025-step2-after_model_forward-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 143459876864,
+            "active_allocated": 138932886528,
+            "inactive": 4526990336
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 477821360,
+            "unattributed": 51024429264,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "quantization_candidate": 23240245248,
+            "activation_or_kernel_storage_candidate": 26105283184,
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 597917864,
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 114301998080,
+              "inactive": 4524731392
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        35483,
+        28,
+        28,
+        28
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_fp32_gradient_copy",
+      "sequence": 26,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 88953201152,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 88953201152,
+        "inactive_split_bytes.all.current": 9745063424
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_fp32_gradient_copy",
+      "sequence": 27,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 90332440576,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 90332440576,
+        "inactive_split_bytes.all.current": 9445857280
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "027-step2-after_fp32_gradient_copy.pickle",
+      "inventory": "027-step2-after_fp32_gradient_copy-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 143459876864,
+            "active_allocated": 90332440576,
+            "inactive": 53127436288
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 438085940,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "optimizer_gradients": 1378311808,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 65701552128,
+              "inactive": 53125177344
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        45660,
+        30,
+        30,
+        30
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_fp32_gradient_copy",
+      "sequence": 28,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 90332440576,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 90332440576,
+        "inactive_split_bytes.all.current": 9445857280
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_fp32_gradient_copy",
+      "sequence": 29,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553344,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553344,
+        "inactive_split_bytes.all.current": 2229082112
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "029-step2-after_fp32_gradient_copy.pickle",
+      "inventory": "029-step2-after_fp32_gradient_copy-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 143459876864,
+            "active_allocated": 109450553344,
+            "inactive": 34009323520
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 439265588,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "optimizer_gradients": 20495244928,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 84819664896,
+              "inactive": 34007064576
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        46430,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_adam_update",
+      "sequence": 30,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553856,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553856,
+        "inactive_split_bytes.all.current": 2229081600
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_adam_update",
+      "sequence": 31,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553856,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553856,
+        "inactive_split_bytes.all.current": 2229081600
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "before_adam_update",
+      "sequence": 32,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553856,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553856,
+        "inactive_split_bytes.all.current": 2229081600
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "after_adam_update",
+      "sequence": 33,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553856,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553856,
+        "inactive_split_bytes.all.current": 2229081600
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "phase": "step_end",
+      "sequence": 34,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553344,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553344,
+        "inactive_split_bytes.all.current": 2229082112
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "034-step2-step_end.pickle",
+      "inventory": "034-step2-step_end-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 143459876864,
+            "active_allocated": 109450553344,
+            "inactive": 34009323520
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 439265588,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1085406924,
+            "optimizer_gradients": 20495244928,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "communication_or_routing_candidate": 38046168,
+            "unknown": 4423844,
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "gemm_workspace_candidate": 201331680,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 84819664896,
+              "inactive": 34007064576
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        46492,
+        37,
+        37,
+        37
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 3,
+      "phase": "step_start",
+      "sequence": 35,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109450553344,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 143459876864,
+        "reserved_bytes.all.peak": 143459876864,
+        "active_bytes.all.current": 109450553344,
+        "inactive_split_bytes.all.current": 2229082112
+      },
+      "device_wide_used_bytes": 150426222592,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 3,
+      "phase": "step_end",
+      "sequence": 36,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109653124608,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165207343104,
+        "reserved_bytes.all.peak": 165207343104,
+        "active_bytes.all.current": 109653124608,
+        "inactive_split_bytes.all.current": 2452232704
+      },
+      "device_wide_used_bytes": 172198854656,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 4,
+      "phase": "step_start",
+      "sequence": 37,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109653124608,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165207343104,
+        "reserved_bytes.all.peak": 165207343104,
+        "active_bytes.all.current": 109653124608,
+        "inactive_split_bytes.all.current": 2452232704
+      },
+      "device_wide_used_bytes": 172198854656,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 4,
+      "phase": "step_end",
+      "sequence": 38,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109646341632,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165341560832,
+        "reserved_bytes.all.peak": 165341560832,
+        "active_bytes.all.current": 109646341632,
+        "inactive_split_bytes.all.current": 2593233408
+      },
+      "device_wide_used_bytes": 172333072384,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 5,
+      "phase": "step_start",
+      "sequence": 39,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109646341632,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165341560832,
+        "reserved_bytes.all.peak": 165341560832,
+        "active_bytes.all.current": 109646341632,
+        "inactive_split_bytes.all.current": 2593233408
+      },
+      "device_wide_used_bytes": 172333072384,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 5,
+      "phase": "step_end",
+      "sequence": 40,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109646341632,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165341560832,
+        "reserved_bytes.all.peak": 165341560832,
+        "active_bytes.all.current": 109646341632,
+        "inactive_split_bytes.all.current": 2593233408
+      },
+      "device_wide_used_bytes": 172333072384,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 6,
+      "phase": "step_start",
+      "sequence": 41,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109646341632,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165341560832,
+        "reserved_bytes.all.peak": 165341560832,
+        "active_bytes.all.current": 109646341632,
+        "inactive_split_bytes.all.current": 2593233408
+      },
+      "device_wide_used_bytes": 172333072384,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    },
+    {
+      "rank": 0,
+      "step": 6,
+      "phase": "step_end",
+      "sequence": 42,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109646341632,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165341560832,
+        "reserved_bytes.all.peak": 165341560832,
+        "active_bytes.all.current": 109646341632,
+        "inactive_split_bytes.all.current": 2593233408
+      },
+      "device_wide_used_bytes": 172333072384,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot": "042-step6-step_end.pickle",
+      "inventory": "042-step6-step_end-inventory.json",
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      },
+      "attribution": {
+        "0": {
+          "totals_bytes": {
+            "reserved_bytes": 165341560832,
+            "active_allocated": 109646341632,
+            "inactive": 55695219200
+          },
+          "exact_storage_categories_bytes": {
+            "master_weights": 20495244928,
+            "allocator_block_slack": 567944948,
+            "optimizer_gradients": 20495244928,
+            "parameters": 12315091712,
+            "model_gradient_buffers": 12315091712,
+            "adam_second_moment": 20495244928,
+            "adam_first_moment": 20495244928,
+            "unattributed": 1152515852,
+            "quantization_cache": 1314717696
+          },
+          "unattributed_stack_hints_bytes": {
+            "communication_or_routing_candidate": 38046168,
+            "gemm_workspace_candidate": 268440544,
+            "unknown": 4423908,
+            "te_dummy_weight_gradient_candidate": 841605120,
+            "activation_or_kernel_storage_candidate": 112
+          },
+          "pools_by_state_bytes": {
+            "(0, 0)": {
+              "active_allocated": 84907105280,
+              "inactive": 2175034368
+            },
+            "(0, 1)": {
+              "active_allocated": 5513250816,
+              "inactive": 2258944
+            },
+            "(0, 2)": {
+              "active_allocated": 19117637632
+            },
+            "(0, 3)": {
+              "inactive": 53517925888,
+              "active_allocated": 108347904
+            }
+          },
+          "pool_interpretation": "Non-default pool IDs may be graph or custom pools; not classified from ID alone",
+          "attributed_plus_unattributed_equals_active": true
+        }
+      },
+      "trace_entries": [
+        74506,
+        40,
+        40,
+        40
+      ]
+    },
+    {
+      "rank": 0,
+      "step": 6,
+      "phase": "finished",
+      "sequence": 43,
+      "explicit_synchronize": false,
+      "allocator_backend": "native",
+      "counters": {
+        "allocated_bytes.all.current": 109579227648,
+        "allocated_bytes.all.peak": 139983559680,
+        "reserved_bytes.all.current": 165341560832,
+        "reserved_bytes.all.peak": 165341560832,
+        "active_bytes.all.current": 109579227648,
+        "inactive_split_bytes.all.current": 2188488192
+      },
+      "device_wide_used_bytes": 167710949376,
+      "device_wide_scope": "whole device, not exact process/NCCL attribution",
+      "deepep_log": "deepep/rank0-pid1438831.jsonl",
+      "deepep_log_bytes": 1208,
+      "snapshot_omitted_from_export": true,
+      "hybridep_external": {
+        "scope": "instrumented HybridEP ExtendedMemoryAllocator only",
+        "requested_live_bytes": 98437656,
+        "accounted_live_bytes": 113246208,
+        "fabric_physical_live_bytes": 113246208,
+        "cuda_malloc_requested_live_bytes": 0,
+        "physical_live_bytes": 113246208,
+        "fabric_alignment_live_bytes": 14808552,
+        "peak_accounted_bytes": 115343360,
+        "cuda_malloc_physical_rounding_known": false,
+        "unmatched_events": [],
+        "complete_external_memory_coverage": false
+      }
+    }
+  ],
+  "timing_validated": false,
+  "limitations": [
+    "allocation stack hints are not exact ownership",
+    "history is bounded and may wrap",
+    "device usage includes external allocations and is not process-specific",
+    "snapshot CPU overhead may change overlap; compare counters-only control",
+    "HybridEP direct-allocation probe covers ExtendedMemoryAllocator, not every direct CUDA allocation"
+  ]
+}

@@ -2,6 +2,11 @@
 
 ## Principal Finding
 
+Subsequent [Ptyche allocation experiments](GPT_OSS_ALLOCATION_EXPERIMENT.md)
+completed full GPU training on four/eight GB200s and directly measured several
+previously unexplained components. They use new diagnostic configurations;
+the archived-run comparisons below retain their original scope and values.
+
 The CPU simulation reproduces the parameter inventory and partition sizes of all
 five GPT-OSS benchmark runs. Its independent model of training state at the
 reporting point accounts for 91%–98% of current allocated memory in the MXFP8
