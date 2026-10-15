@@ -23,6 +23,11 @@ V3 runtime allowances and V4 allocator ratios from the supplied GPU logs. It run
 on CPU, preserves calibration scope, and keeps fitted counter estimates separate
 from independently simulated storage and required-capacity claims.
 
+[Expanded-log validation](docs/EXPANDED_LOG_VALIDATION.md) tests those frozen
+factors against a separate batch sweep. It finds 18–20% underestimation at
+batch 1 and up to 5.24% variation in the conditional V4 reservation estimate;
+the original factors remain unchanged and should not be treated as capacity bounds.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.

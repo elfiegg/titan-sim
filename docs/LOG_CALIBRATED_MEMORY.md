@@ -1,5 +1,11 @@
 # Memory estimation from GPU runtime logs
 
+**Subsequent validation:** the [expanded-log evaluation](EXPANDED_LOG_VALIDATION.md)
+finds that these frozen factors underestimate batch-1 memory by 18–20%. The
+rounded planning factors also underestimate batches below 16. The calibration
+results below remain valid descriptions of their original fit, not guarantees
+of extrapolation accuracy or required capacity.
+
 ## Abstract
 
 Titan-Sim now has an empirical memory-estimation path that runs entirely on CPU. It combines a declared training-state baseline with a runtime allowance calibrated from the supplied GPU logs. The existing independent tensor/component simulation remains separate. This allows useful estimates before every internal allocation is understood, while preserving which numbers came from GPU measurements.

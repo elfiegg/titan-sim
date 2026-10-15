@@ -1,0 +1,2957 @@
+{
+  "source": "frozen_cpu_model_log_validation",
+  "baseline_commit": "98ff55a",
+  "profile_fingerprints": {
+    "mxfp8": "e31f9ab07952f5276ce7f1f489eb9943a78f4ae45345160d0a19618e496b047b",
+    "nvfp4": "ab449c7429ad178115084edb6013be500c4351d1db7137ac27134362c66ad5b7"
+  },
+  "refitted": false,
+  "v3_evaluations": [
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt",
+      "sha256": "9566050928a21de5a4cad6c7bbfa052bba1d20ebf8dee8ec6263a7206aad59e9",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 4096,
+        "global_batch": 256,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 1,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 4096
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 256
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 3581935616
+        }
+      },
+      "observed_max_gib": 57.42999999970198,
+      "frozen_estimate_gib": 46.901447570475284,
+      "planning_estimate_gib": 47.06512740850449,
+      "frozen_error_percent": -18.332844209091636,
+      "planning_error_percent": -18.047836655495864,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt",
+        "line": 2843,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 57.43,
+        "unit": "GiB",
+        "bytes": 61664992952,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.04796,
+        "grad_norm": 3.6646,
+        "tps": 1584.0,
+        "tflops": 445.26
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-nvfp4-64n-408659950.txt",
+      "sha256": "53d27f979946dbd20d530d1e100b87dceddbbc2b55a439bb9e7e18cea4f03a2d",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 4096,
+        "global_batch": 256,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 1,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 4096
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 256
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 3581935616
+        }
+      },
+      "observed_max_gib": 57.42999999970198,
+      "frozen_estimate_gib": 46.227072570472956,
+      "planning_estimate_gib": 46.39793990850448,
+      "frozen_error_percent": -19.507099824633745,
+      "planning_error_percent": -19.209577035094448,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-nvfp4-64n-408659950.txt",
+        "line": 3047,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 57.43,
+        "unit": "GiB",
+        "bytes": 61664992952,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.44594,
+        "grad_norm": 19.381,
+        "tps": 1195.0,
+        "tflops": 336.05
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-mxfp8-64n-408659938.txt",
+      "sha256": "9b80064b3649ae5a64a2b83351a0594d62a413a53bc8673c6a0d75755a5faf6d",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 8192,
+        "global_batch": 512,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 2,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 8192
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 512
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 7163871232
+        }
+      },
+      "observed_max_gib": 61.53000000026077,
+      "frozen_estimate_gib": 54.74401773244608,
+      "planning_estimate_gib": 55.07137740850449,
+      "frozen_error_percent": -11.02873763657717,
+      "planning_error_percent": -10.496705008498141,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-mxfp8-64n-408659938.txt",
+        "line": 2895,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 61.53,
+        "unit": "GiB",
+        "bytes": 66067334431,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.09029,
+        "grad_norm": 9.9485,
+        "tps": 2088.0,
+        "tflops": 586.98
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-nvfp4-64n-408659953.txt",
+      "sha256": "06b68796e8090097a62b0d548ad347c511021511636986654d0b9e397054dc58",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 8192,
+        "global_batch": 512,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 2,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 8192
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 512
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 7163871232
+        }
+      },
+      "observed_max_gib": 61.230000000447035,
+      "frozen_estimate_gib": 53.395267732441425,
+      "planning_estimate_gib": 53.73700240850449,
+      "frozen_error_percent": -12.79557776898319,
+      "planning_error_percent": -12.237461361894242,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-nvfp4-64n-408659953.txt",
+        "line": 3078,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 61.23,
+        "unit": "GiB",
+        "bytes": 65745211884,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.39773,
+        "grad_norm": 22.0429,
+        "tps": 2062.0,
+        "tflops": 579.8
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt",
+      "sha256": "b9af7673ee9800f89a7a917446704d1d8a0c3ac8fbc03cf7e7731b1813e25e22",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 16384,
+        "global_batch": 1024,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 4,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 16384
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 1024
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 14327742464
+        }
+      },
+      "observed_max_gib": 74.99000000022352,
+      "frozen_estimate_gib": 70.42915805638768,
+      "planning_estimate_gib": 71.08387740850449,
+      "frozen_error_percent": -6.08193351623183,
+      "planning_error_percent": -5.208857970005843,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt",
+        "line": 2822,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 74.99,
+        "unit": "GiB",
+        "bytes": 80519899382,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.0119,
+        "grad_norm": 9.5535,
+        "tps": 2497.0,
+        "tflops": 701.92
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt",
+      "sha256": "4334c1b2a5dadd8d00bc30d74d001a7f5098c1ff7c47706398fdfcc6d418faf9",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 16384,
+        "global_batch": 1024,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 4,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 16384
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 1024
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 14327742464
+        }
+      },
+      "observed_max_gib": 72.25,
+      "frozen_estimate_gib": 67.73165805637836,
+      "planning_estimate_gib": 68.41512740850449,
+      "frozen_error_percent": -6.2537604756008776,
+      "planning_error_percent": -5.3077821335578035,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt",
+        "line": 3063,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 72.25,
+        "unit": "GiB",
+        "bytes": 77577846784,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.19452,
+        "grad_norm": 10.6391,
+        "tps": 2723.0,
+        "tflops": 765.64
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-mxfp8-64n-408659944.txt",
+      "sha256": "bc086092c7a7bb7ddbff2e38b2d464ec6b34642e51904f851b77764f4baedb17",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 32768,
+        "global_batch": 2048,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 8,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 32768
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 2048
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 28655484928
+        }
+      },
+      "observed_max_gib": 105.05999999959022,
+      "frozen_estimate_gib": 101.79943870427087,
+      "planning_estimate_gib": 103.10887740850448,
+      "frozen_error_percent": -3.1035230300133887,
+      "planning_error_percent": -1.8571507625103179,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-mxfp8-64n-408659944.txt",
+        "line": 2845,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 105.06,
+        "unit": "GiB",
+        "bytes": 112807316029,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.95064,
+        "grad_norm": 4.0964,
+        "tps": 2792.0,
+        "tflops": 784.97
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-nvfp4-64n-408659959.txt",
+      "sha256": "2ddf995ef254c05fdd1ba5af3eb6913c5d635aa4c1f3a9673e75fd818383c59c",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 32768,
+        "global_batch": 2048,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 8,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 32768
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 2048
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 28655484928
+        }
+      },
+      "observed_max_gib": 98.69000000040978,
+      "frozen_estimate_gib": 96.40443870425224,
+      "planning_estimate_gib": 97.77137740850449,
+      "frozen_error_percent": -2.3158995806546234,
+      "planning_error_percent": -0.9308162852380897,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-nvfp4-64n-408659959.txt",
+        "line": 3037,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 98.69,
+        "unit": "GiB",
+        "bytes": 105967580611,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.41561,
+        "grad_norm": 17.4493,
+        "tps": 3118.0,
+        "tflops": 876.67
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt",
+      "sha256": "eae350a6d37789c0573facf33ecdc0f45e33681b34f1d445fdf1a39550102797",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 164.54000000003725,
+      "frozen_estimate_gib": 164.54000000003725,
+      "planning_estimate_gib": 167.15887740850448,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.5916357168267004,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt",
+        "line": 2880,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 164.54,
+        "unit": "GiB",
+        "bytes": 176673479721,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.22791,
+        "grad_norm": 3.6184,
+        "tps": 3061.0,
+        "tflops": 860.71
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt",
+      "sha256": "a03315ffd5fe00a6c85b1cfb38d580ab877232fbf2cb887248b63f78e0c1bcd1",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 153.75,
+      "frozen_estimate_gib": 153.75,
+      "planning_estimate_gib": 156.4838774085045,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.7781316478078013,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt",
+        "line": 3095,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 153.75,
+        "unit": "GiB",
+        "bytes": 165087805440,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.02885,
+        "grad_norm": 8.1042,
+        "tps": 3446.0,
+        "tflops": 968.8
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expB/run_logs/aws_expB-rung5-mxfp8-64n-408216972.txt",
+      "sha256": "5e313a2417c26af3daad3d1c3083a86ff89065a52dc66b822908c1c62204e1b0",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 164.54000000003725,
+      "frozen_estimate_gib": 164.54000000003725,
+      "planning_estimate_gib": 167.15887740850448,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.5916357168267004,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expB/run_logs/aws_expB-rung5-mxfp8-64n-408216972.txt",
+        "line": 2860,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 164.54,
+        "unit": "GiB",
+        "bytes": 176673479721,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.69562,
+        "grad_norm": 4.5713,
+        "tps": 3060.0,
+        "tflops": 860.41
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expB"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expB/run_logs/aws_expB-rung5-nvfp4-64n-408216975.txt",
+      "sha256": "2ecae99e9c7b693cdef6bb680c16f0ed71da9d7a4e9e326bb8be42a73447a33c",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 153.75,
+      "frozen_estimate_gib": 153.75,
+      "planning_estimate_gib": 156.4838774085045,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.7781316478078013,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expB/run_logs/aws_expB-rung5-nvfp4-64n-408216975.txt",
+        "line": 3063,
+        "rank": null,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 153.75,
+        "unit": "GiB",
+        "bytes": 165087805440,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.38652,
+        "grad_norm": 18.2334,
+        "tps": 3453.0,
+        "tflops": 970.72
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "aws_expB"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs1-408661957.txt",
+      "sha256": "d810356bb3ba558adbc7647d3dfe8bd177e5432e70ee8a2d9af33f94a8fc4699",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 4096,
+        "global_batch": 256,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 1,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 4096
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 256
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 3581935616
+        }
+      },
+      "observed_max_gib": 57.42999999970198,
+      "frozen_estimate_gib": 46.901447570475284,
+      "planning_estimate_gib": 47.06512740850449,
+      "frozen_error_percent": -18.332844209091636,
+      "planning_error_percent": -18.047836655495864,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs1-408661957.txt",
+        "line": 44,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 57.43,
+        "unit": "GiB",
+        "bytes": 61664992952,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.00868,
+        "grad_norm": 10.861,
+        "tps": 1858.0,
+        "tflops": 522.52
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs16-408661954.txt",
+      "sha256": "b6ac996ec2c40c41fba12c3fef4a13a960aaf76cd43f3d1eab0883630d453f94",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 164.54000000003725,
+      "frozen_estimate_gib": 164.54000000003725,
+      "planning_estimate_gib": 167.15887740850448,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.5916357168267004,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs16-408661954.txt",
+        "line": 44,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 164.54,
+        "unit": "GiB",
+        "bytes": 176673479721,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.8591,
+        "grad_norm": 3.326,
+        "tps": 3144.0,
+        "tflops": 884.02
+      },
+      "training_completed": false,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs2-408661960.txt",
+      "sha256": "d4a6501d6738a7b40dab6f07ca8e70b74f6d7bbc4cbf84cb635622c20b3cc565",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 8192,
+        "global_batch": 512,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 2,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 8192
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 512
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 7163871232
+        }
+      },
+      "observed_max_gib": 61.53000000026077,
+      "frozen_estimate_gib": 54.74401773244608,
+      "planning_estimate_gib": 55.07137740850449,
+      "frozen_error_percent": -11.02873763657717,
+      "planning_error_percent": -10.496705008498141,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs2-408661960.txt",
+        "line": 44,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 61.53,
+        "unit": "GiB",
+        "bytes": 66067334431,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.77522,
+        "grad_norm": 4.0979,
+        "tps": 2332.0,
+        "tflops": 655.73
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs4-408661963.txt",
+      "sha256": "a41aa42ed660609ef548b54b3a6a0ef5234c6c5553eb21e93ef09e0cf6843d7e",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 16384,
+        "global_batch": 1024,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 4,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 16384
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 1024
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 14327742464
+        }
+      },
+      "observed_max_gib": 74.99000000022352,
+      "frozen_estimate_gib": 70.42915805638768,
+      "planning_estimate_gib": 71.08387740850449,
+      "frozen_error_percent": -6.08193351623183,
+      "planning_error_percent": -5.208857970005843,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs4-408661963.txt",
+        "line": 44,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 74.99,
+        "unit": "GiB",
+        "bytes": 80519899382,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.30067,
+        "grad_norm": 3.9713,
+        "tps": 2641.0,
+        "tflops": 742.51
+      },
+      "training_completed": false,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs8-408661966.txt",
+      "sha256": "068f155affd58fec1123670d64b85810f91e8c5855e92536ccd4f8ad0ee36c04",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 32768,
+        "global_batch": 2048,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 8,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 32768
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 2048
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 28655484928
+        }
+      },
+      "observed_max_gib": 105.05999999959022,
+      "frozen_estimate_gib": 101.79943870427087,
+      "planning_estimate_gib": 103.10887740850448,
+      "frozen_error_percent": -3.1035230300133887,
+      "planning_error_percent": -1.8571507625103179,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs8-408661966.txt",
+        "line": 44,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 105.06,
+        "unit": "GiB",
+        "bytes": 112807316029,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.64905,
+        "grad_norm": 9.8782,
+        "tps": 2916.0,
+        "tflops": 819.77
+      },
+      "training_completed": false,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs1-408661972.txt",
+      "sha256": "f6f6ac78c9b8da5cecd384af9971864e9a0bd95704657feb129f188385d18003",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 4096,
+        "global_batch": 256,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 1,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 4096
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 256
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 3581935616
+        }
+      },
+      "observed_max_gib": 57.42999999970198,
+      "frozen_estimate_gib": 46.227072570472956,
+      "planning_estimate_gib": 46.39793990850448,
+      "frozen_error_percent": -19.507099824633745,
+      "planning_error_percent": -19.209577035094448,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs1-408661972.txt",
+        "line": 47,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 57.43,
+        "unit": "GiB",
+        "bytes": 61664992952,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.72751,
+        "grad_norm": 3.1993,
+        "tps": 1604.0,
+        "tflops": 451.05
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs16-408661969.txt",
+      "sha256": "589d3978260b8b3a5676c586a98adae5e7b2c2bcab10d8dbc7ffadecb2243986",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 153.75,
+      "frozen_estimate_gib": 153.75,
+      "planning_estimate_gib": 156.4838774085045,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.7781316478078013,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs16-408661969.txt",
+        "line": 47,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 153.75,
+        "unit": "GiB",
+        "bytes": 165087805440,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.86042,
+        "grad_norm": 7.4479,
+        "tps": 3571.0,
+        "tflops": 1004.09
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs2-408661975.txt",
+      "sha256": "ce11fd24fd7dcef4715bc948178a9058b595d93bd75bfc48552aab3227acae4c",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 8192,
+        "global_batch": 512,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 2,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 8192
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 512
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 7163871232
+        }
+      },
+      "observed_max_gib": 61.230000000447035,
+      "frozen_estimate_gib": 53.395267732441425,
+      "planning_estimate_gib": 53.73700240850449,
+      "frozen_error_percent": -12.79557776898319,
+      "planning_error_percent": -12.237461361894242,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs2-408661975.txt",
+        "line": 47,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 61.23,
+        "unit": "GiB",
+        "bytes": 65745211884,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.07665,
+        "grad_norm": 4.3937,
+        "tps": 2468.0,
+        "tflops": 693.92
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs4-408661978.txt",
+      "sha256": "c1b4e91a14ed9cad6e2d8e503f23581cd3464e1ce5a996851a73ac2f6ef1de84",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 16384,
+        "global_batch": 1024,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 4,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 16384
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 1024
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 14327742464
+        }
+      },
+      "observed_max_gib": 72.25,
+      "frozen_estimate_gib": 67.73165805637836,
+      "planning_estimate_gib": 68.41512740850449,
+      "frozen_error_percent": -6.2537604756008776,
+      "planning_error_percent": -5.3077821335578035,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs4-408661978.txt",
+        "line": 47,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 72.25,
+        "unit": "GiB",
+        "bytes": 77577846784,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.33865,
+        "grad_norm": 16.1811,
+        "tps": 2899.0,
+        "tflops": 815.18
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs8-408661981.txt",
+      "sha256": "154e9e9062a3ffab219960a606338fe110311aecac8878c30863a16a2e4dab03",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 32768,
+        "global_batch": 2048,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 8,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": false,
+      "same_metric_signature_as_calibration": false,
+      "evaluation_kind": "separate_log_counter_comparison",
+      "configuration_extrapolation": true,
+      "mismatches": {
+        "tokens_per_rank": {
+          "calibration": 65536,
+          "request": 32768
+        },
+        "global_batch": {
+          "calibration": 4096,
+          "request": 2048
+        },
+        "baseline.checkpoint_proxy_bytes": {
+          "calibration": 57310969856,
+          "request": 28655484928
+        }
+      },
+      "observed_max_gib": 98.69000000040978,
+      "frozen_estimate_gib": 96.40443870425224,
+      "planning_estimate_gib": 97.77137740850449,
+      "frozen_error_percent": -2.3158995806546234,
+      "planning_error_percent": -0.9308162852380897,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs8-408661981.txt",
+        "line": 47,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 98.69,
+        "unit": "GiB",
+        "bytes": 105967580611,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.10635,
+        "grad_norm": 4.2851,
+        "tps": 3267.0,
+        "tflops": 918.42
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expA"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expB/run_logs/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+      "sha256": "d37c4bc1f5da809cf6a61c103782fa9e0da4bf62c45898379ecbac88647dd1b5",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_mxfp8_batch16",
+      "profile_factor_unchanged": 2.350934381106,
+      "calibration_source_reused": true,
+      "same_metric_signature_as_calibration": true,
+      "evaluation_kind": "calibration_replay",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 164.54000000003725,
+      "frozen_estimate_gib": 164.54000000003725,
+      "planning_estimate_gib": 167.15887740850448,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.5916357168267004,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expB/run_logs/lyris_expB-rung5-mxfp8-64n-408471707.txt",
+        "line": 44,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 164.54,
+        "unit": "GiB",
+        "bytes": 176673479721,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 10.28121,
+        "grad_norm": 3.8999,
+        "tps": 3147.0,
+        "tflops": 884.86
+      },
+      "training_completed": true,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expB"
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expB/run_logs/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+      "sha256": "132f699bf12a67fa041c6e4b0f5843c357da72f2ef0637fb6bf711c85898d1cf",
+      "context": {
+        "model": "DeepSeek-V3 671B",
+        "framework": "TorchTitan",
+        "revision": null,
+        "torch_version": null,
+        "hardware": "NVIDIA GB300",
+        "world_size": 256,
+        "tp": 1,
+        "pp": 1,
+        "ep": 64,
+        "cp": 1,
+        "dp_shard": 256,
+        "dp_replicate": 1,
+        "sequence_length": 4096,
+        "tokens_per_rank": 65536,
+        "global_batch": 4096,
+        "microbatches": 1,
+        "checkpoint_policy": "FullAC",
+        "compile_policy": "loss and each TransformerBlock",
+        "precision": "mixed NVFP4/MXFP8 compute",
+        "memory_metric": "training_memory_unspecified"
+      },
+      "package_version": "0.2.2+gita615ec2",
+      "local_batch": 16,
+      "profile": "titan_v3_nvfp4_batch16",
+      "profile_factor_unchanged": 2.1487798143605716,
+      "calibration_source_reused": true,
+      "same_metric_signature_as_calibration": true,
+      "evaluation_kind": "calibration_replay",
+      "configuration_extrapolation": false,
+      "mismatches": {},
+      "observed_max_gib": 153.75,
+      "frozen_estimate_gib": 153.75,
+      "planning_estimate_gib": 156.4838774085045,
+      "frozen_error_percent": 0.0,
+      "planning_error_percent": 1.7781316478078013,
+      "maximum_evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expB/run_logs/lyris_expB-rung5-nvfp4-64n-408471710.txt",
+        "line": 47,
+        "rank": 0,
+        "step": 10,
+        "metric": "training_memory_unspecified",
+        "value": 153.75,
+        "unit": "GiB",
+        "bytes": 165087805440,
+        "metric_semantics_verified": false,
+        "window": "unverified",
+        "loss": 9.85997,
+        "grad_norm": 4.4284,
+        "tps": 3574.0,
+        "tflops": 1004.99
+      },
+      "training_completed": false,
+      "nan_gradient_observed": false,
+      "oom_observed": false,
+      "end_to_end_validation": false,
+      "limitations": [
+        "Sparse printed counter, not required device capacity or within-step trajectory.",
+        "Full software identity, logger semantics and complete rank coverage remain unverified.",
+        "A separate file/run is not proof of statistical independence."
+      ],
+      "cohort": "lyris_expB"
+    }
+  ],
+  "excluded_selected_runs": [],
+  "v4_runs": {
+    "2565249": {
+      "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+      "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e",
+      "configuration": {
+        "num_layers": {
+          "value": "61",
+          "line": 25020
+        },
+        "hidden_size": {
+          "value": "7168",
+          "line": 24986
+        },
+        "num_attention_heads": {
+          "value": "128",
+          "line": 25019
+        },
+        "num_moe_experts": {
+          "value": "384",
+          "line": 25023
+        },
+        "moe_router_topk": {
+          "value": "6",
+          "line": 25013
+        },
+        "tensor_model_parallel_size": {
+          "value": "1",
+          "line": 25217
+        },
+        "pipeline_model_parallel_size": {
+          "value": "4",
+          "line": 25033
+        },
+        "virtual_pipeline_model_parallel_size": {
+          "value": "4",
+          "line": 25044
+        },
+        "expert_model_parallel_size": {
+          "value": "64",
+          "line": 24974
+        },
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 24975
+        },
+        "seq_length": {
+          "value": "4096",
+          "line": 25121
+        },
+        "micro_batch_size": {
+          "value": "1",
+          "line": 25065
+        },
+        "global_batch_size": {
+          "value": "4096",
+          "line": 25060
+        },
+        "fp8_recipe": {
+          "value": "'mxfp8'",
+          "line": 24925
+        },
+        "main_grads_dtype": {
+          "value": "torch.bfloat16",
+          "line": 24927
+        },
+        "params_dtype": {
+          "value": "torch.bfloat16",
+          "line": 24930
+        },
+        "pipeline_model_parallel_layout": {
+          "value": "Et*4|(tttt|)*14tmL",
+          "line": 25032
+        },
+        "recompute_granularity": {
+          "value": "'selective'",
+          "line": 25037
+        },
+        "recompute_modules": {
+          "value": "['mla_up_proj', 'mhc']",
+          "line": 25038
+        },
+        "cuda_graph_impl": {
+          "value": "'full_iteration'",
+          "line": 24964
+        },
+        "moe_router_force_load_balancing": {
+          "value": "True",
+          "line": 25008
+        },
+        "offload_modules": {
+          "value": "['core_attn', 'attn_proj']",
+          "line": 25026
+        }
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64233,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 136.76,
+            "reserved": 216.8,
+            "max-allocated": 208.93,
+            "max-reserved": 216.8
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.5852588476162623,
+          "high_water_allocated_over_current": 1.527712781515063,
+          "high_water_reserved_over_current": 1.5852588476162623,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64223,
+          "rank": 64,
+          "step": 1,
+          "printed_values": {
+            "allocated": 133.44,
+            "reserved": 201.01,
+            "max-allocated": 193.1,
+            "max-reserved": 201.01
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.5063699040767387,
+          "high_water_allocated_over_current": 1.4470923261390887,
+          "high_water_reserved_over_current": 1.5063699040767387,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64223,
+          "rank": 128,
+          "step": 1,
+          "printed_values": {
+            "allocated": 133.44,
+            "reserved": 187.29,
+            "max-allocated": 181.23,
+            "max-reserved": 187.29
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.4035521582733812,
+          "high_water_allocated_over_current": 1.358138489208633,
+          "high_water_reserved_over_current": 1.4035521582733812,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64227,
+          "rank": 192,
+          "step": 1,
+          "printed_values": {
+            "allocated": 127.36,
+            "reserved": 182.44,
+            "max-allocated": 168.77,
+            "max-reserved": 182.44
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.4324748743718594,
+          "high_water_allocated_over_current": 1.3251413316582916,
+          "high_water_reserved_over_current": 1.4324748743718594,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64250,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 187.98,
+            "reserved": 252.87,
+            "max-allocated": 243.74,
+            "max-reserved": 252.87
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.3451962974784553,
+          "high_water_allocated_over_current": 1.2966273007766784,
+          "high_water_reserved_over_current": 1.3451962974784553,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64240,
+          "rank": 64,
+          "step": 2,
+          "printed_values": {
+            "allocated": 179.27,
+            "reserved": 236.72,
+            "max-allocated": 227.13,
+            "max-reserved": 236.72
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.320466335694762,
+          "high_water_allocated_over_current": 1.2669716070731298,
+          "high_water_reserved_over_current": 1.320466335694762,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64243,
+          "rank": 128,
+          "step": 2,
+          "printed_values": {
+            "allocated": 173.88,
+            "reserved": 222.38,
+            "max-allocated": 214.53,
+            "max-reserved": 222.38
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.2789279963193008,
+          "high_water_allocated_over_current": 1.2337819185645273,
+          "high_water_reserved_over_current": 1.2789279963193008,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64241,
+          "rank": 192,
+          "step": 2,
+          "printed_values": {
+            "allocated": 162.41,
+            "reserved": 217.11,
+            "max-allocated": 198.81,
+            "max-reserved": 217.11
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.336801921063974,
+          "high_water_allocated_over_current": 1.2241241302875439,
+          "high_water_reserved_over_current": 1.336801921063974,
+          "peak_reset_verified": false
+        }
+      ],
+      "stash": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64234,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2311424,
+            7168
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "uint8",
+          "payload_bytes": 16568287232,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64235,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            6144
+          ],
+          "storage_dtype": "bfloat16",
+          "logical_dtype": "bfloat16",
+          "payload_bytes": 27541635072,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64236,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            1
+          ],
+          "storage_dtype": "float32",
+          "logical_dtype": "float32",
+          "payload_bytes": 8965376,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64237,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            3072
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e4m3fn",
+          "payload_bytes": 6885408768,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+          "line": 64238,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            70080,
+            3072
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e8m0fnu",
+          "payload_bytes": 215285760,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        }
+      ],
+      "nan_gradient_observed": true,
+      "observed_iteration_ms": [
+        {
+          "step": 1,
+          "ms": 1068640.5
+        },
+        {
+          "step": 2,
+          "ms": 38657.0
+        },
+        {
+          "step": 3,
+          "ms": 33632.1
+        },
+        {
+          "step": 4,
+          "ms": 66780.3
+        },
+        {
+          "step": 5,
+          "ms": 21179.4
+        },
+        {
+          "step": 6,
+          "ms": 20730.7
+        },
+        {
+          "step": 7,
+          "ms": 20580.9
+        },
+        {
+          "step": 8,
+          "ms": 20588.5
+        },
+        {
+          "step": 9,
+          "ms": 20695.2
+        },
+        {
+          "step": 10,
+          "ms": 20585.0
+        },
+        {
+          "step": 11,
+          "ms": 20585.7
+        },
+        {
+          "step": 12,
+          "ms": 20602.4
+        },
+        {
+          "step": 13,
+          "ms": 20580.3
+        },
+        {
+          "step": 14,
+          "ms": 20578.7
+        },
+        {
+          "step": 15,
+          "ms": 20581.6
+        },
+        {
+          "step": 16,
+          "ms": 20587.3
+        },
+        {
+          "step": 17,
+          "ms": 20579.7
+        },
+        {
+          "step": 18,
+          "ms": 20813.2
+        },
+        {
+          "step": 19,
+          "ms": 20587.5
+        },
+        {
+          "step": 20,
+          "ms": 20584.3
+        },
+        {
+          "step": 21,
+          "ms": 20583.8
+        },
+        {
+          "step": 22,
+          "ms": 20612.2
+        },
+        {
+          "step": 23,
+          "ms": 20591.4
+        },
+        {
+          "step": 24,
+          "ms": 20579.4
+        },
+        {
+          "step": 25,
+          "ms": 20582.9
+        },
+        {
+          "step": 26,
+          "ms": 20585.5
+        },
+        {
+          "step": 27,
+          "ms": 20581.5
+        },
+        {
+          "step": 28,
+          "ms": 20581.8
+        },
+        {
+          "step": 29,
+          "ms": 20583.8
+        },
+        {
+          "step": 30,
+          "ms": 20580.3
+        },
+        {
+          "step": 31,
+          "ms": 20586.2
+        },
+        {
+          "step": 32,
+          "ms": 20710.1
+        },
+        {
+          "step": 33,
+          "ms": 20649.4
+        },
+        {
+          "step": 34,
+          "ms": 20579.6
+        },
+        {
+          "step": 35,
+          "ms": 20583.1
+        },
+        {
+          "step": 36,
+          "ms": 20589.9
+        },
+        {
+          "step": 37,
+          "ms": 20580.3
+        },
+        {
+          "step": 38,
+          "ms": 20581.9
+        },
+        {
+          "step": 39,
+          "ms": 20580.0
+        },
+        {
+          "step": 40,
+          "ms": 20640.7
+        },
+        {
+          "step": 41,
+          "ms": 20579.2
+        },
+        {
+          "step": 42,
+          "ms": 20597.3
+        },
+        {
+          "step": 43,
+          "ms": 20618.6
+        },
+        {
+          "step": 44,
+          "ms": 20617.3
+        },
+        {
+          "step": 45,
+          "ms": 20583.5
+        },
+        {
+          "step": 46,
+          "ms": 24459.8
+        },
+        {
+          "step": 47,
+          "ms": 20709.5
+        },
+        {
+          "step": 48,
+          "ms": 20764.6
+        },
+        {
+          "step": 49,
+          "ms": 20751.5
+        },
+        {
+          "step": 50,
+          "ms": 21007.7
+        }
+      ],
+      "observed_median_iteration_ms_steps_10_50": 20585.5
+    },
+    "2568526": {
+      "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+      "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6",
+      "configuration": {
+        "num_layers": {
+          "value": "61",
+          "line": 22761
+        },
+        "hidden_size": {
+          "value": "7168",
+          "line": 22727
+        },
+        "num_attention_heads": {
+          "value": "128",
+          "line": 22760
+        },
+        "num_moe_experts": {
+          "value": "384",
+          "line": 22764
+        },
+        "moe_router_topk": {
+          "value": "6",
+          "line": 22754
+        },
+        "tensor_model_parallel_size": {
+          "value": "1",
+          "line": 22961
+        },
+        "pipeline_model_parallel_size": {
+          "value": "4",
+          "line": 22774
+        },
+        "virtual_pipeline_model_parallel_size": {
+          "value": "4",
+          "line": 22785
+        },
+        "expert_model_parallel_size": {
+          "value": "64",
+          "line": 22715
+        },
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 22716
+        },
+        "seq_length": {
+          "value": "4096",
+          "line": 22863
+        },
+        "micro_batch_size": {
+          "value": "1",
+          "line": 22806
+        },
+        "global_batch_size": {
+          "value": "4096",
+          "line": 22801
+        },
+        "fp8_recipe": {
+          "value": "'mxfp8'",
+          "line": 22666
+        },
+        "main_grads_dtype": {
+          "value": "torch.bfloat16",
+          "line": 22668
+        },
+        "params_dtype": {
+          "value": "torch.bfloat16",
+          "line": 22671
+        },
+        "pipeline_model_parallel_layout": {
+          "value": "Et*4|(tttt|)*14tmL",
+          "line": 22773
+        },
+        "recompute_granularity": {
+          "value": "'selective'",
+          "line": 22778
+        },
+        "recompute_modules": {
+          "value": "['mla_up_proj', 'mhc']",
+          "line": 22779
+        },
+        "cuda_graph_impl": {
+          "value": "'full_iteration'",
+          "line": 22705
+        },
+        "moe_router_force_load_balancing": {
+          "value": "True",
+          "line": 22749
+        },
+        "offload_modules": {
+          "value": "['core_attn', 'attn_proj']",
+          "line": 22767
+        }
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64272,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 136.76,
+            "reserved": 216.76,
+            "max-allocated": 208.93,
+            "max-reserved": 216.76
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.584966364434045,
+          "high_water_allocated_over_current": 1.527712781515063,
+          "high_water_reserved_over_current": 1.584966364434045,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64267,
+          "rank": 64,
+          "step": 1,
+          "printed_values": {
+            "allocated": 133.44,
+            "reserved": 200.61,
+            "max-allocated": 193.1,
+            "max-reserved": 200.61
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.5033723021582734,
+          "high_water_allocated_over_current": 1.4470923261390887,
+          "high_water_reserved_over_current": 1.5033723021582734,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64265,
+          "rank": 128,
+          "step": 1,
+          "printed_values": {
+            "allocated": 133.44,
+            "reserved": 187.61,
+            "max-allocated": 181.23,
+            "max-reserved": 187.61
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.4059502398081536,
+          "high_water_allocated_over_current": 1.358138489208633,
+          "high_water_reserved_over_current": 1.4059502398081536,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64273,
+          "rank": 192,
+          "step": 1,
+          "printed_values": {
+            "allocated": 127.36,
+            "reserved": 182.82,
+            "max-allocated": 168.77,
+            "max-reserved": 182.82
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.4354585427135678,
+          "high_water_allocated_over_current": 1.3251413316582916,
+          "high_water_reserved_over_current": 1.4354585427135678,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64290,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 187.98,
+            "reserved": 266.13,
+            "max-allocated": 243.74,
+            "max-reserved": 266.13
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.4157357165655922,
+          "high_water_allocated_over_current": 1.2966273007766784,
+          "high_water_reserved_over_current": 1.4157357165655922,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64280,
+          "rank": 64,
+          "step": 2,
+          "printed_values": {
+            "allocated": 179.27,
+            "reserved": 236.64,
+            "max-allocated": 227.13,
+            "max-reserved": 236.64
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.3200200814414011,
+          "high_water_allocated_over_current": 1.2669716070731298,
+          "high_water_reserved_over_current": 1.3200200814414011,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64281,
+          "rank": 128,
+          "step": 2,
+          "printed_values": {
+            "allocated": 173.88,
+            "reserved": 223.7,
+            "max-allocated": 214.53,
+            "max-reserved": 223.7
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.2865194386933516,
+          "high_water_allocated_over_current": 1.2337819185645273,
+          "high_water_reserved_over_current": 1.2865194386933516,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64284,
+          "rank": 192,
+          "step": 2,
+          "printed_values": {
+            "allocated": 162.41,
+            "reserved": 217.82,
+            "max-allocated": 198.81,
+            "max-reserved": 217.82
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.3411735730558463,
+          "high_water_allocated_over_current": 1.2241241302875439,
+          "high_water_reserved_over_current": 1.3411735730558463,
+          "peak_reset_verified": false
+        }
+      ],
+      "stash": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64274,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2311424,
+            7168
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "uint8",
+          "payload_bytes": 16568287232,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64275,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            6144
+          ],
+          "storage_dtype": "bfloat16",
+          "logical_dtype": "bfloat16",
+          "payload_bytes": 27541635072,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64276,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            1
+          ],
+          "storage_dtype": "float32",
+          "logical_dtype": "float32",
+          "payload_bytes": 8965376,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64277,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            2241344,
+            3072
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e4m3fn",
+          "payload_bytes": 6885408768,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+          "line": 64278,
+          "source_kind": "observed_buffer_geometry",
+          "name": "paged_stash",
+          "device": "cuda",
+          "rank": null,
+          "launcher_label": null,
+          "shape": [
+            70080,
+            3072
+          ],
+          "storage_dtype": "uint8",
+          "logical_dtype": "float8_e8m0fnu",
+          "payload_bytes": 215285760,
+          "lifetime": "unverified",
+          "storage_identity": null,
+          "note": "Payload reconstructed from logged geometry; not an independent prediction or peak. Host omission means unknown, not zero."
+        }
+      ],
+      "nan_gradient_observed": true,
+      "observed_iteration_ms": [
+        {
+          "step": 1,
+          "ms": 1073279.6
+        },
+        {
+          "step": 2,
+          "ms": 43363.8
+        },
+        {
+          "step": 3,
+          "ms": 33968.2
+        },
+        {
+          "step": 4,
+          "ms": 66707.9
+        },
+        {
+          "step": 5,
+          "ms": 20718.8
+        },
+        {
+          "step": 6,
+          "ms": 20715.3
+        },
+        {
+          "step": 7,
+          "ms": 20591.8
+        },
+        {
+          "step": 8,
+          "ms": 20606.5
+        },
+        {
+          "step": 9,
+          "ms": 20597.9
+        },
+        {
+          "step": 10,
+          "ms": 20736.8
+        },
+        {
+          "step": 11,
+          "ms": 20602.5
+        },
+        {
+          "step": 12,
+          "ms": 20605.5
+        },
+        {
+          "step": 13,
+          "ms": 20613.9
+        },
+        {
+          "step": 14,
+          "ms": 20753.5
+        },
+        {
+          "step": 15,
+          "ms": 20595.8
+        },
+        {
+          "step": 16,
+          "ms": 21031.8
+        },
+        {
+          "step": 17,
+          "ms": 20584.1
+        },
+        {
+          "step": 18,
+          "ms": 20600.7
+        },
+        {
+          "step": 19,
+          "ms": 20610.1
+        },
+        {
+          "step": 20,
+          "ms": 20591.4
+        },
+        {
+          "step": 21,
+          "ms": 20585.8
+        },
+        {
+          "step": 22,
+          "ms": 20584.4
+        },
+        {
+          "step": 23,
+          "ms": 20976.4
+        },
+        {
+          "step": 24,
+          "ms": 20592.8
+        },
+        {
+          "step": 25,
+          "ms": 20584.0
+        },
+        {
+          "step": 26,
+          "ms": 20603.9
+        },
+        {
+          "step": 27,
+          "ms": 20605.9
+        },
+        {
+          "step": 28,
+          "ms": 20601.0
+        },
+        {
+          "step": 29,
+          "ms": 20686.5
+        },
+        {
+          "step": 30,
+          "ms": 20607.3
+        },
+        {
+          "step": 31,
+          "ms": 20605.6
+        },
+        {
+          "step": 32,
+          "ms": 20596.1
+        },
+        {
+          "step": 33,
+          "ms": 20589.5
+        },
+        {
+          "step": 34,
+          "ms": 20598.1
+        },
+        {
+          "step": 35,
+          "ms": 20702.9
+        },
+        {
+          "step": 36,
+          "ms": 20605.7
+        },
+        {
+          "step": 37,
+          "ms": 20597.7
+        },
+        {
+          "step": 38,
+          "ms": 20596.1
+        },
+        {
+          "step": 39,
+          "ms": 20593.3
+        },
+        {
+          "step": 40,
+          "ms": 20593.8
+        },
+        {
+          "step": 41,
+          "ms": 20615.1
+        },
+        {
+          "step": 42,
+          "ms": 20594.6
+        },
+        {
+          "step": 43,
+          "ms": 20599.6
+        },
+        {
+          "step": 44,
+          "ms": 20587.0
+        },
+        {
+          "step": 45,
+          "ms": 20604.3
+        },
+        {
+          "step": 46,
+          "ms": 24563.8
+        },
+        {
+          "step": 47,
+          "ms": 20768.9
+        },
+        {
+          "step": 48,
+          "ms": 20797.7
+        },
+        {
+          "step": 49,
+          "ms": 20876.9
+        },
+        {
+          "step": 50,
+          "ms": 20838.5
+        }
+      ],
+      "observed_median_iteration_ms_steps_10_50": 20603.9
+    }
+  },
+  "v4_configuration_differences": {},
+  "v4_ratio_tests": [
+    {
+      "rank": 0,
+      "step": 1,
+      "input_current_allocated_printed_units": 136.76,
+      "predicted_reserved_printed_units": 216.76,
+      "observed_reserved_printed_units": 216.8,
+      "error_percent": -0.01845018450185032,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 64,
+      "step": 1,
+      "input_current_allocated_printed_units": 133.44,
+      "predicted_reserved_printed_units": 200.61,
+      "observed_reserved_printed_units": 201.01,
+      "error_percent": -0.19899507487188828,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 128,
+      "step": 1,
+      "input_current_allocated_printed_units": 133.44,
+      "predicted_reserved_printed_units": 187.61,
+      "observed_reserved_printed_units": 187.29,
+      "error_percent": 0.170858027657661,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 192,
+      "step": 1,
+      "input_current_allocated_printed_units": 127.36,
+      "predicted_reserved_printed_units": 182.82,
+      "observed_reserved_printed_units": 182.44,
+      "error_percent": 0.2082876562157443,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 0,
+      "step": 2,
+      "input_current_allocated_printed_units": 187.98,
+      "predicted_reserved_printed_units": 266.13,
+      "observed_reserved_printed_units": 252.87,
+      "error_percent": 5.24380116265275,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 64,
+      "step": 2,
+      "input_current_allocated_printed_units": 179.27,
+      "predicted_reserved_printed_units": 236.64,
+      "observed_reserved_printed_units": 236.72,
+      "error_percent": -0.03379520108145462,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 128,
+      "step": 2,
+      "input_current_allocated_printed_units": 173.88,
+      "predicted_reserved_printed_units": 223.69999999999996,
+      "observed_reserved_printed_units": 222.38,
+      "error_percent": 0.5935785592229292,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    },
+    {
+      "rank": 192,
+      "step": 2,
+      "input_current_allocated_printed_units": 162.41,
+      "predicted_reserved_printed_units": 217.82,
+      "observed_reserved_printed_units": 217.11,
+      "error_percent": 0.3270231679793456,
+      "conditioning": "Uses held-out current allocated as input, not an end-to-end prediction"
+    }
+  ],
+  "component_checks": {
+    "observed_stash_payload_bytes": 51219582208,
+    "cpu_replay_logical_bytes": 51219582208,
+    "mxfp8_cpu_layout_bytes": 7100694528,
+    "mxfp8_logged_payload_plus_scales_bytes": 7100694528,
+    "mxfp8_layout_assumption": "Transposed logical orientation with explicit scale-column alignment 64; byte-count equivalence only, not proof of backend layout",
+    "independent_allocation_prediction": false,
+    "scope": "Observed buffer geometries replayed as coexisting allocations on one representative rank; not a measured peak."
+  },
+  "full_model_execution_validation": false
+}
