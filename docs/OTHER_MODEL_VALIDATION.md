@@ -1,5 +1,11 @@
 # Additional model and configuration validation
 
+**Follow-up:** The [GPT-OSS CPU study](GPT_OSS_CPU_VALIDATION.md) now resolves the
+synthetic vocabulary and historical storage defaults, matches all five runs'
+parameter counts, and compares independent CPU state projections with their
+GPU counters. The candidate-only statements below describe this earlier audit;
+full training-peak coverage remains incomplete.
+
 ## Abstract
 
 V3's close agreement is specific to a calibrated model and recipe. Additional logs support the same fitting method on **DeepSeek-V3 16B**, but do not support transferring the 671B coefficients unchanged. After separate 16B calibration, the largest error on batches excluded from fitting is **2.20%**. Reusing the old 671B factor with 16B state and activation dimensions underpredicts by up to **34.9%**. This distinction matters: a reusable fitting method is not a universal memory predictor.

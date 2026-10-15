@@ -42,6 +42,14 @@ configurations. Their reservation-ratio comparison reaches 0.56% maximum error,
 conditional on measured current allocation; neither result establishes universal
 cross-model prediction accuracy.
 
+[GPT-OSS CPU cross-validation](docs/GPT_OSS_CPU_VALIDATION.md) now matches the
+logged synthetic vocabulary and every reported per-rank parameter count across
+five Megatron runs. Independent estimates include the FP32 optimizer gradient
+shards retained at the reporting point and leave 2.2–17.5% of current allocation
+unexplained. A retrospective factor transfer still misses larger-run current
+memory by 5.6–7.4%, illustrating the limits of a single multiplier. Training peaks remain
+unmodeled; the actual CPU dispatch probe stops at FlexAttention backward support.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.
