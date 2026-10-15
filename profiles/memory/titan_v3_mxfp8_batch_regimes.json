@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "source": "log_calibrated_batch_memory_profile",
+  "name": "titan_v3_mxfp8_batch_regimes",
+  "formula": "piecewise affine interpolation in local batch",
+  "context": {
+    "model": "DeepSeek-V3 671B",
+    "framework": "TorchTitan",
+    "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+    "torch_version": null,
+    "hardware": "NVIDIA GB300",
+    "world_size": 256,
+    "tp": 1,
+    "pp": 1,
+    "ep": 64,
+    "cp": 1,
+    "dp_shard": 256,
+    "dp_replicate": 1,
+    "sequence_length": 4096,
+    "microbatches": 1,
+    "checkpoint_policy": "FullAC",
+    "compile_policy": "loss and each TransformerBlock",
+    "precision": "MXFP8 compute",
+    "memory_metric": "peak_reserved_bytes_between_metric_resets",
+    "allocator_policy": null,
+    "parameter_dtype": null,
+    "gradient_dtype": null,
+    "optimizer_state_dtype": null,
+    "optimizer": "AdamW fused=True foreach=False",
+    "attention": null,
+    "routing_policy": null,
+    "deep_ep_version": null,
+    "torchao_version": null,
+    "torchao_revision": "14555766ebf05763588b1bb87df6d2dcede0cb4e",
+    "offload_policy": null,
+    "expert_tp": null,
+    "counter_window": "peak since last metric reset; largest printed value in 50-step run"
+  },
+  "anchors": [
+    {
+      "local_batch": 1,
+      "observed_bytes": 61664992952,
+      "evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt",
+        "sha256": "9566050928a21de5a4cad6c7bbfa052bba1d20ebf8dee8ec6263a7206aad59e9",
+        "line": 2843,
+        "step": 10,
+        "training_signature": "035cbf459f45ee3b42c48370c733c7fda71cbc9aa8a1c221e9fcf3584522c106",
+        "revision_lines": [
+          217,
+          221
+        ]
+      }
+    },
+    {
+      "local_batch": 4,
+      "observed_bytes": 80519899382,
+      "evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt",
+        "sha256": "b9af7673ee9800f89a7a917446704d1d8a0c3ac8fbc03cf7e7731b1813e25e22",
+        "line": 2822,
+        "step": 10,
+        "training_signature": "0f10dd6a51d58db566873bb952f9fa105444107a29a201f280bb4203d3fd14a9",
+        "revision_lines": [
+          222,
+          226
+        ]
+      }
+    },
+    {
+      "local_batch": 16,
+      "observed_bytes": 176673479721,
+      "evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt",
+        "sha256": "eae350a6d37789c0573facf33ecdc0f45e33681b34f1d445fdf1a39550102797",
+        "line": 2880,
+        "step": 10,
+        "training_signature": "6ad73d71afd83290dca1dc124face17bc89badeba99d3e5a61409e469c357425",
+        "revision_lines": [
+          184,
+          188
+        ]
+      }
+    }
+  ],
+  "assumed_state_bytes": 41939150272,
+  "metric_evidence": {
+    "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+    "source_sha256": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+    "url": "https://github.com/rdspring1/torchtitan/blob/a615ec2db9d66d46e9e8d6f679ed73e890369eea/torchtitan/components/metrics.py",
+    "line_anchors": {
+      "reserved_peak_read": [
+        68
+      ],
+      "printed_counter": [
+        527,
+        569
+      ],
+      "metric_resets": [
+        353,
+        537,
+        576
+      ],
+      "reset_implementation": [
+        49,
+        92
+      ]
+    }
+  },
+  "target_metric": "peak_reserved_bytes_between_metric_resets",
+  "limitations": [
+    "Empirical total includes allocator cache and unresolved runtime storage; do not stack other allowances.",
+    "Effective intercepts are not measured component allocations or proven execution phases.",
+    "Only interpolates local batch under the recorded context; no hardware, sequence, precision or mesh transfer.",
+    "Unknown software and allocator fields remain unknown even when context matches.",
+    "Not a within-step trajectory, all-rank maximum, independent validation or required-capacity guarantee."
+  ]
+}

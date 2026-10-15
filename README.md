@@ -28,6 +28,13 @@ factors against a separate batch sweep. It finds 18–20% underestimation at
 batch 1 and up to 5.24% variation in the conditional V4 reservation estimate;
 the original factors remain unchanged and should not be treated as capacity bounds.
 
+The [memory-gap diagnosis](docs/MEMORY_GAP_DIAGNOSIS.md) identifies the V3 counter
+as peak reserved memory at the logged historical revision, adds bounded batch
+interpolation, and reduces the largest retrospective non-fitting-point error
+from 12.80% to 2.85%. It also isolates V4's 5.24% discrepancy to reservation
+differences despite equal allocated counters. These are empirical estimates,
+not full-model execution or required-capacity validation.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.

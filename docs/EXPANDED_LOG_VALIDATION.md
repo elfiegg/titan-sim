@@ -1,5 +1,11 @@
 # CPU memory-model validation against the expanded DeepSeek logs
 
+Follow-up: [the memory-gap diagnosis](MEMORY_GAP_DIAGNOSIS.md) resolves V3's
+counter semantics against the full historical revision and evaluates a new,
+bounded batch estimator. The frozen baseline results below remain unchanged;
+their earlier counter-definition uncertainty is superseded for the audited V3
+revision only. V4 metric/reset uncertainties remain.
+
 ## Abstract
 
 The expanded logs show that the current CPU memory model is useful near its calibration configuration but does **not** accurately extrapolate to small batches. With the existing coefficients frozen, DeepSeek-V3 batch-1 memory is underestimated by **18.3% for MXFP8** and **19.5% for mixed NVFP4/MXFP8**. At batch 8 the corresponding errors fall to 3.1% and 2.3%; the separate batch-16 runs reproduce the calibration values at printed precision. The rounded planning factors also underestimate every tested batch below 16, so their rounding is not an adequate capacity margin.

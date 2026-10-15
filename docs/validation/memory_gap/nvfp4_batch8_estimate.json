@@ -1,0 +1,88 @@
+{
+  "source": "log_calibrated_batch_memory_estimate",
+  "profile": "titan_v3_nvfp4_batch_regimes",
+  "target_metric": "peak_reserved_bytes_between_metric_resets",
+  "estimated_bytes": 106747833002.66666,
+  "estimated_gib": 99.41666666666666,
+  "local_batch": 8,
+  "segment_batch_range": [
+    4,
+    16
+  ],
+  "decomposition": {
+    "assumed_state_bytes": 41939150272,
+    "effective_fixed_allowance_bytes": 6468710293.333328,
+    "batch_dependent_allowance_bytes": 58339972437.333336
+  },
+  "slope_bytes_per_batch": 7292496554.666667,
+  "source_evidence": [
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt",
+      "sha256": "4334c1b2a5dadd8d00bc30d74d001a7f5098c1ff7c47706398fdfcc6d418faf9",
+      "line": 3063,
+      "step": 10,
+      "training_signature": "dc3549b3646f3d0049807b6d79c6b215659084d706a9d4456b569b1a074fbab1",
+      "revision_lines": [
+        207,
+        211
+      ]
+    },
+    {
+      "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt",
+      "sha256": "a03315ffd5fe00a6c85b1cfb38d580ab877232fbf2cb887248b63f78e0c1bcd1",
+      "line": 3095,
+      "step": 10,
+      "training_signature": "00619c58d22f9859f9bbb0ba432605e281c5a1796dca13f2a7270b2c1e484915",
+      "revision_lines": [
+        227,
+        231
+      ]
+    }
+  ],
+  "metric_evidence": {
+    "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+    "source_sha256": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+    "url": "https://github.com/rdspring1/torchtitan/blob/a615ec2db9d66d46e9e8d6f679ed73e890369eea/torchtitan/components/metrics.py",
+    "line_anchors": {
+      "reserved_peak_read": [
+        68
+      ],
+      "printed_counter": [
+        527,
+        569
+      ],
+      "metric_resets": [
+        353,
+        537,
+        576
+      ],
+      "reset_implementation": [
+        49,
+        92
+      ]
+    }
+  },
+  "unknown_context_fields": [
+    "allocator_policy",
+    "attention",
+    "deep_ep_version",
+    "expert_tp",
+    "gradient_dtype",
+    "offload_policy",
+    "optimizer_state_dtype",
+    "parameter_dtype",
+    "routing_policy",
+    "torch_version",
+    "torchao_version"
+  ],
+  "independent_validation": false,
+  "required_capacity_bytes": null,
+  "capacity_verdict": "unknown",
+  "limitations": [
+    "Empirical total includes allocator cache and unresolved runtime storage; do not stack other allowances.",
+    "Effective intercepts are not measured component allocations or proven execution phases.",
+    "Only interpolates local batch under the recorded context; no hardware, sequence, precision or mesh transfer.",
+    "Unknown software and allocator fields remain unknown even when context matches.",
+    "Not a within-step trajectory, all-rank maximum, independent validation or required-capacity guarantee."
+  ]
+}

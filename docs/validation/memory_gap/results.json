@@ -1,0 +1,815 @@
+{
+  "source": "retrospective_memory_gap_experiment",
+  "source_audit": {
+    "torchtitan/components/metrics.py": {
+      "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+      "source_sha256": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+      "url": "https://github.com/rdspring1/torchtitan/blob/a615ec2db9d66d46e9e8d6f679ed73e890369eea/torchtitan/components/metrics.py",
+      "line_anchors": {
+        "reserved_peak_read": [
+          68
+        ],
+        "printed_counter": [
+          527,
+          569
+        ],
+        "metric_resets": [
+          353,
+          537,
+          576
+        ],
+        "reset_implementation": [
+          49,
+          92
+        ]
+      }
+    },
+    "torchtitan/trainer.py": {
+      "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+      "source_sha256": "bf59862f1cdc9b421d76dc7d38894569ad7001c6b913f228fb33331b0b8d4cb3",
+      "url": "https://github.com/rdspring1/torchtitan/blob/a615ec2db9d66d46e9e8d6f679ed73e890369eea/torchtitan/trainer.py",
+      "line_anchors": {
+        "initialization_counter": [
+          498
+        ],
+        "optimizer_before_logging": [
+          904
+        ]
+      }
+    },
+    "torchtitan/components/optimizer.py": {
+      "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+      "source_sha256": "546950e730e974d9f796b29514d7dd40387f384a2e5b6f9af60405c077e99077",
+      "url": "https://github.com/rdspring1/torchtitan/blob/a615ec2db9d66d46e9e8d6f679ed73e890369eea/torchtitan/components/optimizer.py",
+      "line_anchors": {
+        "possible_early_state_materialization": [
+          300,
+          308
+        ]
+      }
+    },
+    "torchtitan/distributed/deepep/hybridep.py": {
+      "revision": "a615ec2db9d66d46e9e8d6f679ed73e890369eea",
+      "source_sha256": "6262dfc64b882fb9cd969baca1e6fb4c476b16e2fea5e17bf42707cd8c1bbbc1",
+      "url": "https://github.com/rdspring1/torchtitan/blob/a615ec2db9d66d46e9e8d6f679ed73e890369eea/torchtitan/distributed/deepep/hybridep.py",
+      "line_anchors": {
+        "buffer_capacity_depends_on_tokens": [
+          423
+        ]
+      }
+    }
+  },
+  "fitting_batches": [
+    1,
+    4,
+    16
+  ],
+  "evaluation_batches": [
+    2,
+    8
+  ],
+  "selection_caveat": "All sweep values had already been inspected; excluded from fitting is not blind validation.",
+  "experimental_max_error_target_percent": 5,
+  "precisions": {
+    "mxfp8": {
+      "aws_rows": [
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt",
+          "sha256": "9566050928a21de5a4cad6c7bbfa052bba1d20ebf8dee8ec6263a7206aad59e9",
+          "local_batch": 1,
+          "role": "fit",
+          "observed_gib": 57.42999999970198,
+          "frozen_gib": 46.901447570475284,
+          "frozen_error_percent": -18.332844209091636,
+          "affine_gib": 57.42999999970198,
+          "affine_error_percent": 0.0,
+          "regime_gib": 57.42999999970198,
+          "regime_error_percent": 0.0,
+          "initialization_gib": 13.43,
+          "first_step_gib": 42.21,
+          "revision_lines": [
+            217,
+            221
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt",
+            "line": 2843,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 57.43,
+            "unit": "GiB",
+            "bytes": 61664992952,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.04796,
+            "grad_norm": 3.6646,
+            "tps": 1584.0,
+            "tflops": 445.26
+          },
+          "training_signature": "035cbf459f45ee3b42c48370c733c7fda71cbc9aa8a1c221e9fcf3584522c106"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-mxfp8-64n-408659938.txt",
+          "sha256": "9b80064b3649ae5a64a2b83351a0594d62a413a53bc8673c6a0d75755a5faf6d",
+          "local_batch": 2,
+          "role": "evaluation",
+          "observed_gib": 61.53000000026077,
+          "frozen_gib": 54.74401773244608,
+          "frozen_error_percent": -11.02873763657717,
+          "affine_gib": 64.57066666639099,
+          "affine_error_percent": 4.941762824829077,
+          "regime_gib": 63.28333333320916,
+          "regime_error_percent": 2.8495584803200913,
+          "initialization_gib": 13.43,
+          "first_step_gib": 42.32,
+          "revision_lines": [
+            164,
+            168
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-mxfp8-64n-408659938.txt",
+            "line": 2895,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 61.53,
+            "unit": "GiB",
+            "bytes": 66067334431,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.09029,
+            "grad_norm": 9.9485,
+            "tps": 2088.0,
+            "tflops": 586.98
+          },
+          "training_signature": "a8e79e1bff29353d2553afa129b10482f0e4d28dea738a6007811e0e70dd78a1"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt",
+          "sha256": "b9af7673ee9800f89a7a917446704d1d8a0c3ac8fbc03cf7e7731b1813e25e22",
+          "local_batch": 4,
+          "role": "fit",
+          "observed_gib": 74.99000000022352,
+          "frozen_gib": 70.42915805638768,
+          "frozen_error_percent": -6.08193351623183,
+          "affine_gib": 78.85199999976903,
+          "affine_error_percent": 5.150020002045608,
+          "regime_gib": 74.99000000022352,
+          "regime_error_percent": 0.0,
+          "initialization_gib": 13.43,
+          "first_step_gib": 55.13,
+          "revision_lines": [
+            222,
+            226
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt",
+            "line": 2822,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 74.99,
+            "unit": "GiB",
+            "bytes": 80519899382,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.0119,
+            "grad_norm": 9.5535,
+            "tps": 2497.0,
+            "tflops": 701.92
+          },
+          "training_signature": "0f10dd6a51d58db566873bb952f9fa105444107a29a201f280bb4203d3fd14a9"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-mxfp8-64n-408659944.txt",
+          "sha256": "bc086092c7a7bb7ddbff2e38b2d464ec6b34642e51904f851b77764f4baedb17",
+          "local_batch": 8,
+          "role": "evaluation",
+          "observed_gib": 105.05999999959022,
+          "frozen_gib": 101.79943870427087,
+          "frozen_error_percent": -3.1035230300133887,
+          "affine_gib": 107.41466666652511,
+          "affine_error_percent": 2.24125896339622,
+          "regime_gib": 104.84000000016144,
+          "regime_error_percent": -0.20940414946662989,
+          "initialization_gib": 13.43,
+          "first_step_gib": 83.88,
+          "revision_lines": [
+            183,
+            187
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-mxfp8-64n-408659944.txt",
+            "line": 2845,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 105.06,
+            "unit": "GiB",
+            "bytes": 112807316029,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 9.95064,
+            "grad_norm": 4.0964,
+            "tps": 2792.0,
+            "tflops": 784.97
+          },
+          "training_signature": "8a2fdebb42b3057e01c88c887a483b4d6a75853c2c47e46fd6dc31bd52bc5b22"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt",
+          "sha256": "eae350a6d37789c0573facf33ecdc0f45e33681b34f1d445fdf1a39550102797",
+          "local_batch": 16,
+          "role": "fit",
+          "observed_gib": 164.54000000003725,
+          "frozen_gib": 164.54000000003725,
+          "frozen_error_percent": 0.0,
+          "affine_gib": 164.54000000003725,
+          "affine_error_percent": 0.0,
+          "regime_gib": 164.54000000003725,
+          "regime_error_percent": 0.0,
+          "initialization_gib": 13.43,
+          "first_step_gib": 147.66,
+          "revision_lines": [
+            184,
+            188
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt",
+            "line": 2880,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 164.54,
+            "unit": "GiB",
+            "bytes": 176673479721,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.22791,
+            "grad_norm": 3.6184,
+            "tps": 3061.0,
+            "tflops": 860.71
+          },
+          "training_signature": "6ad73d71afd83290dca1dc124face17bc89badeba99d3e5a61409e469c357425"
+        }
+      ],
+      "max_evaluation_error_percent": 2.8495584803200913,
+      "baseline_profile_sha256": "077f5f2223342eb261cfb9cae31e740d4fc93c9973d06b3c62e02bfc7c9b19a3",
+      "lyris_corroboration": [
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs1-408661957.txt",
+          "sha256": "d810356bb3ba558adbc7647d3dfe8bd177e5432e70ee8a2d9af33f94a8fc4699",
+          "local_batch": 1,
+          "observed_max_gib": 57.42999999970198,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs16-408661954.txt",
+          "sha256": "b6ac996ec2c40c41fba12c3fef4a13a960aaf76cd43f3d1eab0883630d453f94",
+          "local_batch": 16,
+          "observed_max_gib": 164.54000000003725,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs2-408661960.txt",
+          "sha256": "d4a6501d6738a7b40dab6f07ca8e70b74f6d7bbc4cbf84cb635622c20b3cc565",
+          "local_batch": 2,
+          "observed_max_gib": 61.53000000026077,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs4-408661963.txt",
+          "sha256": "a41aa42ed660609ef548b54b3a6a0ef5234c6c5553eb21e93ef09e0cf6843d7e",
+          "local_batch": 4,
+          "observed_max_gib": 74.99000000022352,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-mxfp8-bs8-408661966.txt",
+          "sha256": "068f155affd58fec1123670d64b85810f91e8c5855e92536ccd4f8ad0ee36c04",
+          "local_batch": 8,
+          "observed_max_gib": 105.05999999959022,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        }
+      ]
+    },
+    "nvfp4": {
+      "aws_rows": [
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-nvfp4-64n-408659950.txt",
+          "sha256": "53d27f979946dbd20d530d1e100b87dceddbbc2b55a439bb9e7e18cea4f03a2d",
+          "local_batch": 1,
+          "role": "fit",
+          "observed_gib": 57.42999999970198,
+          "frozen_gib": 46.227072570472956,
+          "frozen_error_percent": -19.507099824633745,
+          "affine_gib": 57.42999999970198,
+          "affine_error_percent": 0.0,
+          "regime_gib": 57.42999999970198,
+          "regime_error_percent": 0.0,
+          "initialization_gib": 13.43,
+          "first_step_gib": 42.21,
+          "revision_lines": [
+            217,
+            221
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-nvfp4-64n-408659950.txt",
+            "line": 3047,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 57.43,
+            "unit": "GiB",
+            "bytes": 61664992952,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.44594,
+            "grad_norm": 19.381,
+            "tps": 1195.0,
+            "tflops": 336.05
+          },
+          "training_signature": "594a39b1db775d9fa140d1fad898eb3dcf4c2889600eb97a06eccd568f62a02c"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-nvfp4-64n-408659953.txt",
+          "sha256": "06b68796e8090097a62b0d548ad347c511021511636986654d0b9e397054dc58",
+          "local_batch": 2,
+          "role": "evaluation",
+          "observed_gib": 61.230000000447035,
+          "frozen_gib": 53.395267732441425,
+          "frozen_error_percent": -12.79557776898319,
+          "affine_gib": 63.85133333305518,
+          "affine_error_percent": 4.281125808572606,
+          "regime_gib": 62.36999999980132,
+          "regime_error_percent": 1.861832434012678,
+          "initialization_gib": 13.43,
+          "first_step_gib": 42.32,
+          "revision_lines": [
+            178,
+            182
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-nvfp4-64n-408659953.txt",
+            "line": 3078,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 61.23,
+            "unit": "GiB",
+            "bytes": 65745211884,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.39773,
+            "grad_norm": 22.0429,
+            "tps": 2062.0,
+            "tflops": 579.8
+          },
+          "training_signature": "6030241424896e0eb229e4ee68fb80eefe0f7e21c5ab2e6406912610c7373bff"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt",
+          "sha256": "4334c1b2a5dadd8d00bc30d74d001a7f5098c1ff7c47706398fdfcc6d418faf9",
+          "local_batch": 4,
+          "role": "fit",
+          "observed_gib": 72.25,
+          "frozen_gib": 67.73165805637836,
+          "frozen_error_percent": -6.2537604756008776,
+          "affine_gib": 76.69399999976159,
+          "affine_error_percent": 6.15086505157314,
+          "regime_gib": 72.25,
+          "regime_error_percent": 0.0,
+          "initialization_gib": 13.43,
+          "first_step_gib": 51.81,
+          "revision_lines": [
+            207,
+            211
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt",
+            "line": 3063,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 72.25,
+            "unit": "GiB",
+            "bytes": 77577846784,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.19452,
+            "grad_norm": 10.6391,
+            "tps": 2723.0,
+            "tflops": 765.64
+          },
+          "training_signature": "dc3549b3646f3d0049807b6d79c6b215659084d706a9d4456b569b1a074fbab1"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-nvfp4-64n-408659959.txt",
+          "sha256": "2ddf995ef254c05fdd1ba5af3eb6913c5d635aa4c1f3a9673e75fd818383c59c",
+          "local_batch": 8,
+          "role": "evaluation",
+          "observed_gib": 98.69000000040978,
+          "frozen_gib": 96.40443870425224,
+          "frozen_error_percent": -2.3158995806546234,
+          "affine_gib": 102.37933333317439,
+          "affine_error_percent": 3.738305129951658,
+          "regime_gib": 99.41666666666666,
+          "regime_error_percent": 0.7363123581455744,
+          "initialization_gib": 13.43,
+          "first_step_gib": 78.85,
+          "revision_lines": [
+            195,
+            199
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-nvfp4-64n-408659959.txt",
+            "line": 3037,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 98.69,
+            "unit": "GiB",
+            "bytes": 105967580611,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.41561,
+            "grad_norm": 17.4493,
+            "tps": 3118.0,
+            "tflops": 876.67
+          },
+          "training_signature": "9400322d1cfd94778be21f0d30ff0fd0cbf9ac4d263e62f661841d6cdf78e17b"
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt",
+          "sha256": "a03315ffd5fe00a6c85b1cfb38d580ab877232fbf2cb887248b63f78e0c1bcd1",
+          "local_batch": 16,
+          "role": "fit",
+          "observed_gib": 153.75,
+          "frozen_gib": 153.75,
+          "frozen_error_percent": 0.0,
+          "affine_gib": 153.75,
+          "affine_error_percent": 0.0,
+          "regime_gib": 153.75,
+          "regime_error_percent": 0.0,
+          "initialization_gib": 13.43,
+          "first_step_gib": 132.07,
+          "revision_lines": [
+            227,
+            231
+          ],
+          "maximum_evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt",
+            "line": 3095,
+            "rank": null,
+            "step": 10,
+            "metric": "training_memory_unspecified",
+            "value": 153.75,
+            "unit": "GiB",
+            "bytes": 165087805440,
+            "metric_semantics_verified": false,
+            "window": "unverified",
+            "loss": 10.02885,
+            "grad_norm": 8.1042,
+            "tps": 3446.0,
+            "tflops": 968.8
+          },
+          "training_signature": "00619c58d22f9859f9bbb0ba432605e281c5a1796dca13f2a7270b2c1e484915"
+        }
+      ],
+      "max_evaluation_error_percent": 1.861832434012678,
+      "baseline_profile_sha256": "fd46bee6e1cea704acd50bb9ef0ad1e8a904ac40ff6d71e68ecbe62b7ece2c07",
+      "lyris_corroboration": [
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs1-408661972.txt",
+          "sha256": "f6f6ac78c9b8da5cecd384af9971864e9a0bd95704657feb129f188385d18003",
+          "local_batch": 1,
+          "observed_max_gib": 57.42999999970198,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs16-408661969.txt",
+          "sha256": "589d3978260b8b3a5676c586a98adae5e7b2c2bcab10d8dbc7ffadecb2243986",
+          "local_batch": 16,
+          "observed_max_gib": 153.75,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs2-408661975.txt",
+          "sha256": "ce11fd24fd7dcef4715bc948178a9058b595d93bd75bfc48552aab3227acae4c",
+          "local_batch": 2,
+          "observed_max_gib": 61.230000000447035,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs4-408661978.txt",
+          "sha256": "c1b4e91a14ed9cad6e2d8e503f23581cd3464e1ce5a996851a73ac2f6ef1de84",
+          "local_batch": 4,
+          "observed_max_gib": 72.25,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        },
+        {
+          "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/lyris_expA/run_logs/lyris_expA-nvfp4-bs8-408661981.txt",
+          "sha256": "154e9e9062a3ffab219960a606338fe110311aecac8878c30863a16a2e4dab03",
+          "local_batch": 8,
+          "observed_max_gib": 98.69000000040978,
+          "caveat": "Package suffix only; same rounded maxima do not establish independent runs or complete software identity."
+        }
+      ]
+    }
+  },
+  "v4_reservation_variability": {
+    "paired_rows": [
+      {
+        "rank": 0,
+        "step": 1,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 136.76,
+          "reserved": 216.76,
+          "max-allocated": 208.93,
+          "max-reserved": 216.76
+        },
+        "evaluation_values": {
+          "allocated": 136.76,
+          "reserved": 216.8,
+          "max-allocated": 208.93,
+          "max-reserved": 216.8
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": 0.040000000000020464,
+        "observed_reserved_over_current_range": [
+          1.584966364434045,
+          1.5852588476162623
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64272,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64233,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 0,
+        "step": 2,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 187.98,
+          "reserved": 266.13,
+          "max-allocated": 243.74,
+          "max-reserved": 266.13
+        },
+        "evaluation_values": {
+          "allocated": 187.98,
+          "reserved": 252.87,
+          "max-allocated": 243.74,
+          "max-reserved": 252.87
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": -13.259999999999991,
+        "observed_reserved_over_current_range": [
+          1.3451962974784553,
+          1.4157357165655922
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64290,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64250,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 64,
+        "step": 1,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 133.44,
+          "reserved": 200.61,
+          "max-allocated": 193.1,
+          "max-reserved": 200.61
+        },
+        "evaluation_values": {
+          "allocated": 133.44,
+          "reserved": 201.01,
+          "max-allocated": 193.1,
+          "max-reserved": 201.01
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": 0.39999999999997726,
+        "observed_reserved_over_current_range": [
+          1.5033723021582734,
+          1.5063699040767387
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64267,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64223,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 64,
+        "step": 2,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 179.27,
+          "reserved": 236.64,
+          "max-allocated": 227.13,
+          "max-reserved": 236.64
+        },
+        "evaluation_values": {
+          "allocated": 179.27,
+          "reserved": 236.72,
+          "max-allocated": 227.13,
+          "max-reserved": 236.72
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": 0.0800000000000125,
+        "observed_reserved_over_current_range": [
+          1.3200200814414011,
+          1.320466335694762
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64280,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64240,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 128,
+        "step": 1,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 133.44,
+          "reserved": 187.61,
+          "max-allocated": 181.23,
+          "max-reserved": 187.61
+        },
+        "evaluation_values": {
+          "allocated": 133.44,
+          "reserved": 187.29,
+          "max-allocated": 181.23,
+          "max-reserved": 187.29
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": -0.3200000000000216,
+        "observed_reserved_over_current_range": [
+          1.4035521582733812,
+          1.4059502398081536
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64265,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64223,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 128,
+        "step": 2,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 173.88,
+          "reserved": 223.7,
+          "max-allocated": 214.53,
+          "max-reserved": 223.7
+        },
+        "evaluation_values": {
+          "allocated": 173.88,
+          "reserved": 222.38,
+          "max-allocated": 214.53,
+          "max-reserved": 222.38
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": -1.3199999999999932,
+        "observed_reserved_over_current_range": [
+          1.2789279963193008,
+          1.2865194386933516
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64281,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64243,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 192,
+        "step": 1,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 127.36,
+          "reserved": 182.82,
+          "max-allocated": 168.77,
+          "max-reserved": 182.82
+        },
+        "evaluation_values": {
+          "allocated": 127.36,
+          "reserved": 182.44,
+          "max-allocated": 168.77,
+          "max-reserved": 182.44
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": -0.37999999999999545,
+        "observed_reserved_over_current_range": [
+          1.4324748743718594,
+          1.4354585427135678
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64273,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64227,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      },
+      {
+        "rank": 192,
+        "step": 2,
+        "printed_unit": "GB",
+        "calibration_values": {
+          "allocated": 162.41,
+          "reserved": 217.82,
+          "max-allocated": 198.81,
+          "max-reserved": 217.82
+        },
+        "evaluation_values": {
+          "allocated": 162.41,
+          "reserved": 217.11,
+          "max-allocated": 198.81,
+          "max-reserved": 217.11
+        },
+        "current_allocated_difference": 0.0,
+        "peak_allocated_difference": 0.0,
+        "reserved_difference": -0.7099999999999795,
+        "observed_reserved_over_current_range": [
+          1.336801921063974,
+          1.3411735730558463
+        ],
+        "source_evidence": [
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out",
+            "line": 64284,
+            "sha256": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6"
+          },
+          {
+            "source": "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+            "line": 64241,
+            "sha256": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e"
+          }
+        ]
+      }
+    ],
+    "interpretation": "Same allocated counters do not imply the same reservation. Ranges describe these two runs only; not forecast confidence bounds.",
+    "metric_caveat": "GB divisor and peak reset window remain unverified for this separate Megatron logger; V3 source audit does not resolve them."
+  }
+}
