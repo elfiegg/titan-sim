@@ -1,0 +1,3798 @@
+{
+  "source": "additional_model_config_audit",
+  "v3_16b": {
+    "mxfp8": {
+      "rows": [
+        {
+          "local_batch": 1,
+          "observed_bytes": 36002563359,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+            "sha256": "d675a6d61d335a28fa8d43eca94ac6fb3b2a80966cc90ec8aba831ad157ccecc",
+            "line": 1251,
+            "step": 2,
+            "signature": "d4a07a539d76d5e009941d18ca9b35af2f8707471c10dd37c288ba95c9d650c1"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 397
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 405
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 416
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 1,
+                  "global_batch": 8,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+                  "line": 1223
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "fit",
+          "observed_gib": 33.53000000026077,
+          "new_fit_gib": 33.53000000026077,
+          "error_percent": 0.0,
+          "out_of_domain_671b_factor_gib": 30.247407093335248,
+          "out_of_domain_error_percent": -9.790017616761093
+        },
+        {
+          "local_batch": 2,
+          "observed_bytes": 37033355510,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+            "sha256": "6a40e525d866c06d242b13acb46d8b947803ab17f2130762cfaec7eb2c69abb2",
+            "line": 465,
+            "step": 2,
+            "signature": "c4a04ced245164c25cace2ed2d3b5464d38ac655a9ea32a7d9c57afd1032d8b1"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 398
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 405
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 416
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 2,
+                  "global_batch": 16,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt",
+                  "line": 447
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "evaluation",
+          "observed_gib": 34.49000000022352,
+          "new_fit_gib": 35.151428571636124,
+          "error_percent": 1.9177401316564868,
+          "out_of_domain_671b_factor_gib": 31.23920753536434,
+          "out_of_domain_error_percent": -9.425318831075991
+        },
+        {
+          "local_batch": 8,
+          "observed_bytes": 48189533061,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+            "sha256": "de7526b503964cdfc76b7abd690dc3986a7607dc806574ef11cf4378f43fc34d",
+            "line": 465,
+            "step": 2,
+            "signature": "83f6cda45e1226558ed56df8e84728f9b97d72aeff12beb922ef191d8c34e287"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 397
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 406
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 416
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 8,
+                  "global_batch": 64,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+                  "line": 445
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "fit",
+          "observed_gib": 44.87999999988824,
+          "new_fit_gib": 44.87999999988824,
+          "error_percent": 0.0,
+          "out_of_domain_671b_factor_gib": 37.1900101875389,
+          "out_of_domain_error_percent": -17.134558405455635
+        },
+        {
+          "local_batch": 32,
+          "observed_bytes": 92900142612,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+            "sha256": "d043bb6b28ce55a93573c5ed01c2abf6b4aff8a8934ce5270d827bd702d6289a",
+            "line": 858,
+            "step": 2,
+            "signature": "cffd859d0874b36361ba8e08f40135d476d7b5ca13639291a286052a3e84fe7f"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 397
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 405
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 416
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 32,
+                  "global_batch": 256,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt",
+                  "line": 825
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "evaluation",
+          "observed_gib": 86.51999999955297,
+          "new_fit_gib": 86.69999999992018,
+          "error_percent": 0.20804438322716834,
+          "out_of_domain_671b_factor_gib": 60.99322079623715,
+          "out_of_domain_error_percent": -29.50390569053133
+        },
+        {
+          "local_batch": 64,
+          "observed_bytes": 152965260247,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+            "sha256": "bc5414da35c438f809c0df5fa0fa63e3b71ab601579c3e49a701df54ee992fe5",
+            "line": 858,
+            "step": 2,
+            "signature": "89c151364085774c9504a9122f5dff34cf372b8503d587766570c8084c924be2"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 397
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 405
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 412
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 417
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 64,
+                  "global_batch": 512,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+                  "line": 838
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "fit",
+          "observed_gib": 142.45999999996275,
+          "new_fit_gib": 142.45999999996275,
+          "error_percent": 0.0,
+          "out_of_domain_671b_factor_gib": 92.73083494116815,
+          "out_of_domain_error_percent": -34.90745827517029
+        }
+      ],
+      "model_source": {
+        "revision": "791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9",
+        "source_sha256": "35cdf2208c2b4db99f31e7df4cae07a602d59696808b097e492890903055e8b2",
+        "url": "https://github.com/rdspring1/torchtitan/blob/791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9/torchtitan/models/deepseek_v3/__init__.py"
+      },
+      "metric_source": {
+        "revision": "791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9",
+        "source_sha256": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+        "url": "https://github.com/rdspring1/torchtitan/blob/791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9/torchtitan/components/metrics.py"
+      },
+      "caveat": "New model-specific calibration; validates the method retrospectively, not transfer of 671B coefficients."
+    },
+    "nvfp4": {
+      "rows": [
+        {
+          "local_batch": 1,
+          "observed_bytes": 35959613686,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+            "sha256": "0a497708c5ad2d2d92a8076b9106ee88367cff47549fb76ff6282e2b4ad617c4",
+            "line": 860,
+            "step": 2,
+            "signature": "9abfe39c088e391a002f5168f1a1639d0598c6f5a45d50c3bb0b2fa15a48171f"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 399
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 407
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 419
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 1,
+                  "global_batch": 8,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt",
+                  "line": 837
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "fit",
+          "observed_gib": 33.49000000022352,
+          "new_fit_gib": 33.49000000022352,
+          "error_percent": 0.0,
+          "out_of_domain_671b_factor_gib": 30.16212313548952,
+          "out_of_domain_error_percent": -9.93692703706117
+        },
+        {
+          "local_batch": 2,
+          "observed_bytes": 36711232963,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+            "sha256": "7656fb358e2da89180afef7dc88b99378abd74eec02e20c9300b97cf55989968",
+            "line": 467,
+            "step": 2,
+            "signature": "8601be65eedc1937ee87c89b3db376314ffb5edfcd07c9a8813fd658ccaaf4e2"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 399
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 409
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 416
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 2,
+                  "global_batch": 16,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt",
+                  "line": 447
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "evaluation",
+          "observed_gib": 34.19000000040978,
+          "new_fit_gib": 34.94285714307002,
+          "error_percent": 2.2019805283744365,
+          "out_of_domain_671b_factor_gib": 31.068639619672886,
+          "out_of_domain_error_percent": -9.129454169931217
+        },
+        {
+          "local_batch": 8,
+          "observed_bytes": 46879568036,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+            "sha256": "f7508beda4f4b019622adc7c1616f97e5e97919c68bd32000074af75e97cf986",
+            "line": 467,
+            "step": 2,
+            "signature": "09c4809ab7232c285b2fc8f119f385d195b1fd39ebd033689af19e1dcb3d7586"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 399
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 409
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 417
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 8,
+                  "global_batch": 64,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt",
+                  "line": 449
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "fit",
+          "observed_gib": 43.66000000014901,
+          "new_fit_gib": 43.66000000014901,
+          "error_percent": 0.0,
+          "out_of_domain_671b_factor_gib": 36.50773852477308,
+          "out_of_domain_error_percent": -16.38172577954997
+        },
+        {
+          "local_batch": 32,
+          "observed_bytes": 87617332838,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+            "sha256": "2a18b8347a43c4bd25c3d9a4ee11f6a1f2b7924e1c81a5b74dac7875789339fd",
+            "line": 467,
+            "step": 2,
+            "signature": "1389bbd00d6a6225ec73bd8fbc74518fe1b8dd58641fba7a6c7fd10aefda6205"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 399
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 407
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 418
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 32,
+                  "global_batch": 256,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt",
+                  "line": 449
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "evaluation",
+          "observed_gib": 81.59999999962747,
+          "new_fit_gib": 81.85857142867255,
+          "error_percent": 0.3168767512821802,
+          "out_of_domain_671b_factor_gib": 58.26413414517387,
+          "out_of_domain_error_percent": -28.59787482176487
+        },
+        {
+          "local_batch": 64,
+          "observed_bytes": 142582176809,
+          "evidence": {
+            "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+            "sha256": "22a7d118591b4a0f268c5c05ff2ff6448cb25f82631332d17887d955c3c48cac",
+            "line": 467,
+            "step": 2,
+            "signature": "a8739de30c34e5fe68c4754a1c88e4626831bd4cab1d2c483b184a0ce0e58644"
+          },
+          "facts": {
+            "torchtitan_version": [
+              {
+                "value": "0.2.2+git791f241",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 384
+                }
+              }
+            ],
+            "mesh": [
+              {
+                "value": {
+                  "pp": 1,
+                  "dp_replicate": 1,
+                  "dp_shard": 8,
+                  "cp": 1,
+                  "tp": 1,
+                  "ep": 8
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 399
+                }
+              }
+            ],
+            "model": [
+              {
+                "value": "deepseek_v3 16B",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 409
+                }
+              }
+            ],
+            "hardware": [
+              {
+                "value": "NVIDIA GB300",
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "capacity_gib_printed": [
+              {
+                "value": 276.62,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 414
+                }
+              }
+            ],
+            "parameter_elements": [
+              {
+                "value": 15706484224,
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 419
+                }
+              }
+            ],
+            "training": [
+              {
+                "value": {
+                  "local_batch": 64,
+                  "global_batch": 512,
+                  "accumulation": 1,
+                  "sequence_length": 4096,
+                  "steps": 100
+                },
+                "occurrences": 2,
+                "evidence": {
+                  "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt",
+                  "line": 447
+                }
+              }
+            ]
+          },
+          "training_completed": true,
+          "role": "fit",
+          "observed_gib": 132.79000000003725,
+          "new_fit_gib": 132.79000000003725,
+          "error_percent": 0.0,
+          "out_of_domain_671b_factor_gib": 87.27266163904159,
+          "out_of_domain_error_percent": -34.27768533849152
+        }
+      ],
+      "model_source": {
+        "revision": "791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9",
+        "source_sha256": "35cdf2208c2b4db99f31e7df4cae07a602d59696808b097e492890903055e8b2",
+        "url": "https://github.com/rdspring1/torchtitan/blob/791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9/torchtitan/models/deepseek_v3/__init__.py"
+      },
+      "metric_source": {
+        "revision": "791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9",
+        "source_sha256": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+        "url": "https://github.com/rdspring1/torchtitan/blob/791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9/torchtitan/components/metrics.py"
+      },
+      "caveat": "New model-specific calibration; validates the method retrospectively, not transfer of 671B coefficients."
+    }
+  },
+  "v4_long_context": {
+    "runs": {
+      "packed_4x16k": {
+        "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+        "sha256": "1e3c0167bc98b14f266fc9ee44ba0e82ce5e715e0b93ec7fb15993be29785d81",
+        "config": {
+          "num_layers": {
+            "value": "15",
+            "line": 784
+          },
+          "hidden_size": {
+            "value": "7168",
+            "line": 496
+          },
+          "num_experts": {
+            "value": "384",
+            "line": 783
+          },
+          "num_attention_heads": {
+            "value": "128",
+            "line": 778
+          },
+          "moe_router_topk": {
+            "value": "6",
+            "line": 720
+          },
+          "world_size": {
+            "value": "64",
+            "line": 1045
+          },
+          "tensor_model_parallel_size": {
+            "value": "1",
+            "line": 952
+          },
+          "pipeline_model_parallel_size": {
+            "value": "1",
+            "line": 835
+          },
+          "context_parallel_size": {
+            "value": "16",
+            "line": 284
+          },
+          "expert_model_parallel_size": {
+            "value": "64",
+            "line": 398
+          },
+          "expert_tensor_parallel_size": {
+            "value": "1",
+            "line": 399
+          },
+          "seq_length": {
+            "value": "65536",
+            "line": 924
+          },
+          "micro_batch_size": {
+            "value": "1",
+            "line": 664
+          },
+          "global_batch_size": {
+            "value": "1024",
+            "line": 476
+          },
+          "varlen_mock_dataset_config_json": {
+            "value": "{\"mode\":\"distribution\",\"type\":\"lognormal\",\"format\":\"thd\",\"min_seq_len\":16384,\"max_seq_len\":16384,\"mean_seq_len\":16384,\"lognormal_sigma\":1.1}",
+            "line": 1026
+          },
+          "experimental_attention_variant": {
+            "value": "dsv4_hybrid",
+            "line": 397
+          },
+          "fp8_recipe": {
+            "value": "mxfp8",
+            "line": 467
+          },
+          "params_dtype": {
+            "value": "torch.bfloat16",
+            "line": 824
+          },
+          "recompute_granularity": {
+            "value": "selective",
+            "line": 857
+          },
+          "cuda_graph_impl": {
+            "value": "transformer_engine",
+            "line": 298
+          },
+          "mtp_num_layers": {
+            "value": "1",
+            "line": 739
+          }
+        },
+        "allocator_rows": [
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19968,
+            "rank": 0,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.7,
+              "reserved": 169580.0,
+              "max-allocated": 161621.95,
+              "max-reserved": 169580.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2380930825801806,
+            "high_water_allocated_over_current": 1.1799918521530832,
+            "high_water_reserved_over_current": 1.2380930825801806,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19953,
+            "rank": 1,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.61,
+              "reserved": 170538.0,
+              "max-allocated": 161621.91,
+              "max-reserved": 170538.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2450881994056888,
+            "high_water_allocated_over_current": 1.1799923354701491,
+            "high_water_reserved_over_current": 1.2450881994056888,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19962,
+            "rank": 2,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.61,
+              "reserved": 169598.0,
+              "max-allocated": 161621.91,
+              "max-reserved": 169598.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2382253130845091,
+            "high_water_allocated_over_current": 1.1799923354701491,
+            "high_water_reserved_over_current": 1.2382253130845091,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19962,
+            "rank": 3,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169958.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169958.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241107367639154,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241107367639154,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19956,
+            "rank": 4,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169958.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169958.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241107367639154,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241107367639154,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19956,
+            "rank": 5,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169958.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169958.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241107367639154,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241107367639154,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19956,
+            "rank": 6,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169958.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169958.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241107367639154,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241107367639154,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19956,
+            "rank": 7,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19957,
+            "rank": 8,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 170220.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 170220.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.243020424252466,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.243020424252466,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19959,
+            "rank": 9,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19957,
+            "rank": 10,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19957,
+            "rank": 11,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.63,
+              "reserved": 170520.0,
+              "max-allocated": 161621.93,
+              "max-reserved": 170520.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2449566006464399,
+            "high_water_allocated_over_current": 1.1799923091878775,
+            "high_water_reserved_over_current": 1.2449566006464399,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19961,
+            "rank": 12,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137864.63,
+              "reserved": 170500.0,
+              "max-allocated": 162069.93,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367203973927177,
+            "high_water_allocated_over_current": 1.1755729515249849,
+            "high_water_reserved_over_current": 1.2367203973927177,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19955,
+            "rank": 13,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137864.63,
+              "reserved": 170060.0,
+              "max-allocated": 162069.93,
+              "max-reserved": 170060.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2335288608833173,
+            "high_water_allocated_over_current": 1.1755729515249849,
+            "high_water_reserved_over_current": 1.2335288608833173,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19954,
+            "rank": 14,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137865.1,
+              "reserved": 170500.0,
+              "max-allocated": 162070.16,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367161812525431,
+            "high_water_allocated_over_current": 1.1755706121418692,
+            "high_water_reserved_over_current": 1.2367161812525431,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 19954,
+            "rank": 15,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137865.1,
+              "reserved": 170500.0,
+              "max-allocated": 162070.16,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367161812525431,
+            "high_water_allocated_over_current": 1.1755706121418692,
+            "high_water_reserved_over_current": 1.2367161812525431,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20053,
+            "rank": 0,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.27,
+              "reserved": 201406.0,
+              "max-allocated": 174485.53,
+              "max-reserved": 201406.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4256987786429325,
+            "high_water_allocated_over_current": 1.2351360287770212,
+            "high_water_reserved_over_current": 1.4256987786429325,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20050,
+            "rank": 1,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.18,
+              "reserved": 201372.0,
+              "max-allocated": 174485.43,
+              "max-reserved": 201372.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4254590099483126,
+            "high_water_allocated_over_current": 1.2351361077915777,
+            "high_water_reserved_over_current": 1.4254590099483126,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20057,
+            "rank": 2,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.18,
+              "reserved": 201812.0,
+              "max-allocated": 174485.43,
+              "max-reserved": 201812.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4285736533166917,
+            "high_water_allocated_over_current": 1.2351361077915777,
+            "high_water_reserved_over_current": 1.4285736533166917,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20057,
+            "rank": 3,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.17,
+              "reserved": 201192.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201192.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4244672744304965,
+            "high_water_allocated_over_current": 1.2351828095364086,
+            "high_water_reserved_over_current": 1.4244672744304965,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20055,
+            "rank": 4,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.17,
+              "reserved": 201652.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201652.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4277241382533028,
+            "high_water_allocated_over_current": 1.2351828095364086,
+            "high_water_reserved_over_current": 1.4277241382533028,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20058,
+            "rank": 5,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.19,
+              "reserved": 201472.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201472.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4264495112899522,
+            "high_water_allocated_over_current": 1.23518263463112,
+            "high_water_reserved_over_current": 1.4264495112899522,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20054,
+            "rank": 6,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.17,
+              "reserved": 201112.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201112.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.423900863330878,
+            "high_water_allocated_over_current": 1.2351828095364086,
+            "high_water_reserved_over_current": 1.423900863330878,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20054,
+            "rank": 7,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201594.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201594.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4273131870388174,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4273131870388174,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20061,
+            "rank": 8,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201374.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201374.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4257555568457139,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4257555568457139,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20061,
+            "rank": 9,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201334.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201334.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4254723513560585,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4254723513560585,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20048,
+            "rank": 10,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201494.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201494.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4266051733146794,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4266051733146794,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20048,
+            "rank": 11,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.2,
+              "reserved": 201474.0,
+              "max-allocated": 174485.46,
+              "max-reserved": 201474.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4261808389998598,
+            "high_water_allocated_over_current": 1.235136145289598,
+            "high_water_reserved_over_current": 1.4261808389998598,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20056,
+            "rank": 12,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.2,
+              "reserved": 202114.0,
+              "max-allocated": 175381.46,
+              "max-reserved": 202114.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4216940692523152,
+            "high_water_allocated_over_current": 1.2336541829799625,
+            "high_water_reserved_over_current": 1.4216940692523152,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20056,
+            "rank": 13,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.2,
+              "reserved": 202394.0,
+              "max-allocated": 175381.46,
+              "max-reserved": 202394.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4236636227686013,
+            "high_water_allocated_over_current": 1.2336541829799625,
+            "high_water_reserved_over_current": 1.4236636227686013,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20049,
+            "rank": 14,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.68,
+              "reserved": 202094.0,
+              "max-allocated": 175381.93,
+              "max-reserved": 202094.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.421548587173692,
+            "high_water_allocated_over_current": 1.2336533237369507,
+            "high_water_reserved_over_current": 1.421548587173692,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+            "line": 20049,
+            "rank": 15,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.67,
+              "reserved": 202156.0,
+              "max-allocated": 175381.93,
+              "max-reserved": 202156.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.421984801146445,
+            "high_water_allocated_over_current": 1.2336534105133152,
+            "high_water_reserved_over_current": 1.421984801146445,
+            "peak_reset_verified": false
+          }
+        ],
+        "hardware": null,
+        "maximum_logged_iteration": 15,
+        "caveat": "15-layer dsv4_hybrid variant, not full V4 Pro; hardware and memory-unit divisor unverified."
+      },
+      "single_64k": {
+        "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+        "sha256": "5012b78e279ea84c362015ac2b23c9ed7d35ab3250cef78c9649e40e1c812206",
+        "config": {
+          "num_layers": {
+            "value": "15",
+            "line": 1006
+          },
+          "hidden_size": {
+            "value": "7168",
+            "line": 706
+          },
+          "num_experts": {
+            "value": "384",
+            "line": 1005
+          },
+          "num_attention_heads": {
+            "value": "128",
+            "line": 1000
+          },
+          "moe_router_topk": {
+            "value": "6",
+            "line": 942
+          },
+          "world_size": {
+            "value": "64",
+            "line": 1276
+          },
+          "tensor_model_parallel_size": {
+            "value": "1",
+            "line": 1180
+          },
+          "pipeline_model_parallel_size": {
+            "value": "1",
+            "line": 1057
+          },
+          "context_parallel_size": {
+            "value": "16",
+            "line": 490
+          },
+          "expert_model_parallel_size": {
+            "value": "64",
+            "line": 608
+          },
+          "expert_tensor_parallel_size": {
+            "value": "1",
+            "line": 609
+          },
+          "seq_length": {
+            "value": "65536",
+            "line": 1149
+          },
+          "micro_batch_size": {
+            "value": "1",
+            "line": 886
+          },
+          "global_batch_size": {
+            "value": "256",
+            "line": 686
+          },
+          "varlen_mock_dataset_config_json": {
+            "value": "{\"mode\":\"distribution\",\"type\":\"lognormal\",\"format\":\"thd\",\"min_seq_len\":65534,\"max_seq_len\":65534,\"mean_seq_len\":65534,\"lognormal_sigma\":1.1}",
+            "line": 1254
+          },
+          "experimental_attention_variant": {
+            "value": "dsv4_hybrid",
+            "line": 607
+          },
+          "fp8_recipe": {
+            "value": "mxfp8",
+            "line": 677
+          },
+          "params_dtype": {
+            "value": "torch.bfloat16",
+            "line": 1046
+          },
+          "recompute_granularity": {
+            "value": "selective",
+            "line": 1079
+          },
+          "cuda_graph_impl": {
+            "value": "transformer_engine",
+            "line": 508
+          },
+          "mtp_num_layers": {
+            "value": "1",
+            "line": 961
+          }
+        },
+        "allocator_rows": [
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19968,
+            "rank": 0,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.7,
+              "reserved": 170000.0,
+              "max-allocated": 161621.95,
+              "max-reserved": 170000.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411594765811458,
+            "high_water_allocated_over_current": 1.1799918521530832,
+            "high_water_reserved_over_current": 1.2411594765811458,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19954,
+            "rank": 1,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.61,
+              "reserved": 170040.0,
+              "max-allocated": 161621.91,
+              "max-reserved": 170040.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2414523298440425,
+            "high_water_allocated_over_current": 1.1799923354701491,
+            "high_water_reserved_over_current": 1.2414523298440425,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19964,
+            "rank": 2,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.61,
+              "reserved": 170540.0,
+              "max-allocated": 161621.91,
+              "max-reserved": 170540.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2451028012914784,
+            "high_water_allocated_over_current": 1.1799923354701491,
+            "high_water_reserved_over_current": 1.2451028012914784,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19964,
+            "rank": 3,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169960.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241121972510565,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241121972510565,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19960,
+            "rank": 4,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169960.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241121972510565,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241121972510565,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19960,
+            "rank": 5,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169960.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241121972510565,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241121972510565,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19955,
+            "rank": 6,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.61,
+              "reserved": 169960.0,
+              "max-allocated": 161607.91,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.241121972510565,
+            "high_water_allocated_over_current": 1.1801313722788296,
+            "high_water_reserved_over_current": 1.241121972510565,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19955,
+            "rank": 7,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19965,
+            "rank": 8,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19965,
+            "rank": 9,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19958,
+            "rank": 10,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136940.63,
+              "reserved": 169960.0,
+              "max-allocated": 161607.93,
+              "max-reserved": 169960.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2411217912463233,
+            "high_water_allocated_over_current": 1.180131345970878,
+            "high_water_reserved_over_current": 1.2411217912463233,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19958,
+            "rank": 11,
+            "step": 1,
+            "printed_values": {
+              "allocated": 136968.63,
+              "reserved": 170520.0,
+              "max-allocated": 161621.93,
+              "max-reserved": 170520.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2449566006464399,
+            "high_water_allocated_over_current": 1.1799923091878775,
+            "high_water_reserved_over_current": 1.2449566006464399,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19957,
+            "rank": 12,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137864.63,
+              "reserved": 170500.0,
+              "max-allocated": 162069.93,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367203973927177,
+            "high_water_allocated_over_current": 1.1755729515249849,
+            "high_water_reserved_over_current": 1.2367203973927177,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19957,
+            "rank": 13,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137864.63,
+              "reserved": 170500.0,
+              "max-allocated": 162069.93,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367203973927177,
+            "high_water_allocated_over_current": 1.1755729515249849,
+            "high_water_reserved_over_current": 1.2367203973927177,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19953,
+            "rank": 14,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137865.1,
+              "reserved": 170500.0,
+              "max-allocated": 162070.16,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367161812525431,
+            "high_water_allocated_over_current": 1.1755706121418692,
+            "high_water_reserved_over_current": 1.2367161812525431,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 19953,
+            "rank": 15,
+            "step": 1,
+            "printed_values": {
+              "allocated": 137865.1,
+              "reserved": 170500.0,
+              "max-allocated": 162070.16,
+              "max-reserved": 170500.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.2367161812525431,
+            "high_water_allocated_over_current": 1.1755706121418692,
+            "high_water_reserved_over_current": 1.2367161812525431,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20052,
+            "rank": 0,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.27,
+              "reserved": 201686.0,
+              "max-allocated": 174485.53,
+              "max-reserved": 201686.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.427680823160077,
+            "high_water_allocated_over_current": 1.2351360287770212,
+            "high_water_reserved_over_current": 1.427680823160077,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20047,
+            "rank": 1,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.18,
+              "reserved": 200792.0,
+              "max-allocated": 174485.43,
+              "max-reserved": 200792.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4213533436899946,
+            "high_water_allocated_over_current": 1.2351361077915777,
+            "high_water_reserved_over_current": 1.4213533436899946,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20057,
+            "rank": 2,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.18,
+              "reserved": 200972.0,
+              "max-allocated": 174485.43,
+              "max-reserved": 200972.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4226275159770587,
+            "high_water_allocated_over_current": 1.2351361077915777,
+            "high_water_reserved_over_current": 1.4226275159770587,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20057,
+            "rank": 3,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.17,
+              "reserved": 201072.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201072.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4236176577810689,
+            "high_water_allocated_over_current": 1.2351828095364086,
+            "high_water_reserved_over_current": 1.4236176577810689,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20059,
+            "rank": 4,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.17,
+              "reserved": 201392.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201392.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4258833021795427,
+            "high_water_allocated_over_current": 1.2351828095364086,
+            "high_water_reserved_over_current": 1.4258833021795427,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20059,
+            "rank": 5,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.19,
+              "reserved": 201812.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201812.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4288567581224578,
+            "high_water_allocated_over_current": 1.23518263463112,
+            "high_water_reserved_over_current": 1.4288567581224578,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20049,
+            "rank": 6,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.17,
+              "reserved": 201192.0,
+              "max-allocated": 174457.43,
+              "max-reserved": 201192.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4244672744304965,
+            "high_water_allocated_over_current": 1.2351828095364086,
+            "high_water_reserved_over_current": 1.4244672744304965,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20049,
+            "rank": 7,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201294.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201294.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4251891458664034,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4251891458664034,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20055,
+            "rank": 8,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201514.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201514.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.426746776059507,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.426746776059507,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20055,
+            "rank": 9,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201174.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201174.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4243395293974377,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4243395293974377,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20048,
+            "rank": 10,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141240.2,
+              "reserved": 201674.0,
+              "max-allocated": 174457.46,
+              "max-reserved": 201674.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4278795980181278,
+            "high_water_allocated_over_current": 1.2351827595826117,
+            "high_water_reserved_over_current": 1.4278795980181278,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20048,
+            "rank": 11,
+            "step": 2,
+            "printed_values": {
+              "allocated": 141268.2,
+              "reserved": 201414.0,
+              "max-allocated": 174485.46,
+              "max-reserved": 201414.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4257561149643019,
+            "high_water_allocated_over_current": 1.235136145289598,
+            "high_water_reserved_over_current": 1.4257561149643019,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20061,
+            "rank": 12,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.2,
+              "reserved": 201954.0,
+              "max-allocated": 175381.46,
+              "max-reserved": 201954.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4205686101001518,
+            "high_water_allocated_over_current": 1.2336541829799625,
+            "high_water_reserved_over_current": 1.4205686101001518,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20061,
+            "rank": 13,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.2,
+              "reserved": 202234.0,
+              "max-allocated": 175381.46,
+              "max-reserved": 202234.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4225381636164378,
+            "high_water_allocated_over_current": 1.2336541829799625,
+            "high_water_reserved_over_current": 1.4225381636164378,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20053,
+            "rank": 14,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.68,
+              "reserved": 202474.0,
+              "max-allocated": 175381.93,
+              "max-reserved": 202474.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4242215436351702,
+            "high_water_allocated_over_current": 1.2336533237369507,
+            "high_water_reserved_over_current": 1.4242215436351702,
+            "peak_reset_verified": false
+          },
+          {
+            "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+            "line": 20053,
+            "rank": 15,
+            "step": 2,
+            "printed_values": {
+              "allocated": 142164.67,
+              "reserved": 202234.0,
+              "max-allocated": 175381.93,
+              "max-reserved": 202234.0
+            },
+            "printed_unit": "MB",
+            "reserved_over_current_allocated": 1.4225334606692364,
+            "high_water_allocated_over_current": 1.2336534105133152,
+            "high_water_reserved_over_current": 1.4225334606692364,
+            "peak_reset_verified": false
+          }
+        ],
+        "hardware": null,
+        "maximum_logged_iteration": 15,
+        "caveat": "15-layer dsv4_hybrid variant, not full V4 Pro; hardware and memory-unit divisor unverified."
+      }
+    },
+    "reviewed_config_differences": {
+      "global_batch_size": {
+        "packed_4x16k": "1024",
+        "single_64k": "256"
+      },
+      "varlen_mock_dataset_config_json": {
+        "packed_4x16k": "{\"mode\":\"distribution\",\"type\":\"lognormal\",\"format\":\"thd\",\"min_seq_len\":16384,\"max_seq_len\":16384,\"mean_seq_len\":16384,\"lognormal_sigma\":1.1}",
+        "single_64k": "{\"mode\":\"distribution\",\"type\":\"lognormal\",\"format\":\"thd\",\"min_seq_len\":65534,\"max_seq_len\":65534,\"mean_seq_len\":65534,\"lognormal_sigma\":1.1}"
+      }
+    },
+    "ratio_transfer": [
+      {
+        "rank": 0,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136968.7,
+        "source_allocated": 136968.7,
+        "observed_peak_allocated": 161621.95,
+        "source_peak_allocated": 161621.95,
+        "predicted_reserved": 170000.0,
+        "observed_reserved": 169580.0,
+        "error_percent": 0.24767071588631673,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19968,
+        "target_line": 19968
+      },
+      {
+        "rank": 1,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136968.61,
+        "source_allocated": 136968.61,
+        "observed_peak_allocated": 161621.91,
+        "source_peak_allocated": 161621.91,
+        "predicted_reserved": 170040.0,
+        "observed_reserved": 170538.0,
+        "error_percent": -0.29201702846286537,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19954,
+        "target_line": 19953
+      },
+      {
+        "rank": 2,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136968.61,
+        "source_allocated": 136968.61,
+        "observed_peak_allocated": 161621.91,
+        "source_peak_allocated": 161621.91,
+        "predicted_reserved": 170540.0,
+        "observed_reserved": 169598.0,
+        "error_percent": 0.5554310781966665,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19964,
+        "target_line": 19962
+      },
+      {
+        "rank": 3,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.61,
+        "source_allocated": 136940.61,
+        "observed_peak_allocated": 161607.91,
+        "source_peak_allocated": 161607.91,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169958.0,
+        "error_percent": 0.001176761317500663,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19964,
+        "target_line": 19962
+      },
+      {
+        "rank": 4,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.61,
+        "source_allocated": 136940.61,
+        "observed_peak_allocated": 161607.91,
+        "source_peak_allocated": 161607.91,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169958.0,
+        "error_percent": 0.001176761317500663,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19960,
+        "target_line": 19956
+      },
+      {
+        "rank": 5,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.61,
+        "source_allocated": 136940.61,
+        "observed_peak_allocated": 161607.91,
+        "source_peak_allocated": 161607.91,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169958.0,
+        "error_percent": 0.001176761317500663,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19960,
+        "target_line": 19956
+      },
+      {
+        "rank": 6,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.61,
+        "source_allocated": 136940.61,
+        "observed_peak_allocated": 161607.91,
+        "source_peak_allocated": 161607.91,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169958.0,
+        "error_percent": 0.001176761317500663,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19955,
+        "target_line": 19956
+      },
+      {
+        "rank": 7,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.63,
+        "source_allocated": 136940.63,
+        "observed_peak_allocated": 161607.93,
+        "source_peak_allocated": 161607.93,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169960.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19955,
+        "target_line": 19956
+      },
+      {
+        "rank": 8,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.63,
+        "source_allocated": 136940.63,
+        "observed_peak_allocated": 161607.93,
+        "source_peak_allocated": 161607.93,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 170220.0,
+        "error_percent": -0.15274350840088768,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19965,
+        "target_line": 19957
+      },
+      {
+        "rank": 9,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.63,
+        "source_allocated": 136940.63,
+        "observed_peak_allocated": 161607.93,
+        "source_peak_allocated": 161607.93,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169960.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19965,
+        "target_line": 19959
+      },
+      {
+        "rank": 10,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136940.63,
+        "source_allocated": 136940.63,
+        "observed_peak_allocated": 161607.93,
+        "source_peak_allocated": 161607.93,
+        "predicted_reserved": 169960.0,
+        "observed_reserved": 169960.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19958,
+        "target_line": 19957
+      },
+      {
+        "rank": 11,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 136968.63,
+        "source_allocated": 136968.63,
+        "observed_peak_allocated": 161621.93,
+        "source_peak_allocated": 161621.93,
+        "predicted_reserved": 170520.0,
+        "observed_reserved": 170520.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19958,
+        "target_line": 19957
+      },
+      {
+        "rank": 12,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 137864.63,
+        "source_allocated": 137864.63,
+        "observed_peak_allocated": 162069.93,
+        "source_peak_allocated": 162069.93,
+        "predicted_reserved": 170500.0,
+        "observed_reserved": 170500.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19957,
+        "target_line": 19961
+      },
+      {
+        "rank": 13,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 137864.63,
+        "source_allocated": 137864.63,
+        "observed_peak_allocated": 162069.93,
+        "source_peak_allocated": 162069.93,
+        "predicted_reserved": 170500.0,
+        "observed_reserved": 170060.0,
+        "error_percent": 0.2587322121604174,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19957,
+        "target_line": 19955
+      },
+      {
+        "rank": 14,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 137865.1,
+        "source_allocated": 137865.1,
+        "observed_peak_allocated": 162070.16,
+        "source_peak_allocated": 162070.16,
+        "predicted_reserved": 170500.0,
+        "observed_reserved": 170500.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19953,
+        "target_line": 19954
+      },
+      {
+        "rank": 15,
+        "step": 1,
+        "printed_unit": "MB",
+        "observed_allocated": 137865.1,
+        "source_allocated": 137865.1,
+        "observed_peak_allocated": 162070.16,
+        "source_peak_allocated": 162070.16,
+        "predicted_reserved": 170500.0,
+        "observed_reserved": 170500.0,
+        "error_percent": 0.0,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 19953,
+        "target_line": 19954
+      },
+      {
+        "rank": 0,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141268.27,
+        "source_allocated": 141268.27,
+        "observed_peak_allocated": 174485.53,
+        "source_peak_allocated": 174485.53,
+        "predicted_reserved": 201686.0,
+        "observed_reserved": 201406.0,
+        "error_percent": 0.13902267062551044,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20052,
+        "target_line": 20053
+      },
+      {
+        "rank": 1,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141268.18,
+        "source_allocated": 141268.18,
+        "observed_peak_allocated": 174485.43,
+        "source_peak_allocated": 174485.43,
+        "predicted_reserved": 200792.0,
+        "observed_reserved": 201372.0,
+        "error_percent": -0.28802415430149164,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20047,
+        "target_line": 20050
+      },
+      {
+        "rank": 2,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141268.18,
+        "source_allocated": 141268.18,
+        "observed_peak_allocated": 174485.43,
+        "source_peak_allocated": 174485.43,
+        "predicted_reserved": 200972.0,
+        "observed_reserved": 201812.0,
+        "error_percent": -0.4162289655719187,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20057,
+        "target_line": 20057
+      },
+      {
+        "rank": 3,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.17,
+        "source_allocated": 141240.17,
+        "observed_peak_allocated": 174457.43,
+        "source_peak_allocated": 174457.43,
+        "predicted_reserved": 201072.0,
+        "observed_reserved": 201192.0,
+        "error_percent": -0.059644518668733326,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20057,
+        "target_line": 20057
+      },
+      {
+        "rank": 4,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.17,
+        "source_allocated": 141240.17,
+        "observed_peak_allocated": 174457.43,
+        "source_peak_allocated": 174457.43,
+        "predicted_reserved": 201392.0,
+        "observed_reserved": 201652.0,
+        "error_percent": -0.12893499692540056,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20059,
+        "target_line": 20055
+      },
+      {
+        "rank": 5,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.19,
+        "source_allocated": 141240.19,
+        "observed_peak_allocated": 174457.43,
+        "source_peak_allocated": 174457.43,
+        "predicted_reserved": 201812.0,
+        "observed_reserved": 201472.0,
+        "error_percent": 0.16875794155020163,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20059,
+        "target_line": 20058
+      },
+      {
+        "rank": 6,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.17,
+        "source_allocated": 141240.17,
+        "observed_peak_allocated": 174457.43,
+        "source_peak_allocated": 174457.43,
+        "predicted_reserved": 201192.0,
+        "observed_reserved": 201112.0,
+        "error_percent": 0.03977882970682689,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20049,
+        "target_line": 20054
+      },
+      {
+        "rank": 7,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.2,
+        "source_allocated": 141240.2,
+        "observed_peak_allocated": 174457.46,
+        "source_peak_allocated": 174457.46,
+        "predicted_reserved": 201294.0,
+        "observed_reserved": 201594.0,
+        "error_percent": -0.1488139527962118,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20049,
+        "target_line": 20054
+      },
+      {
+        "rank": 8,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.2,
+        "source_allocated": 141240.2,
+        "observed_peak_allocated": 174457.46,
+        "source_peak_allocated": 174457.46,
+        "predicted_reserved": 201514.0,
+        "observed_reserved": 201374.0,
+        "error_percent": 0.06952238124087184,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20055,
+        "target_line": 20061
+      },
+      {
+        "rank": 9,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.2,
+        "source_allocated": 141240.2,
+        "observed_peak_allocated": 174457.46,
+        "source_peak_allocated": 174457.46,
+        "predicted_reserved": 201174.0,
+        "observed_reserved": 201334.0,
+        "error_percent": -0.0794699355300188,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20055,
+        "target_line": 20061
+      },
+      {
+        "rank": 10,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141240.2,
+        "source_allocated": 141240.2,
+        "observed_peak_allocated": 174457.46,
+        "source_peak_allocated": 174457.46,
+        "predicted_reserved": 201674.0,
+        "observed_reserved": 201494.0,
+        "error_percent": 0.0893326848442122,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20048,
+        "target_line": 20048
+      },
+      {
+        "rank": 11,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 141268.2,
+        "source_allocated": 141268.2,
+        "observed_peak_allocated": 174485.46,
+        "source_peak_allocated": 174485.46,
+        "predicted_reserved": 201414.0,
+        "observed_reserved": 201474.0,
+        "error_percent": -0.029780517585398236,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20048,
+        "target_line": 20048
+      },
+      {
+        "rank": 12,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 142164.2,
+        "source_allocated": 142164.2,
+        "observed_peak_allocated": 175381.46,
+        "source_peak_allocated": 175381.46,
+        "predicted_reserved": 201954.00000000003,
+        "observed_reserved": 202114.0,
+        "error_percent": -0.07916324450556456,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20061,
+        "target_line": 20056
+      },
+      {
+        "rank": 13,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 142164.2,
+        "source_allocated": 142164.2,
+        "observed_peak_allocated": 175381.46,
+        "source_peak_allocated": 175381.46,
+        "predicted_reserved": 202234.0,
+        "observed_reserved": 202394.0,
+        "error_percent": -0.07905372688913337,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20061,
+        "target_line": 20056
+      },
+      {
+        "rank": 14,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 142164.68,
+        "source_allocated": 142164.68,
+        "observed_peak_allocated": 175381.93,
+        "source_peak_allocated": 175381.93,
+        "predicted_reserved": 202474.0,
+        "observed_reserved": 202094.0,
+        "error_percent": 0.1880313121616739,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20053,
+        "target_line": 20049
+      },
+      {
+        "rank": 15,
+        "step": 2,
+        "printed_unit": "MB",
+        "observed_allocated": 142164.67,
+        "source_allocated": 142164.67,
+        "observed_peak_allocated": 175381.93,
+        "source_peak_allocated": 175381.93,
+        "predicted_reserved": 202233.99999999997,
+        "observed_reserved": 202156.0,
+        "error_percent": 0.03858406379231294,
+        "conditioning": "Target current allocation is measured; not a full CPU prediction",
+        "source_line": 20053,
+        "target_line": 20049
+      }
+    ],
+    "full_prediction": false,
+    "max_absolute_error_percent": 0.5554310781966665
+  },
+  "other_architecture_candidates": [
+    {
+      "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+      "sha256": "59db2f2d718bb76260cc324ec762c46ff7419d55c2710b1cd5c496527ca62f12",
+      "candidate_label_from_path": "GPT-OSS-20B",
+      "model": {
+        "num_layers": {
+          "value": "24",
+          "line": 16964
+        },
+        "hidden_size": {
+          "value": "2880",
+          "line": 16947
+        },
+        "num_moe_experts": {
+          "value": "32",
+          "line": 16967
+        },
+        "num_attention_heads": {
+          "value": "64",
+          "line": 16963
+        },
+        "moe_router_topk": {
+          "value": "4",
+          "line": 16960
+        },
+        "tensor_model_parallel_size": {
+          "value": "2",
+          "line": 16975
+        },
+        "pipeline_model_parallel_size": null,
+        "context_parallel_size": {
+          "value": "4",
+          "line": 16927
+        },
+        "expert_model_parallel_size": {
+          "value": "8",
+          "line": 16937
+        },
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 16938
+        },
+        "fp8": {
+          "value": "'e4m3'",
+          "line": 16940
+        },
+        "fp4": null,
+        "fp8_recipe": {
+          "value": "'mxfp8'",
+          "line": 16941
+        },
+        "cuda_graph_impl": {
+          "value": "'full_iteration'",
+          "line": 16932
+        }
+      },
+      "batch": {
+        "micro_batch_size": {
+          "value": "1",
+          "line": 17000
+        },
+        "global_batch_size": {
+          "value": "64",
+          "line": 16995
+        }
+      },
+      "sequence_length": {
+        "value": "8192",
+        "line": 17053
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34141,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34136,
+          "rank": 1,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34132,
+          "rank": 2,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34132,
+          "rank": 3,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34132,
+          "rank": 4,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34132,
+          "rank": 5,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34128,
+          "rank": 6,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34130,
+          "rank": 7,
+          "step": 1,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.005,
+            "max-allocated": 32.758,
+            "max-reserved": 33.005
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.307073954983923,
+          "high_water_allocated_over_current": 2.289808471969803,
+          "high_water_reserved_over_current": 2.307073954983923,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34364,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34144,
+          "rank": 1,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34143,
+          "rank": 2,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34144,
+          "rank": 3,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34144,
+          "rank": 4,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34145,
+          "rank": 5,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34144,
+          "rank": 6,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out",
+          "line": 34144,
+          "rank": 7,
+          "step": 2,
+          "printed_values": {
+            "allocated": 14.306,
+            "reserved": 33.408,
+            "max-allocated": 33.105,
+            "max-reserved": 33.408
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.335243953585908,
+          "high_water_allocated_over_current": 2.314064029078708,
+          "high_water_reserved_over_current": 2.335243953585908,
+          "peak_reset_verified": false
+        }
+      ],
+      "maximum_logged_iteration": 100,
+      "eligibility": "Inventory only: model dimensions/precision verified; complete identity, omitted defaults and matched CPU adapter not established."
+    },
+    {
+      "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out",
+      "sha256": "c5b0abc28525ff558455359833f3402e958c5b6851ddada6e3b079560549e89d",
+      "candidate_label_from_path": "GPT-OSS-20B",
+      "model": {
+        "num_layers": {
+          "value": "24",
+          "line": 3244
+        },
+        "hidden_size": {
+          "value": "2880",
+          "line": 3227
+        },
+        "num_moe_experts": {
+          "value": "32",
+          "line": 3247
+        },
+        "num_attention_heads": {
+          "value": "64",
+          "line": 3243
+        },
+        "moe_router_topk": {
+          "value": "4",
+          "line": 3240
+        },
+        "tensor_model_parallel_size": null,
+        "pipeline_model_parallel_size": null,
+        "context_parallel_size": {
+          "value": "2",
+          "line": 3207
+        },
+        "expert_model_parallel_size": {
+          "value": "4",
+          "line": 3217
+        },
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 3218
+        },
+        "fp8": {
+          "value": "'e4m3'",
+          "line": 3220
+        },
+        "fp4": null,
+        "fp8_recipe": {
+          "value": "'mxfp8'",
+          "line": 3221
+        },
+        "cuda_graph_impl": {
+          "value": "'full_iteration'",
+          "line": 3212
+        }
+      },
+      "batch": {
+        "micro_batch_size": {
+          "value": "1",
+          "line": 3278
+        },
+        "global_batch_size": {
+          "value": "36",
+          "line": 3273
+        }
+      },
+      "sequence_length": {
+        "value": "8192",
+        "line": 3331
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out",
+          "line": 5874,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 31.602,
+            "reserved": 80.143,
+            "max-allocated": 79.405,
+            "max-reserved": 80.143
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.536010379089931,
+          "high_water_allocated_over_current": 2.5126574267451427,
+          "high_water_reserved_over_current": 2.536010379089931,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out",
+          "line": 5871,
+          "rank": 1,
+          "step": 1,
+          "printed_values": {
+            "allocated": 31.602,
+            "reserved": 80.143,
+            "max-allocated": 79.405,
+            "max-reserved": 80.143
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.536010379089931,
+          "high_water_allocated_over_current": 2.5126574267451427,
+          "high_water_reserved_over_current": 2.536010379089931,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out",
+          "line": 5884,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 31.602,
+            "reserved": 82.322,
+            "max-allocated": 81.735,
+            "max-reserved": 82.322
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.604961711284096,
+          "high_water_allocated_over_current": 2.586386937535599,
+          "high_water_reserved_over_current": 2.604961711284096,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out",
+          "line": 5878,
+          "rank": 1,
+          "step": 2,
+          "printed_values": {
+            "allocated": 31.602,
+            "reserved": 82.322,
+            "max-allocated": 81.735,
+            "max-reserved": 82.322
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.604961711284096,
+          "high_water_allocated_over_current": 2.586386937535599,
+          "high_water_reserved_over_current": 2.604961711284096,
+          "peak_reset_verified": false
+        }
+      ],
+      "maximum_logged_iteration": 100,
+      "eligibility": "Inventory only: model dimensions/precision verified; complete identity, omitted defaults and matched CPU adapter not established."
+    },
+    {
+      "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_1782756735/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_2238579_0.out",
+      "sha256": "65cc16454ce10213671aa27bc6d70a692381b69f62ac4d230326ee5b4c497681",
+      "candidate_label_from_path": "GPT-OSS-20B",
+      "model": {
+        "num_layers": {
+          "value": "24",
+          "line": 432
+        },
+        "hidden_size": {
+          "value": "2880",
+          "line": 415
+        },
+        "num_moe_experts": {
+          "value": "32",
+          "line": 435
+        },
+        "num_attention_heads": {
+          "value": "64",
+          "line": 431
+        },
+        "moe_router_topk": {
+          "value": "4",
+          "line": 428
+        },
+        "tensor_model_parallel_size": null,
+        "pipeline_model_parallel_size": null,
+        "context_parallel_size": null,
+        "expert_model_parallel_size": null,
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 406
+        },
+        "fp8": {
+          "value": "'e4m3'",
+          "line": 408
+        },
+        "fp4": null,
+        "fp8_recipe": {
+          "value": "'mxfp8'",
+          "line": 409
+        },
+        "cuda_graph_impl": {
+          "value": "'full_iteration'",
+          "line": 401
+        }
+      },
+      "batch": {
+        "micro_batch_size": {
+          "value": "3",
+          "line": 466
+        },
+        "global_batch_size": {
+          "value": "24",
+          "line": 461
+        }
+      },
+      "sequence_length": {
+        "value": "8192",
+        "line": 519
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_1782756735/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_2238579_0.out",
+          "line": 4208,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 125.69,
+            "reserved": 247.77,
+            "max-allocated": 246.38,
+            "max-reserved": 247.77
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.9712785424456998,
+          "high_water_allocated_over_current": 1.9602195878749304,
+          "high_water_reserved_over_current": 1.9712785424456998,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_1782756735/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_2238579_0.out",
+          "line": 4217,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 125.69,
+            "reserved": 269.42,
+            "max-allocated": 267.03,
+            "max-reserved": 269.42
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 2.1435277269472515,
+          "high_water_allocated_over_current": 2.1245126899514677,
+          "high_water_reserved_over_current": 2.1435277269472515,
+          "peak_reset_verified": false
+        }
+      ],
+      "maximum_logged_iteration": 50,
+      "eligibility": "Inventory only: model dimensions/precision verified; complete identity, omitted defaults and matched CPU adapter not established."
+    },
+    {
+      "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out",
+      "sha256": "72e3885217f6a7190321dac95868cc85308ecd124c668b2f543997001ff04924",
+      "candidate_label_from_path": "GPT-OSS-20B",
+      "model": {
+        "num_layers": {
+          "value": "24",
+          "line": 2991
+        },
+        "hidden_size": {
+          "value": "2880",
+          "line": 2976
+        },
+        "num_moe_experts": {
+          "value": "32",
+          "line": 2994
+        },
+        "num_attention_heads": {
+          "value": "64",
+          "line": 2990
+        },
+        "moe_router_topk": {
+          "value": "4",
+          "line": 2987
+        },
+        "tensor_model_parallel_size": null,
+        "pipeline_model_parallel_size": null,
+        "context_parallel_size": {
+          "value": "2",
+          "line": 2955
+        },
+        "expert_model_parallel_size": {
+          "value": "4",
+          "line": 2965
+        },
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 2966
+        },
+        "fp8": null,
+        "fp4": {
+          "value": "'e2m1'",
+          "line": 2969
+        },
+        "fp8_recipe": {
+          "value": "'tensorwise'",
+          "line": 2970
+        },
+        "cuda_graph_impl": {
+          "value": "'transformer_engine'",
+          "line": 2960
+        }
+      },
+      "batch": {
+        "micro_batch_size": {
+          "value": "1",
+          "line": 3024
+        },
+        "global_batch_size": {
+          "value": "36",
+          "line": 3019
+        }
+      },
+      "sequence_length": {
+        "value": "8192",
+        "line": 3077
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out",
+          "line": 5417,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 35.383,
+            "reserved": 50.478,
+            "max-allocated": 50.114,
+            "max-reserved": 50.478
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.4266173020942259,
+          "high_water_allocated_over_current": 1.4163298759291183,
+          "high_water_reserved_over_current": 1.4266173020942259,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out",
+          "line": 5416,
+          "rank": 1,
+          "step": 1,
+          "printed_values": {
+            "allocated": 35.382,
+            "reserved": 48.381,
+            "max-allocated": 48.105,
+            "max-reserved": 48.381
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.3673901984059693,
+          "high_water_allocated_over_current": 1.3595896218416144,
+          "high_water_reserved_over_current": 1.3673901984059693,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out",
+          "line": 5427,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 35.382,
+            "reserved": 52.45,
+            "max-allocated": 51.506,
+            "max-reserved": 52.45
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.482392176813069,
+          "high_water_allocated_over_current": 1.4557119439262902,
+          "high_water_reserved_over_current": 1.482392176813069,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out",
+          "line": 5420,
+          "rank": 1,
+          "step": 2,
+          "printed_values": {
+            "allocated": 35.382,
+            "reserved": 52.49,
+            "max-allocated": 51.38,
+            "max-reserved": 52.49
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.483522695155729,
+          "high_water_allocated_over_current": 1.452150811146911,
+          "high_water_reserved_over_current": 1.483522695155729,
+          "peak_reset_verified": false
+        }
+      ],
+      "maximum_logged_iteration": 100,
+      "eligibility": "Inventory only: model dimensions/precision verified; complete identity, omitted defaults and matched CPU adapter not established."
+    },
+    {
+      "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_1782756688/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_2238575_0.out",
+      "sha256": "93627eae6fd9f78db3741601751e478ae515346d4694bcebbe48d8ed1d1826cc",
+      "candidate_label_from_path": "GPT-OSS-20B",
+      "model": {
+        "num_layers": {
+          "value": "24",
+          "line": 459
+        },
+        "hidden_size": {
+          "value": "2880",
+          "line": 444
+        },
+        "num_moe_experts": {
+          "value": "32",
+          "line": 462
+        },
+        "num_attention_heads": {
+          "value": "64",
+          "line": 458
+        },
+        "moe_router_topk": {
+          "value": "4",
+          "line": 455
+        },
+        "tensor_model_parallel_size": null,
+        "pipeline_model_parallel_size": null,
+        "context_parallel_size": null,
+        "expert_model_parallel_size": {
+          "value": "2",
+          "line": 433
+        },
+        "expert_tensor_parallel_size": {
+          "value": "1",
+          "line": 434
+        },
+        "fp8": null,
+        "fp4": {
+          "value": "'e2m1'",
+          "line": 437
+        },
+        "fp8_recipe": {
+          "value": "'tensorwise'",
+          "line": 438
+        },
+        "cuda_graph_impl": {
+          "value": "'transformer_engine'",
+          "line": 428
+        }
+      },
+      "batch": {
+        "micro_batch_size": {
+          "value": "3",
+          "line": 492
+        },
+        "global_batch_size": {
+          "value": "24",
+          "line": 487
+        }
+      },
+      "sequence_length": {
+        "value": "8192",
+        "line": 545
+      },
+      "allocator_rows": [
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_1782756688/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_2238575_0.out",
+          "line": 2593,
+          "rank": 0,
+          "step": 1,
+          "printed_values": {
+            "allocated": 95.593,
+            "reserved": 165.21,
+            "max-allocated": 164.34,
+            "max-reserved": 165.21
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.7282646218865398,
+          "high_water_allocated_over_current": 1.7191635370790748,
+          "high_water_reserved_over_current": 1.7282646218865398,
+          "peak_reset_verified": false
+        },
+        {
+          "source": "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_1782756688/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_2238575_0.out",
+          "line": 2602,
+          "rank": 0,
+          "step": 2,
+          "printed_values": {
+            "allocated": 95.593,
+            "reserved": 187.39,
+            "max-allocated": 182.84,
+            "max-reserved": 187.39
+          },
+          "printed_unit": "GB",
+          "reserved_over_current_allocated": 1.9602899793917963,
+          "high_water_allocated_over_current": 1.9126923519504566,
+          "high_water_reserved_over_current": 1.9602899793917963,
+          "peak_reset_verified": false
+        }
+      ],
+      "maximum_logged_iteration": 50,
+      "eligibility": "Inventory only: model dimensions/precision verified; complete identity, omitted defaults and matched CPU adapter not established."
+    }
+  ],
+  "independent_full_model_validation": false,
+  "v4_five_layer_failed_run": {
+    "source": "lustre/share/coreai_dlalgo_llm/gaod/2203614.log",
+    "sha256": "0290b546a756708466cc9dbbb3eaee823513b5fb03e37f142623656f3e66bc9b",
+    "config": {
+      "num_layers": {
+        "value": "5",
+        "line": 573
+      },
+      "hidden_size": {
+        "value": "7168",
+        "line": 298
+      },
+      "num_experts": {
+        "value": "24",
+        "line": 572
+      },
+      "num_attention_heads": {
+        "value": "128",
+        "line": 567
+      },
+      "moe_router_topk": {
+        "value": "6",
+        "line": 509
+      },
+      "world_size": {
+        "value": "4",
+        "line": 832
+      },
+      "tensor_model_parallel_size": {
+        "value": "1",
+        "line": 739
+      },
+      "pipeline_model_parallel_size": {
+        "value": "1",
+        "line": 624
+      },
+      "context_parallel_size": {
+        "value": "1",
+        "line": 89
+      },
+      "expert_model_parallel_size": {
+        "value": "4",
+        "line": 202
+      },
+      "expert_tensor_parallel_size": {
+        "value": "1",
+        "line": 203
+      },
+      "seq_length": {
+        "value": "4096",
+        "line": 711
+      },
+      "micro_batch_size": {
+        "value": "1",
+        "line": 453
+      },
+      "global_batch_size": {
+        "value": "16",
+        "line": 278
+      },
+      "varlen_mock_dataset_config_json": {
+        "value": "None",
+        "line": 813
+      },
+      "experimental_attention_variant": {
+        "value": "dsv4_hybrid",
+        "line": 201
+      },
+      "fp8_recipe": {
+        "value": "mxfp8",
+        "line": 271
+      },
+      "params_dtype": {
+        "value": "torch.bfloat16",
+        "line": 613
+      },
+      "recompute_granularity": {
+        "value": "selective",
+        "line": 646
+      },
+      "cuda_graph_impl": {
+        "value": "full_iteration",
+        "line": 102
+      },
+      "mtp_num_layers": {
+        "value": "1",
+        "line": 528
+      }
+    },
+    "allocator_rows": [
+      {
+        "source": "lustre/share/coreai_dlalgo_llm/gaod/2203614.log",
+        "line": 2109,
+        "rank": 0,
+        "step": 1,
+        "printed_values": {
+          "allocated": 70230.98,
+          "reserved": 76482.0,
+          "max-allocated": 71996.81,
+          "max-reserved": 76482.0
+        },
+        "printed_unit": "MB",
+        "reserved_over_current_allocated": 1.0890065893997207,
+        "high_water_allocated_over_current": 1.0251431775549764,
+        "high_water_reserved_over_current": 1.0890065893997207,
+        "peak_reset_verified": false
+      }
+    ],
+    "failure": [
+      {
+        "line": 2302,
+        "message": "ValueError: Attempted to make view with size=(-1,) from MXFP8 tensor with shape=(7168, 3072)."
+      },
+      {
+        "line": 2453,
+        "message": "ValueError: Attempted to make view with size=(-1,) from MXFP8 tensor with shape=(6144, 7168)."
+      },
+      {
+        "line": 2592,
+        "message": "ValueError: Attempted to make view with size=(-1,) from MXFP8 tensor with shape=(512, 7168)."
+      }
+    ],
+    "eligibility": "One iteration then MXFP8 tensor-view errors; exclude from steady-state validation. Hardware unverified."
+  }
+}

@@ -35,6 +35,13 @@ from 12.80% to 2.85%. It also isolates V4's 5.24% discrepancy to reservation
 differences despite equal allocated counters. These are empirical estimates,
 not full-model execution or required-capacity validation.
 
+[Additional model/configuration checks](docs/OTHER_MODEL_VALIDATION.md) apply
+the method to V3 16B with separate calibration (up to 2.20% excluded-batch error)
+and recover legacy allocator counters from two different 15-layer V4 hybrid
+configurations. Their reservation-ratio comparison reaches 0.56% maximum error,
+conditional on measured current allocation; neither result establishes universal
+cross-model prediction accuracy.
+
 ## What it models
 
 - Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.

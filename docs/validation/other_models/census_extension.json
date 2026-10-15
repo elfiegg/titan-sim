@@ -1,0 +1,93 @@
+{
+  "verified_manifest_entries": 2613,
+  "unique_stored_files": 2598,
+  "prior_candidates": 240,
+  "current_candidates": 245,
+  "new_candidates": [
+    {
+      "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-4x16k-rank15_slurm_2379453.log",
+      "sha256": "1e3c0167bc98b14f266fc9ee44ba0e82ce5e715e0b93ec7fb15993be29785d81",
+      "full_v3_parameter_count_present": false,
+      "facts_census": {
+        "model": [],
+        "parameter_elements": [],
+        "hardware": [],
+        "capacity_gib_printed": [],
+        "torchtitan_version": [],
+        "mesh": [],
+        "training": []
+      },
+      "max_printed_training_memory_gib": null,
+      "allocator_counter_present": true,
+      "stash_geometry_present": false
+    },
+    {
+      "source": "lustre/share/coreai_dlalgo_llm/gaod/dsv4_thd/thd-cp16-64k-rank15_slurm_2378960.log",
+      "sha256": "5012b78e279ea84c362015ac2b23c9ed7d35ab3250cef78c9649e40e1c812206",
+      "full_v3_parameter_count_present": false,
+      "facts_census": {
+        "model": [],
+        "parameter_elements": [],
+        "hardware": [],
+        "capacity_gib_printed": [],
+        "torchtitan_version": [],
+        "mesh": [],
+        "training": []
+      },
+      "max_printed_training_memory_gib": null,
+      "allocator_counter_present": true,
+      "stash_geometry_present": false
+    },
+    {
+      "source": "lustre/share/coreai_dlalgo_llm/malayn/570032.log",
+      "sha256": "cfa2c55e8cb39262251e797afe99f44a0a209f3983e85adaeb6ae236a87957c9",
+      "full_v3_parameter_count_present": false,
+      "facts_census": {
+        "model": [],
+        "parameter_elements": [],
+        "hardware": [],
+        "capacity_gib_printed": [],
+        "torchtitan_version": [],
+        "mesh": [],
+        "training": []
+      },
+      "max_printed_training_memory_gib": null,
+      "allocator_counter_present": true,
+      "stash_geometry_present": false
+    },
+    {
+      "source": "lustre/share/coreai_dlalgo_llm/malayn/mlm_logs/712688.log",
+      "sha256": "730189df597cf2043fb16deaeb8cc22d3f53c3e3aa482f409dbce911b8700a73",
+      "full_v3_parameter_count_present": false,
+      "facts_census": {
+        "model": [],
+        "parameter_elements": [],
+        "hardware": [],
+        "capacity_gib_printed": [],
+        "torchtitan_version": [],
+        "mesh": [],
+        "training": []
+      },
+      "max_printed_training_memory_gib": null,
+      "allocator_counter_present": true,
+      "stash_geometry_present": false
+    },
+    {
+      "source": "lustre/share/coreai_dlalgo_llm/malayn/mlm_logs/713374.log",
+      "sha256": "783ed87bc0efdda961812865fee425cb38736d45ba17ec46eb78bcf2dcdbfb04",
+      "full_v3_parameter_count_present": false,
+      "facts_census": {
+        "model": [],
+        "parameter_elements": [],
+        "hardware": [],
+        "capacity_gib_printed": [],
+        "torchtitan_version": [],
+        "mesh": [],
+        "training": []
+      },
+      "max_printed_training_memory_gib": null,
+      "allocator_counter_present": true,
+      "stash_geometry_present": false
+    }
+  ]
+}

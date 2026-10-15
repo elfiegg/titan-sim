@@ -30,6 +30,18 @@ class LogObservationTests(unittest.TestCase):
         self.assertEqual(doc['samples'][1]['window'], 'peak_reset_unverified')
         self.assertEqual(doc['samples'][2]['value'], 236.64)
 
+    def test_legacy_mb_allocator_rows_keep_rank_units_and_support_ratios(self):
+        from titan_sim.empirical_memory import allocator_ratios
+        doc = self.parse('[Rank 0] (after 2 iterations) memory (MB) | allocated: 100 | max allocated: 150 | reserved: 180 | max reserved: 180'
+                         '[Rank 15] (after 2 iterations) memory (MB) | allocated: 200 | max allocated: 250 | reserved: 300 | max reserved: 300')
+        self.assertEqual(len(doc['samples']), 8)
+        self.assertTrue(all(s['unit'] == 'MB' and s['bytes'] is None for s in doc['samples']))
+        self.assertEqual(doc['samples'][1]['window'], 'peak_reset_unverified')
+        rows = allocator_ratios(doc)
+        self.assertEqual([(r['rank'], r['step']) for r in rows], [(0, 2), (15, 2)])
+        self.assertEqual(rows[0]['high_water_reserved_over_current'], 1.8)
+        self.assertEqual(rows[1]['high_water_reserved_over_current'], 1.5)
+
     def test_conflicting_facts_preserved_and_commands_not_samples(self):
         doc = self.parse('CUDA capacity: NVIDIA GB200 with 184.00GiB memory\nCUDA capacity: NVIDIA GB300 with 276.62GiB memory\n+ echo "step: 1 memory: 999GiB"\n[rank0]: step: 10 memory: 102.21GiB\n')
         self.assertEqual(len(doc['facts']['hardware']), 2)
@@ -101,6 +113,7 @@ class LogObservationTests(unittest.TestCase):
 
     def test_negative_memory_is_rejected_for_every_counter_family(self):
         for text in ('step: 1 memory: -1GiB', 'CUDA memory usage for model: -1GiB',
+                     '[Rank 0] (after 1 iterations) memory (MB) | allocated: -1',
                      '[Rank 0] (after 1 iterations) memory (GB) | mem-allocated-gigabytes: -1'):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 self.parse(text)

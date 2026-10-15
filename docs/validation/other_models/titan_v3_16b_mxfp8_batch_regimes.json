@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "source": "log_calibrated_batch_memory_profile",
+  "name": "titan_v3_16b_mxfp8_batch_regimes",
+  "formula": "piecewise affine interpolation in local batch",
+  "context": {
+    "model": "DeepSeek-V3 16B",
+    "parameter_elements": 15706484224,
+    "layers": 27,
+    "hidden_size": 2048,
+    "revision": "791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9",
+    "hardware": "NVIDIA GB300",
+    "world_size": 8,
+    "pp": 1,
+    "dp_replicate": 1,
+    "dp_shard": 8,
+    "cp": 1,
+    "tp": 1,
+    "ep": 8,
+    "sequence_length": 4096,
+    "microbatches": 1,
+    "precision": "mxfp8",
+    "checkpoint_policy": "FullAC",
+    "compile_policy": "loss and each TransformerBlock",
+    "optimizer": "AdamW",
+    "torch_version": null,
+    "allocator_policy": null,
+    "state_dtype": null,
+    "memory_metric": "peak_reserved_bytes_between_metric_resets",
+    "counter_window": "largest printed peak reserved in 100-step run"
+  },
+  "anchors": [
+    {
+      "local_batch": 1,
+      "observed_bytes": 36002563359,
+      "evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt",
+        "sha256": "d675a6d61d335a28fa8d43eca94ac6fb3b2a80966cc90ec8aba831ad157ccecc",
+        "line": 1251,
+        "step": 2,
+        "signature": "d4a07a539d76d5e009941d18ca9b35af2f8707471c10dd37c288ba95c9d650c1"
+      }
+    },
+    {
+      "local_batch": 8,
+      "observed_bytes": 48189533061,
+      "evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt",
+        "sha256": "de7526b503964cdfc76b7abd690dc3986a7607dc806574ef11cf4378f43fc34d",
+        "line": 465,
+        "step": 2,
+        "signature": "83f6cda45e1226558ed56df8e84728f9b97d72aeff12beb922ef191d8c34e287"
+      }
+    },
+    {
+      "local_batch": 64,
+      "observed_bytes": 152965260247,
+      "evidence": {
+        "source": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt",
+        "sha256": "bc5414da35c438f809c0df5fa0fa63e3b71ab601579c3e49a701df54ee992fe5",
+        "line": 858,
+        "step": 2,
+        "signature": "89c151364085774c9504a9122f5dff34cf372b8503d587766570c8084c924be2"
+      }
+    }
+  ],
+  "assumed_state_bytes": 31412968448,
+  "metric_evidence": {
+    "revision": "791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9",
+    "source_sha256": "2d5e50d705f84ab31d5004e11daf876f17836d51c403c68fb7930ee4b0bf6de8",
+    "url": "https://github.com/rdspring1/torchtitan/blob/791f2415fa73a0baf07b776bbf6fb8ee6a9e81a9/torchtitan/components/metrics.py"
+  },
+  "target_metric": "peak_reserved_bytes_between_metric_resets",
+  "limitations": [
+    "Empirical total includes allocator cache and unresolved runtime storage; do not stack other allowances.",
+    "Effective intercepts are not measured component allocations or proven execution phases.",
+    "Only interpolates local batch under the recorded context; no hardware, sequence, precision or mesh transfer.",
+    "Unknown software and allocator fields remain unknown even when context matches.",
+    "Not a within-step trajectory, all-rank maximum, independent validation or required-capacity guarantee."
+  ]
+}

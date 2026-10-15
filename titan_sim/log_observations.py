@@ -19,6 +19,7 @@ NUMBER = r"[-+]?(?:\d[\d,]*(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
 STEP = re.compile(r"step:\s*(\d+).*?memory:\s*(" + NUMBER + r")\s*(GiB|GB|MiB|MB)")
 ALLOCATOR = re.compile(r"\[Rank (\d+)\]\s*\(after (\d+) iterations\) memory \(([^)]+)\)")
 COUNTER = re.compile(r"(mem-[a-z-]+):\s*(" + NUMBER + r")")
+LEGACY_COUNTER = re.compile(r"(?:^|\|)\s*((?:max )?(?:allocated|reserved)):\s*(" + NUMBER + r")")
 STASH = re.compile(r'allocate_stash_buffers cuda:\s*torch.Size\(\[([\d, ]*)\]\)'
                    r'(?:\s+host:\s*torch.Size\(\[([\d, ]*)\]\))?'
                    r'\s+dtype=torch\.(\w+)\s+\(torch\.(\w+)\)')
@@ -120,8 +121,13 @@ def parse_log(path, *, source_id=None):
             allocator_matches = list(ALLOCATOR.finditer(line))
             for index, match in enumerate(allocator_matches):
                 end = allocator_matches[index + 1].start() if index + 1 < len(allocator_matches) else len(line)
-                for counter, text_value in COUNTER.findall(line[match.end():end]):
-                    if 'gigabytes' not in counter:
+                body = line[match.end():end]
+                counters = COUNTER.findall(body)
+                # Preserve a separate legacy name; MB labels are not verified MiB.
+                counters += [("allocator-" + name.replace(" ", "-"), value)
+                             for name, value in LEGACY_COUNTER.findall(body)]
+                for counter, text_value in counters:
+                    if 'gigabytes' not in counter and not counter.startswith('allocator-'):
                         continue
                     value = _memory_number(text_value)
                     samples.append({**evidence, 'rank': int(match[1]), 'step': int(match[2]),

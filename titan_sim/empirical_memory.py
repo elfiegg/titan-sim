@@ -150,9 +150,14 @@ def allocator_ratios(observation):
     grouped = defaultdict(dict)
     for s in observation["samples"]:
         key = (s["source"], s["line"], s.get("rank"), s.get("step"))
-        if s["metric"] in grouped[key]:
+        metric = s["metric"]
+        if metric.startswith("allocator-"):
+            metric = "mem-" + metric.removeprefix("allocator-") + "-gigabytes"
+        # This key is an internal join alias, not a unit conversion. The sample
+        # and returned printed_unit retain MB/GB exactly as observed.
+        if metric in grouped[key]:
             raise ValueError("Duplicate allocator metric within one row")
-        grouped[key][s["metric"]] = s
+        grouped[key][metric] = s
     rows = []
     for (source, line, rank, step), samples in grouped.items():
         keys = [f"mem-{name}-gigabytes" for name in required]

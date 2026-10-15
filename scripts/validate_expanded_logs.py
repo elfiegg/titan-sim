@@ -25,7 +25,7 @@ def inspect_archive(root):
     """Check every manifest record, resolving declared content duplicates."""
     manifest = json.loads((root / "MANIFEST.json").read_text())
     seen, entries, candidates = {}, [], []
-    marker = re.compile(rb"step:\s*\d+[^\n]*memory:|mem-allocated-gigabytes|allocate_stash_buffers cuda:")
+    marker = re.compile(rb"step:\s*\d+[^\n]*memory:|mem-allocated-gigabytes|allocate_stash_buffers cuda:|\(after \d+ iterations\) memory \([^)]+\)\s*\|\s*allocated:")
     full = re.compile(rb"size:\s*671,026,404,352 total parameters")
     for record in manifest["files"]:
         stored = record.get("duplicate_of", record["archive_path"])
@@ -48,7 +48,7 @@ def inspect_archive(root):
                                    "full_v3_parameter_count_present": bool(full.search(data)),
                                    "facts_census": facts,
                                    "max_printed_training_memory_gib": max(values) if values else None,
-                                   "allocator_counter_present": "mem-allocated-gigabytes" in text,
+                                   "allocator_counter_present": "mem-allocated-gigabytes" in text or bool(re.search(r"\(after \d+ iterations\) memory \([^)]+\)\s*\|\s*allocated:", text)),
                                    "stash_geometry_present": "allocate_stash_buffers cuda:" in text})
         if seen[stored] != record["sha256"]:
             raise ValueError(f"Archive hash mismatch: {stored}")
