@@ -13,6 +13,12 @@ For a human-readable explanation of the design, governing calculations,
 TorchTitan fidelity, and evidence limits, read the
 [implementation analysis](docs/IMPLEMENTATION_ANALYSIS.md).
 
+The [allocation coverage report](docs/ALLOCATION_COVERAGE_REPORT.md) recomputes
+model-by-model memory deltas, separates calibrated totals from state subtotals
+and conditional checks, and links the
+[implementation plan](docs/plans/2026-10-15-allocation-coverage.md) for complete
+allocation sizes, lifetimes, dependencies and matched GPU validation.
+
 [Original DeepSeek CPU step capture](docs/CPU_STEP_CAPTURE.md) now completes
 unsharded model forward, backward, original FullAC recomputation and direct
 AdamW using an explicit FlexAttention metadata contract. Both the reduced model
