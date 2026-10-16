@@ -1,106 +1,201 @@
-# Capacity impact of a 192 GiB RU design
+# 192 GiB HBM: what must change?
 
-## Summary
+[Visual report with embedded diagrams](validation/hbm_capacity_design/report.pdf)
 
-Reducing per-device HBM from 256 GiB to 192 GiB removes 25% of nominal capacity. The design could be economically favorable if lower system cost or power outweighs any loss in training throughput, but it can also force smaller batches, more partitioning, recomputation or offload. We built TitanSim to study these effects. This report combines supported CPU memory projections with configuration-matched GPU logs; it does not yet establish an optimized throughput comparison between the two designs.
+| V3: start with the tested recipe.<br>GPT-OSS: partitioning determines fit.<br>V4 Pro: the current execution needs a redesign. |
+|---|
 
-Across eight selected full-model configurations, six have recorded framework peak reservation below 192 GiB, while two already exceed 192 GiB in live framework allocations. The two capacity-exceeding executions are V4 Pro and GPT-OSS MXFP8 on 8 GPUs. Their observed allocated-memory excesses are at least 35.0 and 56.7 GiB, averaging 45.8 GiB across those two cases. V4 has NaN gradients, so it provides resource-pressure evidence rather than a healthy training baseline. The six lower-memory cases are candidates for unchanged execution, not six validated device fits.
 
-No measured average throughput loss, cost advantage or energy saving can yet be assigned to the HBM reduction. The case count is an equally counted, deliberately selected configuration set, not a frequency-weighted customer workload mix. V3 16B and the 4/8-GB200 GPT-OSS probes support estimator validation but are not extra headline cases; V4 repeats count once. Nemotron approximately 2.3T is excluded pending a verified architecture and matched run.
+Removing 64 GiB cuts capacity by 25%; it does not imply a 25% cut in batch size. The practical question is which allocations overlap at the peak, and which configuration change removes them.
 
-![capacity](validation/hbm_capacity_design/capacity.png)
+### Recorded peak reservation per GPU
 
-Figure 1. Largest observed framework reserved counter for each selected recipe. Values are normalized to GiB per reported GPU. Reserved includes allocated storage and cached blocks. Missing ranks, later phases and external allocations can increase actual demand; the two over-limit cases also exceed 192 GiB in allocated memory alone.
+Bars share a 256 GiB scale. The 192 GiB boundary is at the same position in every row. Green is room below that limit; red is recorded use above it.
 
-## Design assumptions and study scope
+V3 MXFP8 · 256 GPUs · batch 16 · sequence 4K
 
-| Item | Setting and consequence |
-|---|---|
-| Capacity comparison | 192 GiB = 206.2 decimal GB; 256 GiB = 274.9 decimal GB. Both are nominal per-device limits. Usable capacity and operating reserve remain unspecified. |
-| Controlled comparison | Hold compute, HBM bandwidth, links, GPU count and software constant to isolate capacity. An actual RU SKU may change these resources and needs a separate hardware profile. No NVL576 topology or bandwidth is inferred. |
-| Training equivalence | A valid performance comparison preserves model, precision, sequence length, global batch and useful training work. Local batch, accumulation and parallelism may change only as explicit capacity remedies. |
-| Evidence basis | V3 source runs use 256 GB300s reporting 276.62 GiB per device. V4 has 256 ranks; exact physical SKU/capacity is unverified. GPT-OSS archive device counts are verified; physical SKU is not. These are not measurements on the proposed RU. |
-
-The primary capacities follow the manager’s GiB wording. This differs from the earlier decimal-GB study in tab 1. Under decimal 192/256 GB, the same two cases exceed the lower limit, but both also have recorded reservation above 256 GB. Under 256 GiB, all eight recorded reservation values are below the nominal upper limit. Neither observation establishes a complete-device fit.
-
-## Methodology and agreement with measurements
-
-First, identify each runtime recipe from its logs and source revision, including tensor dimensions, partitioning, optimizer, quantization, checkpointing and graph policy. Recheck source hashes and normalize counters only after verifying the logger’s unit divisor. This pass verified 27 archive logs, reran 32 V3 CPU projections without refitting profiles, and recomputed the reported calibration deltas. Printed log precision limits the numerical precision of the comparisons.
-
-For V3 671B, the reported CPU model is a bounded piecewise-linear interpolation of peak reserved memory versus local batch, separately for MXFP8 and mixed NVFP4/MXFP8. Batches 1, 4 and 16 are calibration anchors; batches 2 and 8 are retrospective evaluation points. Other configuration fields are held fixed. The calibrated total already absorbs allocator-visible runtime costs; adding a second generic overhead factor would double count them. The 32 interpolations are not 32 independent validations.
-
-For GPT-OSS, the CPU estimator derives parameter, gradient, master-weight and Adam-state storage from tensor shapes and the actual mesh. Allocation captures provide quantized-cache, workspace-candidate and allocator-slack terms. Frozen terms from 4 GPUs are tested at 8 GPUs with optimizer sharding recomputed. For V4, we can replay explicit buffer geometries and compare reservation behavior, but cannot independently predict the complete model peak. V4 capacity conclusions below therefore use observed GPU allocations.
-
-TitanSim also has metadata capture, dependency scheduling and allocator replay, but this study does not yet supply complete production allocation sizes and lifetimes for every model/rank. A successful short CPU training step is distinct from a complete GPU-memory forecast. NCCL/native pools, hidden workspaces, graph capture, asynchronous reuse, initialization and checkpoint-saving coverage remain incomplete.
-
-Required device capacity is the maximum simultaneous footprint over ranks and time: PyTorch reserved + non-overlapping external allocations + context/driver usage, with a declared uncertainty allowance. PyTorch allocated is already contained in reserved. Sum concurrent allocations at the actual peak; do not sum independent category peaks. A counter below the limit is a candidate; a recorded live allocation above the limit establishes that the observed execution needs a change.
-
-| Comparison | Measured agreement | What confidence it supports |
+| 164.5 used | 27.5 | 64 removed |
 |---|---|---|
-| V3 671B reserved counter | Maximum excluded-batch error: 2.85% MXFP8; 1.86% mixed FP4. Batch 16 matches by calibration. | Within-profile counter interpolation only. No all-rank/device-wide confidence bound. |
-| V3 16B separate profile | Maximum excluded-batch error: 2.20%. | Method transfers with separate calibration; 671B coefficients are not reused. |
-| GPT-OSS NVFP4, 8 GB200 | State only: 65.621 vs 72.229 GB, −9.15%. Frozen components: 72.654 vs 72.229 GB, +0.425 GB / +0.59%. | Post-step rank-0 allocation, not transient peak. All values in this row are decimal GB. MXFP8 component-transfer error is +0.44%. |
-| V4 Pro reservation ratio | Maximum error 5.24%, using target measured current allocation as an input. | Conditional allocator comparison, not independent memory prediction. Full-Pro unit conversion is now verified as decimal GB. |
 
-Delta means estimator minus measurement. These checks are retrospective and their maximum errors are not statistical confidence intervals. The detailed per-model allocation report records component attribution and unresolved lifetime coverage. Full V4 Pro unit semantics above use the later historical-source audit, superseding the earlier unverified-unit label; the reduced V4 logs still have unresolved MB units.
 
-## Detailed capacity results
+GPT-OSS NVFP4 · 8 GPUs · batch 3 · sequence 8K
 
-V3 uses sequence 4096, full activation checkpointing, compiled blocks/loss and FSDP256. Its two selected cases use local batch 16 and global batch 4096. V4 Pro has 61 layers, 384 experts/top-6, sequence 4096, microbatch 1, global batch 4096, VPP4, selective recomputation, attention offload and full-iteration graphs. GPT-OSS has 20.495B parameters, vocabulary 128256 and sequence 8192; PP1 and expert TP1. Its local/global batches are 3/24 on 8 GPUs, 1/36 on 72 GPUs and 1/64 on 512 GPUs.
+| 174.5 used | 17.5 | 64 removed |
+|---|---|---|
 
-| Case and parallelism | Peak allocated | Peak reserved | Room at 192 | Room at 256 |
-|---|---|---|---|---|
-| V3 MXFP8; 256 GPUs<br>TP1 PP1 CP1 EP64 | N/A | 164.5 | +27.5 | +91.5 |
-| V3 mixed FP4; 256 GPUs<br>TP1 PP1 CP1 EP64 | N/A | 153.8 | +38.3 | +102.3 |
-| V4 Pro MXFP8*; 256 GPUs<br>TP1 PP4 CP1 EP64 | 227.0 | 247.9 | -55.9 | +8.1 |
-| GPT-OSS MXFP8; 8 GPUs<br>TP1 PP1 CP1 EP1 | 248.7 | 250.9 | -58.9 | +5.1 |
-| GPT-OSS NVFP4; 8 GPUs<br>TP1 PP1 CP1 EP2 | 170.3 | 174.5 | +17.5 | +81.5 |
-| GPT-OSS MXFP8; 72 GPUs<br>TP1 PP1 CP2 EP4 | 76.1 | 76.7 | +115.3 | +179.3 |
-| GPT-OSS NVFP4; 72 GPUs<br>TP1 PP1 CP2 EP4 | 48.0 | 48.9 | +143.1 | +207.1 |
-| GPT-OSS MXFP8; 512 GPUs<br>TP2 PP1 CP4 EP8 | 30.8 | 31.1 | +160.9 | +224.9 |
 
-Table 3. All numeric columns are GiB per reported GPU. Room = nominal capacity minus largest recorded reserved counter; it excludes unobserved demand and operating headroom. V3 ranks cannot be identified from repeated archived lines. V4 reports only 4/256 ranks after iterations 1–2. GPT-OSS observations cover 1/8, 2/72 or 8/512 ranks after iterations 1–2. These windows and rank sets are not full-run maxima. *V4 has unhealthy gradient norms.
+GPT-OSS MXFP8 · 8 GPUs · batch 3 · sequence 8K
 
-V3 has 27.5 GiB counter-only room in MXFP8 and 38.3 GiB in mixed FP4 at the lower capacity. A batch reduction is not currently shown to be necessary. The mixed-precision result is a distinct training recipe, not a free optimization that preserves a fixed precision requirement.
+| 192 limit | +58.9 |  |
+|---|---|---|
 
-The V4 repeats reach the same 227.0 GiB allocated peak but different reserved peaks, 235.5 and 247.9 GiB. Their early allocator behavior varies even when sampled live allocation agrees. Both precede completed full-iteration graph capture, and NaN gradients begin at iteration 2. Recovering 35.0 GiB of live allocation is a lower-bound requirement for this observed execution; reclaiming cache alone cannot supply that reduction. Microbatch is already 1.
 
-GPT-OSS MXFP8 on 8 GPUs peaks at 248.7 GiB allocated versus 117.1 GiB after iteration 2: the 56.7 GiB excess is transient. The NVFP4 recipe also changes EP1 to EP2; its lower footprint is not solely a precision effect. Four-bit computation does not compress all training state.
+V4 Pro MXFP8 · 256 GPUs · batch 1 · sequence 4K
 
-## Throughput and causes of the capacity tradeoff
+| 192 limit | +55.9 |  |
+|---|---|---|
 
-![batch](validation/hbm_capacity_design/batch.png)
 
-Figure 2. Observed V3 source-run batch sweep. Four post-warmup ten-step timing windows cover steps 11–50. The numerator counts processed label positions, not verified useful loss-bearing tokens. Global batch varies with local batch, so this is not an equivalent-workload capacity comparison.
+V3 has 27.5 GiB of counter-only room; mixed FP4 has 38.3 GiB. GPT-OSS NVFP4 has 17.5 GiB. These recipes do not yet show a need to shorten context or reduce batch.
 
-At local batch 8 versus 16, MXFP8 reserved memory falls from 164.5 to 105.1 GiB, while processed-position throughput falls from 807.0k to 756.3k positions/s globally: 93.7% retention. Mixed FP4 falls from 153.8 to 98.7 GiB and from 919.0k to 847.9k positions/s: 92.3% retention. These measured trends suggest a memory/efficiency tradeoff, but do not establish a 6.3–7.7% penalty caused by the proposed HBM design.
+GPT-OSS MXFP8 and V4 also exceed 192 GiB in live allocations, by 56.7 and 35.0 GiB. Reclaiming cached reservation alone cannot make those observed executions fit.
 
-The batch-8 logs use global batch 2048, whereas batch 16 uses 4096. A matched V3 comparison must instead test 16 × 1 × 256 = 8 × 2 × 256 = 4096 sequences per optimizer step, where the factors are local batch, accumulation and data-parallel degree. Accumulation changes gradient lifetime, communication frequency, optimizer amortization and possibly graph execution; doubling the logged batch-8 time is not a validated prediction.
+Scope: capacity-only comparison, with compute and bandwidth held constant. All memory is GiB/GPU, following the manager’s 192/256 GiB wording. If the SKU means decimal GB, the lower limit is 178.8 GiB: V3 MXFP8 room falls to 14.3 GiB and GPT-OSS NVFP4 room to 4.3 GiB. Archived counters omit some ranks/phases and external memory; V4 has NaN gradients.
 
-Arithmetic intensity is useful for explaining the mechanism. For an illustrative dense GEMM, AI ≈ 2mnk / [s(mk + kn + mn)] FLOP/byte, where s is uniform bytes per element and the denominator assumes one transfer of each operand/output. With small token dimension m and weight traffic dominant, AI approaches 2m/s. Smaller local batches or fewer tokens per expert can reduce reuse and kernel efficiency. The roofline ceiling is min(peak FLOP/s, HBM bandwidth × AI); this ceiling does not predict achieved training throughput. Real traffic includes caches, conversions, rereads and communication. NVIDIA’s GEMM and GPU performance guides explain these limits.
+## V3 — start with batch 16 and 4K context
 
-HBM capacity itself is absent from that roofline equation. If the same execution fits and compute/bandwidth remain unchanged, capacity alone need not slow it. Throughput changes when capacity forces a different execution plan or the actual SKU changes bandwidth, compute or topology. Wider sharding can reduce state bytes while adding communication and shrinking per-rank kernels; pipeline changes also alter in-flight activations and bubbles. More GPUs therefore cannot be assumed to preserve efficiency or minimize GPU-hours. The five GPT-OSS configurations are not a controlled scaling study.
+671B · 256 GB300s · TP1 / PP1 / CP1 / EP64 / FSDP256 · full activation checkpointing · compiled training
 
-Other remedies have distinct costs. More recomputation saves retained activations but repeats arithmetic; V3 already uses full checkpointing. Offload consumes host capacity and transfer bandwidth, and overlap can extend buffer lifetimes. Restricting prefetch or concurrent work may reduce peak memory while exposing communication latency. Graph pools and allocator reuse can alter reservation without changing model state. Select a remedy only after identifying the simultaneous peak on the affected rank, rather than applying a uniform memory factor.
+| Recorded reservation is 164.5 GiB at batch 16, leaving 27.5 GiB for unmeasured device overhead. Validate this recipe before reducing batch or context. |
+|---|
 
-## Design decision and next validation
 
-The evidence supports advancing 192 GiB as a candidate for the lower-memory recipes, while explicitly retaining a remediation requirement for the two capacity-exceeding executions. It does not support a purchasing recommendation or an average throughput penalty. Under identical resources, reducing capacity narrows the feasible configuration set; any economic advantage must come from a favorable system-cost/power tradeoff or a different system design, not from fewer HBM bytes alone.
+### What the real logs tell us
 
-Let rT be useful-token throughput on the selected 192 GiB system divided by the 256 GiB baseline, and rC its full-system hourly cost ratio. For the same training work, cost per token ratio = rC/rT and elapsed-time ratio = 1/rT. As an illustrative sensitivity, 90% throughput retention requires more than a 10% hourly-cost reduction to save money and takes 11.1% longer. Neither rT nor rC is measured here; energy also requires a measured or supported power model.
+| 57.4 GiB<br>Batch-1 reservation | + | 107.1 GiB<br>Additional reservation at batch 16 |
+|---|---|---|
 
-First validate V3 batch16/accumulation1 at fixed global batch 4096 with all-rank allocated, reserved and device-wide peaks through initialization, graph warmup, steady training and checkpoint saving. If the complete budget is tight, compare batch8/accumulation2 with an uninstrumented timing control. For GPT-OSS, capture the transient peak and worst-rank dependencies; the separate GB200 NVFP4 probe already shows rank 3 above rank 0. For V4, establish a numerically healthy baseline before measuring a supported offload/recompute/partitioning change. Freeze calibration before independent repeats, then report fit, useful-token throughput, GPU-hours and cost for the same workload.
 
-## Supporting evidence
+Together: 164.5 GiB for MXFP8. This is a measured batch-sensitive decomposition—not a tensor-by-tensor allocation breakdown. Parameter/gradient/Adam storage, saved activations, communication, quantization and workspace are not separately measured in these logs. The prior 39.1 GiB state term was an assumption.
 
-[Capacity dataset and source audit](https://github.com/elfiegg/titan-sim/blob/main/docs/validation/hbm_capacity_design/study.json)
+### How we estimate it, and the actual error
 
-[Detailed allocation comparisons and component attribution](https://github.com/elfiegg/titan-sim/blob/main/docs/ALLOCATION_COVERAGE_REPORT.md)
+Interpolate total reserved memory between measured batches 1, 4 and 16, separately for each precision. Check batches 2 and 8 excluded from the fit. The coefficients cannot be reused for a new sequence length or mesh.
 
-[Implementation plan for complete allocation coverage](https://github.com/elfiegg/titan-sim/blob/main/docs/plans/2026-10-15-allocation-coverage.md)
+| Excluded batch / recipe | GPU | CPU | CPU − GPU |
+|---|---|---|---|
+| Batch 2 · MXFP8 | 61.53 | 63.28 | +1.75 / +2.85% |
+| Batch 8 · MXFP8 | 105.06 | 104.84 | −0.22 / −0.21% |
+| Batch 2 · mixed FP4 | 61.23 | 62.37 | +1.14 / +1.86% |
+| Batch 8 · mixed FP4 | 98.69 | 99.42 | +0.73 / +0.74% |
 
-[Historical V4 logger defining decimal GB](https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/573e088c9c6740082c39744e03dc5b009e730ed4/src/megatron/bridge/training/utils/train_utils.py)
+### What changes if the complete device budget is too tight?
 
-[NVIDIA matrix multiplication performance guide](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/)
+| Current<br>Batch 16 × accumulation 1<br>4K sequence · same mesh | → | Fallback to test<br>Batch 8 × accumulation 2<br>4K sequence · same mesh |
+|---|---|---|
 
-[NVIDIA GPU performance background](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html)
+
+Both preserve global batch 4,096. The measured batch-8 runs reserve 105.1 GiB (MXFP8) / 98.7 GiB (mixed FP4), roughly 59.5 / 55.1 GiB less than batch 16. But those runs used accumulation 1; the proposed accumulation-2 peak and throughput are not validated.
+
+Performance mechanism: a smaller microbatch can reduce matrix reuse and arithmetic intensity; accumulation restores training batch, not kernel size. No sequence or parallelism change is justified by the present V3 capacity result.
+
+[Evidence: V3 allocation diagnosis and excluded-batch checks](https://github.com/elfiegg/titan-sim/blob/main/docs/MEMORY_GAP_DIAGNOSIS.md)
+
+## GPT-OSS — model runtime buffers, then change the mesh
+
+Allocation probe: 20B · 8 GB200s · TP1 / PP1 / CP2 / EP4 · batch 1 · sequence 8K · NVFP4
+
+| The “~10% error” came from comparing training state with total allocation. Named runtime buffers reduce the matched post-step transfer error to +0.59%. This is not yet a peak predictor. |
+|---|
+
+
+### Real allocation breakdown: rank 0, end of step 2
+
+State is 61.1 GiB: parameters 11.5 + gradient buffers 11.5 + master weights/Adam 28.6 + optimizer gradients 9.5. Storage ownership reconciles this census with the capture.
+
+| Allocation component | GPU capture | CPU estimate* |
+|---|---|---|
+| Training state | 61.11 | 61.11 |
+| Retained quantized caches | 4.74 | 4.74 |
+| Dummy gradients + GEMM scratch | 1.00 | 1.00 |
+| Other storage + block slack | 0.42 | 0.81 |
+| Total current allocation | 67.27 | 67.66 |
+
+*CPU recomputes state sharding and adds runtime components frozen from the 4-GPU run; the 8-GPU total is not an input. Cache ownership is identified; scratch labels use allocation stacks. Small differences largely reflect allocator block slack. Instrumented external HybridEP adds 0.11 GiB outside this total; other external memory is not fully counted.
+
+| State-only estimate<br>61.11 vs 67.27 GiB<br>−6.15 GiB / −9.15% | → | Components included<br>67.66 vs 67.27 GiB<br>+0.40 GiB / +0.59% |
+|---|---|---|
+
+
+### What changes at 192 GiB?
+
+The archived 8-GPU MXFP8 recipe (batch 3, CP1, EP1) peaks at 248.7 GiB allocated. An 8-GPU probe with batch 1, CP2 and EP4 keeps the 8K sequence and measures 115.3 GiB peak reserved over six steps. This is a measured low-memory starting point, not a matched-workload speed comparison.
+
+| Archive: batch 3 × 1 × DP8<br>Global batch 24<br>CP1 / EP1 · sequence 8K | → | Candidate: batch 1 × 6 × DP4<br>Global batch 24<br>CP2 / EP4 · sequence 8K |
+|---|---|---|
+
+
+Accumulation 6 is untested. CP partitions token work and EP partitions experts; both add communication. Keep sequence length first. The archived NVFP4 recipe (EP2, batch 3) already has 17.5 GiB reserved-counter room; it does not require this change on current evidence.
+
+[Evidence: GPT-OSS allocation captures and 4→8 GPU transfer](https://github.com/elfiegg/titan-sim/blob/main/docs/GPT_OSS_ALLOCATION_EXPERIMENT.md)
+
+## V4 Pro — batch is already 1; redesign the peak
+
+256 ranks · TP1 / PP4 / VPP4 / EP64 · batch 1 · sequence 4K · selective recomputation + attention offload
+
+| At least 35.0 GiB of live allocation must disappear from the observed execution. Smaller microbatches are unavailable, and freeing cache alone is insufficient. |
+|---|
+
+
+### The after-step snapshot hides the capacity problem
+
+After iteration 2: current allocated
+
+| 175.1 used | 16.9 | 64 removed |
+|---|---|---|
+
+
+During the observed window: peak allocated
+
+| 192 limit | +35.0 |  |
+|---|---|---|
+
+
+The live peak is 227.0 GiB versus 175.1 GiB after the step. Reservation is 235.5–247.9 GiB; these counters are not additive. Both runs develop NaN gradients, and reports precede completed graph capture.
+
+### What is modeled—and what is missing
+
+| Allocation group | What we can establish |
+|---|---|
+| Parameters, gradients, optimizer | No reconciled physical allocation breakdown for full Pro. |
+| Saved tensors, quantization, scratch | Logged buffer shapes can be replayed, but ownership and simultaneous lifetimes are not established. |
+| Allocator reservation | At this snapshot, reserved minus allocated is 60.4–72.8 GiB; this is not all fragmentation or a guaranteed saving. |
+| Independent CPU peak vs GPU | CPU: unavailable · GPU: 227.0 GiB · delta: unavailable. |
+
+The earlier 5.24% ratio error used the target GPU allocation as an input. It does not validate a CPU prediction of V4 memory.
+
+### Configuration consequences
+
+| Control | 192 GiB implication |
+|---|---|
+| Batch / sequence | Batch 1 cannot shrink. Keep 4K context unless changing the training requirement is acceptable; no validated 2K projection exists. |
+| Same 256 GPUs | Measure the live peak, then test stronger recomputation/offload or TP changes. TP2 alone does not further partition experts when expert TP1 and EP64 remain fixed. |
+| More pipeline partitions | At 256 GPUs, PP8/EP32 keeps PP×EP unchanged, so expert state is not halved. PP8/EP64 needs 512 GPUs and is an unvalidated candidate. |
+
+Decision: no safe 192 GiB V4 configuration can be selected from the current evidence. Establish a numerically healthy baseline and measure the peak before assigning a throughput or GPU-count penalty.
+
+[Evidence: allocation comparisons; full-Pro units resolved by the capacity source audit](https://github.com/elfiegg/titan-sim/blob/main/docs/validation/hbm_capacity_design/study.json)
+
+## Methodology — explain bytes before projecting a recipe
+
+| A useful estimator must answer two separate questions:<br>Which allocations exist and overlap?<br>Does the worst-rank peak fit after changing the configuration? |
+|---|
+
+
+| 1  MATCH THE EXECUTION | Model shapes + precision + batch/sequence + parallel groups + checkpoint/graph policy |
+|---|---|
+| ↓  2  ACCOUNT FOR MEMORY | Count unique state storage. Use captures for runtime buffers and their lifetimes. Use aggregate calibration only when components are unavailable. |
+| ↓  3  CHECK AGAINST THE GPU | Compare the same counter, rank and phase. Freeze coefficients before evaluation. Delta = CPU estimate − GPU measurement. |
+| ↓  4  CHANGE ONE DESIGN LEVER | Preserve sequence, precision and global batch; adjust microbatch/accumulation or mesh. Recompute overlap and test the new peak and throughput. |
+
+### The component model
+
+| Training state<br>Parameters · gradients · optimizer | + | Runtime allocations<br>Activations · quantized caches<br>Communication · scratch |
+|---|---|---|
+
+
+Apply storage aliasing and lifetimes, then allocator behavior. Add external pools and context usage only where they are not already counted. Device demand is the maximum simultaneous total across time and ranks—not the sum of each category’s independent maximum.
+
+### What the present study can support
+
+| Model | Supported today | Not established |
+|---|---|---|
+| V3 | Batch-dependent reserved-total interpolation; excluded-point error ≤2.85%. | Physical per-component breakdown; new sequence or mesh. |
+| GPT-OSS | Physical post-step components; 4→8 GPU transfer +0.59% for NVFP4. | Full peak prediction; accumulation-6 alternative at fixed global batch. |
+| V4 Pro | Observed capacity violation and some logged buffer geometry. | Independent complete CPU peak or a validated replacement recipe. |
+
+Performance interpretation: if the same recipe fits and compute/bandwidth stay fixed, lower capacity alone need not slow it. Smaller kernels may lower arithmetic intensity; extra sharding adds communication; recomputation repeats work. These mechanisms need matched-workload timing, so this study does not report an invented average throughput loss.
+
+Next validation: V3 batch16 unchanged, then batch8/accumulation2 if needed; GPT-OSS CP2/EP4 with accumulation6; V4 healthy full-Pro peak capture. Measure all-rank device usage through warmup, training and saving. Nemotron ~2.3T remains outside the conclusion until its configuration and matched runtime are verified.
+
+[Reproducible measurements, input hashes and estimator deltas](https://github.com/elfiegg/titan-sim/blob/main/docs/validation/hbm_capacity_design/study.json)

@@ -8,4 +8,4 @@ The primary comparison uses binary GiB, following the manager's design wording. 
 
 The V3 CPU forecasts interpolate a frozen calibrated profile; anchor agreement is not independent validation. GPT-OSS component-transfer errors concern post-step allocated storage, not transient peaks. V4 full-model capacity conclusions use measured counters, not an independent CPU peak prediction. Do not add generic overhead factors to calibrated totals without avoiding double counting.
 
-The report is also delivered in tab 2 of the user's existing Google document. That version uses native editable tables and links to these figures because the image-insertion connector rejected local image access. The repository Markdown renders the figures inline.
+The revised report is delivered in tab 2 of the user's existing Google document, with embedded native capacity bars, allocation comparisons, and configuration diagrams. `report.pdf` preserves the five-page visual report. The earlier eight-case dataset and PNG/SVG charts remain supporting evidence; the revised narrative is organized around V3, GPT-OSS and V4 decisions.
