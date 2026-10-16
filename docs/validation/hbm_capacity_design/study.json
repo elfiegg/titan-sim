@@ -1,0 +1,840 @@
+{
+  "primary_capacity_unit": "GiB (manager wording; decimal GB sensitivity retained)",
+  "capacity_scenarios_bytes": {
+    "GiB": [
+      206158430208,
+      274877906944
+    ],
+    "GB": [
+      192000000000,
+      256000000000
+    ]
+  },
+  "cases": [
+    {
+      "id": "V3-mxfp8",
+      "model": "V3 671B",
+      "precision": "mxfp8",
+      "world": 256,
+      "tp": 1,
+      "pp": 1,
+      "cp": 1,
+      "ep": 64,
+      "local_batch": 16,
+      "global_batch": 4096,
+      "sequence": 4096,
+      "allocated_peak_bytes": null,
+      "reserved_peak_bytes": 176673479721,
+      "cpu_reserved_bytes": 176673479721.0,
+      "scope": "max logged counter across 50 steps; ranks not identifiable",
+      "health": "no parsed NaN/OOM; completed 50 steps",
+      "sources": [
+        "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt"
+      ],
+      "reserved_peak_GiB": 164.54000000003725,
+      "allocated_peak_GiB": null,
+      "headroom_192_GiB": 27.459999999962747,
+      "headroom_256_GiB": 91.45999999996275,
+      "allocated_excess_192_GiB": null,
+      "counter_screen_GiB": "below192",
+      "reserved_peak_GB": 176.673479721,
+      "allocated_peak_GB": null,
+      "headroom_192_GB": 15.326520278999993,
+      "headroom_256_GB": 79.326520279,
+      "allocated_excess_192_GB": null,
+      "counter_screen_GB": "below192"
+    },
+    {
+      "id": "V3-nvfp4",
+      "model": "V3 671B",
+      "precision": "nvfp4",
+      "world": 256,
+      "tp": 1,
+      "pp": 1,
+      "cp": 1,
+      "ep": 64,
+      "local_batch": 16,
+      "global_batch": 4096,
+      "sequence": 4096,
+      "allocated_peak_bytes": null,
+      "reserved_peak_bytes": 165087805440,
+      "cpu_reserved_bytes": 165087805440.0,
+      "scope": "max logged counter across 50 steps; ranks not identifiable",
+      "health": "no parsed NaN/OOM; completed 50 steps",
+      "sources": [
+        "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt"
+      ],
+      "reserved_peak_GiB": 153.75,
+      "allocated_peak_GiB": null,
+      "headroom_192_GiB": 38.25,
+      "headroom_256_GiB": 102.25,
+      "allocated_excess_192_GiB": null,
+      "counter_screen_GiB": "below192",
+      "reserved_peak_GB": 165.08780544,
+      "allocated_peak_GB": null,
+      "headroom_192_GB": 26.91219455999999,
+      "headroom_256_GB": 90.91219455999999,
+      "allocated_excess_192_GB": null,
+      "counter_screen_GB": "below192"
+    },
+    {
+      "id": "V4-Pro",
+      "model": "V4 Pro",
+      "precision": "mxfp8",
+      "world": 256,
+      "tp": 1,
+      "pp": 4,
+      "vpp": 4,
+      "cp": 1,
+      "ep": 64,
+      "local_batch": 1,
+      "global_batch": 4096,
+      "sequence": 4096,
+      "allocated_peak_bytes": 243740000000,
+      "reserved_peak_bytes": 266130000000,
+      "reserved_repeat_peaks_bytes": [
+        252870000000,
+        266130000000
+      ],
+      "cpu_reserved_bytes": null,
+      "scope": "two repeats collapsed; 4/256 ranks, iterations 1\u20132, before graph capture",
+      "health": "NaN gradient norms from iteration 2; resource evidence only",
+      "sources": [
+        "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out",
+        "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out"
+      ],
+      "reserved_peak_GiB": 247.8528767824173,
+      "allocated_peak_GiB": 227.00056433677673,
+      "headroom_192_GiB": -55.8528767824173,
+      "headroom_256_GiB": 8.147123217582703,
+      "allocated_excess_192_GiB": 35.00056433677673,
+      "counter_screen_GiB": "allocated_exceeds192",
+      "reserved_peak_GB": 266.13,
+      "allocated_peak_GB": 243.74,
+      "headroom_192_GB": -74.13,
+      "headroom_256_GB": -10.129999999999995,
+      "allocated_excess_192_GB": 51.74000000000001,
+      "counter_screen_GB": "allocated_exceeds192"
+    },
+    {
+      "id": "GPT-8-MXFP8",
+      "model": "GPT-OSS 20B",
+      "precision": "MXFP8",
+      "world": 8,
+      "tp": 1,
+      "pp": 1,
+      "cp": 1,
+      "ep": 1,
+      "local_batch": 3,
+      "global_batch": 24,
+      "sequence": 8192,
+      "allocated_peak_bytes": 267030000000,
+      "reserved_peak_bytes": 269420000000,
+      "cpu_reserved_bytes": null,
+      "cpu_state_bytes": 122971469184,
+      "current_allocated_rank0_step2_bytes": 125690000000,
+      "scope": "1/8 ranks, iterations 1\u20132; full-run max unverified",
+      "health": "memory excerpt; not convergence/production validation",
+      "sources": [
+        "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_1782756735/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_2238579_0.out"
+      ],
+      "reserved_peak_GiB": 250.91692805290222,
+      "allocated_peak_GiB": 248.69106709957123,
+      "headroom_192_GiB": -58.91692805290222,
+      "headroom_256_GiB": 5.083071947097778,
+      "allocated_excess_192_GiB": 56.69106709957123,
+      "counter_screen_GiB": "allocated_exceeds192",
+      "reserved_peak_GB": 269.42,
+      "allocated_peak_GB": 267.03,
+      "headroom_192_GB": -77.42000000000002,
+      "headroom_256_GB": -13.420000000000016,
+      "allocated_excess_192_GB": 75.02999999999997,
+      "counter_screen_GB": "allocated_exceeds192"
+    },
+    {
+      "id": "GPT-8-NVFP4",
+      "model": "GPT-OSS 20B",
+      "precision": "NVFP4",
+      "world": 8,
+      "tp": 1,
+      "pp": 1,
+      "cp": 1,
+      "ep": 2,
+      "local_batch": 3,
+      "global_batch": 24,
+      "sequence": 8192,
+      "allocated_peak_bytes": 182840000000,
+      "reserved_peak_bytes": 187390000000,
+      "cpu_reserved_bytes": null,
+      "cpu_state_bytes": 84737602944,
+      "current_allocated_rank0_step2_bytes": 95593000000,
+      "scope": "1/8 ranks, iterations 1\u20132; full-run max unverified",
+      "health": "memory excerpt; not convergence/production validation",
+      "sources": [
+        "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_1782756688/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_2238575_0.out"
+      ],
+      "reserved_peak_GiB": 174.52053725719452,
+      "allocated_peak_GiB": 170.2830195426941,
+      "headroom_192_GiB": 17.47946274280548,
+      "headroom_256_GiB": 81.47946274280548,
+      "allocated_excess_192_GiB": 0,
+      "counter_screen_GiB": "below192",
+      "reserved_peak_GB": 187.39,
+      "allocated_peak_GB": 182.84,
+      "headroom_192_GB": 4.610000000000014,
+      "headroom_256_GB": 68.61000000000001,
+      "allocated_excess_192_GB": 0,
+      "counter_screen_GB": "below192"
+    },
+    {
+      "id": "GPT-72-MXFP8",
+      "model": "GPT-OSS 20B",
+      "precision": "MXFP8",
+      "world": 72,
+      "tp": 1,
+      "pp": 1,
+      "cp": 2,
+      "ep": 4,
+      "local_batch": 1,
+      "global_batch": 36,
+      "sequence": 8192,
+      "allocated_peak_bytes": 81735000000,
+      "reserved_peak_bytes": 82322000000,
+      "cpu_reserved_bytes": null,
+      "cpu_state_bytes": 29184678960,
+      "current_allocated_rank0_step2_bytes": 31602000000,
+      "scope": "2/72 ranks, iterations 1\u20132; full-run max unverified",
+      "health": "memory excerpt; not convergence/production validation",
+      "sources": [
+        "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out"
+      ],
+      "reserved_peak_GiB": 76.66833698749542,
+      "allocated_peak_GiB": 76.12165063619614,
+      "headroom_192_GiB": 115.33166301250458,
+      "headroom_256_GiB": 179.33166301250458,
+      "allocated_excess_192_GiB": 0,
+      "counter_screen_GiB": "below192",
+      "reserved_peak_GB": 82.322,
+      "allocated_peak_GB": 81.735,
+      "headroom_192_GB": 109.678,
+      "headroom_256_GB": 173.678,
+      "allocated_excess_192_GB": 0,
+      "counter_screen_GB": "below192"
+    },
+    {
+      "id": "GPT-72-NVFP4",
+      "model": "GPT-OSS 20B",
+      "precision": "NVFP4",
+      "world": 72,
+      "tp": 1,
+      "pp": 1,
+      "cp": 2,
+      "ep": 4,
+      "local_batch": 1,
+      "global_batch": 36,
+      "sequence": 8192,
+      "allocated_peak_bytes": 51506000000,
+      "reserved_peak_bytes": 52490000000,
+      "cpu_reserved_bytes": null,
+      "cpu_state_bytes": 29184678960,
+      "current_allocated_rank0_step2_bytes": 35382000000,
+      "scope": "2/72 ranks, iterations 1\u20132; full-run max unverified",
+      "health": "memory excerpt; not convergence/production validation",
+      "sources": [
+        "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out"
+      ],
+      "reserved_peak_GiB": 48.88512194156647,
+      "allocated_peak_GiB": 47.968700528144836,
+      "headroom_192_GiB": 143.11487805843353,
+      "headroom_256_GiB": 207.11487805843353,
+      "allocated_excess_192_GiB": 0,
+      "counter_screen_GiB": "below192",
+      "reserved_peak_GB": 52.49,
+      "allocated_peak_GB": 51.506,
+      "headroom_192_GB": 139.51,
+      "headroom_256_GB": 203.51,
+      "allocated_excess_192_GB": 0,
+      "counter_screen_GB": "below192"
+    },
+    {
+      "id": "GPT-512-MXFP8",
+      "model": "GPT-OSS 20B",
+      "precision": "MXFP8",
+      "world": 512,
+      "tp": 2,
+      "pp": 1,
+      "cp": 4,
+      "ep": 8,
+      "local_batch": 1,
+      "global_batch": 64,
+      "sequence": 8192,
+      "allocated_peak_bytes": 33105000000,
+      "reserved_peak_bytes": 33408000000,
+      "cpu_reserved_bytes": null,
+      "cpu_state_bytes": 12960487872,
+      "current_allocated_rank0_step2_bytes": 14306000000,
+      "scope": "8/512 ranks, iterations 1\u20132; full-run max unverified",
+      "health": "memory excerpt; not convergence/production validation",
+      "sources": [
+        "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out"
+      ],
+      "reserved_peak_GiB": 31.113624572753906,
+      "allocated_peak_GiB": 30.831433832645416,
+      "headroom_192_GiB": 160.8863754272461,
+      "headroom_256_GiB": 224.8863754272461,
+      "allocated_excess_192_GiB": 0,
+      "counter_screen_GiB": "below192",
+      "reserved_peak_GB": 33.408,
+      "allocated_peak_GB": 33.105,
+      "headroom_192_GB": 158.59199999999998,
+      "headroom_256_GB": 222.59199999999998,
+      "allocated_excess_192_GB": 0,
+      "counter_screen_GB": "below192"
+    }
+  ],
+  "screening_summary": {
+    "GiB": {
+      "below192_count": 6,
+      "allocated_exceeds192_count": 2,
+      "below256_reserved_count": 8,
+      "mean_allocated_excess_blocked": 45.84581571817398,
+      "mean_counter_headroom_candidates": 83.75372987349208,
+      "mean_performance_loss": null,
+      "validated_target_fit_count": 0
+    },
+    "GB": {
+      "below192_count": 6,
+      "allocated_exceeds192_count": 2,
+      "below256_reserved_count": 6,
+      "mean_allocated_excess_blocked": 63.38499999999999,
+      "mean_counter_headroom_candidates": 75.77145247316666,
+      "mean_performance_loss": null,
+      "validated_target_fit_count": 0
+    }
+  },
+  "v3_forecasts": [
+    {
+      "precision": "mxfp8",
+      "local_batch": 1,
+      "reserved_bytes": 61664992952.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 2,
+      "reserved_bytes": 67949961762.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 3,
+      "reserved_bytes": 74234930572.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 4,
+      "reserved_bytes": 80519899382.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 5,
+      "reserved_bytes": 88532697743.58334,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 6,
+      "reserved_bytes": 96545496105.16667,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 7,
+      "reserved_bytes": 104558294466.75,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 8,
+      "reserved_bytes": 112571092828.33334,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 9,
+      "reserved_bytes": 120583891189.91667,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 10,
+      "reserved_bytes": 128596689551.5,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 11,
+      "reserved_bytes": 136609487913.08333,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 12,
+      "reserved_bytes": 144622286274.6667,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 13,
+      "reserved_bytes": 152635084636.25,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 14,
+      "reserved_bytes": 160647882997.8333,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 15,
+      "reserved_bytes": 168660681359.4167,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 16,
+      "reserved_bytes": 176673479721.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 1,
+      "reserved_bytes": 61664992952.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 2,
+      "reserved_bytes": 66969277562.66667,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 3,
+      "reserved_bytes": 72273562173.33334,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 4,
+      "reserved_bytes": 77577846784.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 5,
+      "reserved_bytes": 84870343338.66666,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 6,
+      "reserved_bytes": 92162839893.33333,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 7,
+      "reserved_bytes": 99455336448.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 8,
+      "reserved_bytes": 106747833002.66666,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 9,
+      "reserved_bytes": 114040329557.33333,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 10,
+      "reserved_bytes": 121332826112.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 11,
+      "reserved_bytes": 128625322666.66667,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 12,
+      "reserved_bytes": 135917819221.33333,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 13,
+      "reserved_bytes": 143210315776.0,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 14,
+      "reserved_bytes": 150502812330.6667,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 15,
+      "reserved_bytes": 157795308885.3333,
+      "required_capacity_bytes": null
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 16,
+      "reserved_bytes": 165087805440.0,
+      "required_capacity_bytes": null
+    }
+  ],
+  "v3_timing": [
+    {
+      "precision": "mxfp8",
+      "local_batch": 1,
+      "global_batch_sequences": 256,
+      "max_logged_reserved_bytes": 61664992952,
+      "mean_step_seconds_derived": 2.350290246766137,
+      "global_processed_positions_per_second": 446147.44984913233,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt",
+      "source_sha256": "9566050928a21de5a4cad6c7bbfa052bba1d20ebf8dee8ec6263a7206aad59e9",
+      "max_memory_source_line": 2843
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 2,
+      "global_batch_sequences": 512,
+      "max_logged_reserved_bytes": 66067334431,
+      "mean_step_seconds_derived": 3.654182440334154,
+      "global_processed_positions_per_second": 573904.569419426,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-mxfp8-64n-408659938.txt",
+      "source_sha256": "9b80064b3649ae5a64a2b83351a0594d62a413a53bc8673c6a0d75755a5faf6d",
+      "max_memory_source_line": 2895
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 4,
+      "global_batch_sequences": 1024,
+      "max_logged_reserved_bytes": 80519899382,
+      "mean_step_seconds_derived": 6.261904322925519,
+      "global_processed_positions_per_second": 669812.8530396405,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt",
+      "source_sha256": "b9af7673ee9800f89a7a917446704d1d8a0c3ac8fbc03cf7e7731b1813e25e22",
+      "max_memory_source_line": 2822
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 8,
+      "global_batch_sequences": 2048,
+      "max_logged_reserved_bytes": 112807316029,
+      "mean_step_seconds_derived": 11.092359694754721,
+      "global_processed_positions_per_second": 756250.9899464175,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-mxfp8-64n-408659944.txt",
+      "source_sha256": "bc086092c7a7bb7ddbff2e38b2d464ec6b34642e51904f851b77764f4baedb17",
+      "max_memory_source_line": 2845
+    },
+    {
+      "precision": "mxfp8",
+      "local_batch": 16,
+      "global_batch_sequences": 4096,
+      "max_logged_reserved_bytes": 176673479721,
+      "mean_step_seconds_derived": 20.790356500586217,
+      "global_processed_positions_per_second": 806971.0588910267,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt",
+      "source_sha256": "eae350a6d37789c0573facf33ecdc0f45e33681b34f1d445fdf1a39550102797",
+      "max_memory_source_line": 2880
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 1,
+      "global_batch_sequences": 256,
+      "max_logged_reserved_bytes": 61664992952,
+      "mean_step_seconds_derived": 3.113432057528774,
+      "global_processed_positions_per_second": 336791.03337565257,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-nvfp4-64n-408659950.txt",
+      "source_sha256": "53d27f979946dbd20d530d1e100b87dceddbbc2b55a439bb9e7e18cea4f03a2d",
+      "max_memory_source_line": 3047
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 2,
+      "global_batch_sequences": 512,
+      "max_logged_reserved_bytes": 65745211884,
+      "mean_step_seconds_derived": 3.665641548573082,
+      "global_processed_positions_per_second": 572110.4947690138,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-nvfp4-64n-408659953.txt",
+      "source_sha256": "06b68796e8090097a62b0d548ad347c511021511636986654d0b9e397054dc58",
+      "max_memory_source_line": 3078
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 4,
+      "global_batch_sequences": 1024,
+      "max_logged_reserved_bytes": 77577846784,
+      "mean_step_seconds_derived": 5.696584811248535,
+      "global_processed_positions_per_second": 736283.9559094923,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt",
+      "source_sha256": "4334c1b2a5dadd8d00bc30d74d001a7f5098c1ff7c47706398fdfcc6d418faf9",
+      "max_memory_source_line": 3063
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 8,
+      "global_batch_sequences": 2048,
+      "max_logged_reserved_bytes": 105967580611,
+      "mean_step_seconds_derived": 9.893428311732773,
+      "global_processed_positions_per_second": 847896.981277139,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-nvfp4-64n-408659959.txt",
+      "source_sha256": "2ddf995ef254c05fdd1ba5af3eb6913c5d635aa4c1f3a9673e75fd818383c59c",
+      "max_memory_source_line": 3037
+    },
+    {
+      "precision": "nvfp4",
+      "local_batch": 16,
+      "global_batch_sequences": 4096,
+      "max_logged_reserved_bytes": 165087805440,
+      "mean_step_seconds_derived": 18.256517443770786,
+      "global_processed_positions_per_second": 918971.3236203474,
+      "timing_steps_covered": 40,
+      "timing_windows": 4,
+      "source_relative": "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt",
+      "source_sha256": "a03315ffd5fe00a6c85b1cfb38d580ab877232fbf2cb887248b63f78e0c1bcd1",
+      "max_memory_source_line": 3095
+    }
+  ],
+  "validation": [
+    {
+      "model": "V3 671B",
+      "precision": "mxfp8",
+      "local_batch": 2,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 63.28333333320916,
+      "observed": 61.53000000026077,
+      "delta_percent": 2.8495584803200975,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 671B",
+      "precision": "mxfp8",
+      "local_batch": 8,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 104.84000000016144,
+      "observed": 105.05999999959022,
+      "delta_percent": -0.20940414946662617,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 671B",
+      "precision": "nvfp4",
+      "local_batch": 2,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 62.36999999980132,
+      "observed": 61.230000000447035,
+      "delta_percent": 1.8618324340126813,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 671B",
+      "precision": "nvfp4",
+      "local_batch": 8,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 99.41666666666666,
+      "observed": 98.69000000040978,
+      "delta_percent": 0.7363123581455648,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 16B",
+      "precision": "mxfp8",
+      "local_batch": 2,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 35.151428571636124,
+      "observed": 34.49000000022352,
+      "delta_percent": 1.9177401316564815,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 16B",
+      "precision": "mxfp8",
+      "local_batch": 32,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 86.69999999992018,
+      "observed": 86.51999999955297,
+      "delta_percent": 0.2080443832271675,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 16B",
+      "precision": "nvfp4",
+      "local_batch": 2,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 34.94285714307002,
+      "observed": 34.19000000040978,
+      "delta_percent": 2.2019805283744263,
+      "role": "retrospective excluded batch"
+    },
+    {
+      "model": "V3 16B",
+      "precision": "nvfp4",
+      "local_batch": 32,
+      "metric": "peak reserved",
+      "unit": "GiB",
+      "predicted": 81.85857142867255,
+      "observed": 81.59999999962747,
+      "delta_percent": 0.31687675128217785,
+      "role": "retrospective excluded batch"
+    }
+  ],
+  "gpt_component_transfer": [
+    {
+      "precision": "fp8_mx",
+      "method": "freeze additive per-model-rank overhead from 4 GPUs; change only CPU optimizer sharding",
+      "source_world_size": 4,
+      "target_world_size": 8,
+      "phase": "end of step 2",
+      "frozen_components_bytes": {
+        "tensor_storage_padding": 3584,
+        "quantization_cache": 1314717696,
+        "allocator_block_slack": 439265588,
+        "dummy_gradients_from_allocation_stacks": 841605120,
+        "gemm_workspaces_from_allocation_stacks": 201331680,
+        "other_requested_storage": 42470124
+      },
+      "predicted_allocated_bytes": 68460063616,
+      "observed_allocated_bytes": 68157969920,
+      "error_percent": 0.4432257832130082,
+      "prospective_blind_validation": false,
+      "scope": "retrospective check at identical TP/CP/EP, batch, sequence, hardware and software"
+    },
+    {
+      "precision": "nvfp4",
+      "method": "freeze additive per-model-rank overhead from 4 GPUs; change only CPU optimizer sharding",
+      "source_world_size": 4,
+      "target_world_size": 8,
+      "phase": "end of step 2",
+      "frozen_components_bytes": {
+        "tensor_storage_padding": 3584,
+        "quantization_cache": 5084282880,
+        "allocator_block_slack": 836544636,
+        "dummy_gradients_from_allocation_stacks": 841605120,
+        "gemm_workspaces_from_allocation_stacks": 234886144,
+        "other_requested_storage": 35596676
+      },
+      "predicted_allocated_bytes": 72653588864,
+      "observed_allocated_bytes": 72228999680,
+      "error_percent": 0.587837552618864,
+      "prospective_blind_validation": false,
+      "scope": "retrospective check at identical TP/CP/EP, batch, sequence, hardware and software"
+    }
+  ],
+  "v4_source_semantics": {
+    "bridge_revision": "573e088c9c6740082c39744e03dc5b009e730ed4",
+    "core_revision_prefix": "9304a25642",
+    "bridge_logger_source_sha256": "e04f40b7842fad311c7527baef82f97a0440b85ed943c1fb543144017577b8fe",
+    "logger_unit_divisor": 1000000000.0,
+    "logger_mapping_lines": [
+      166,
+      174
+    ],
+    "unit_conversion_lines": [
+      1195,
+      1209
+    ],
+    "rank_and_reporting_lines": [
+      1141,
+      1154
+    ],
+    "reset_search": "No reset_peak_memory_stats, reset_max_memory, or reset_accumulated_memory calls in fetched Bridge src or Core megatron Python trees for logged revisions. Runtime modifications and dependencies not exhaustively audited; no process-lifetime reset guarantee.",
+    "runtime_source_modifications_verified_absent": false,
+    "full_pro_cp_status": "CP1 is historical Core default at core/model_parallel_config.py:63, omitted from log dump; no explicit override observed",
+    "full_pro_world_status": "256 from experiment identity, corroborated by rank0\u2013255 runtime records; no standalone world_size field found",
+    "source_url": "https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/573e088c9c6740082c39744e03dc5b009e730ed4/src/megatron/bridge/training/utils/train_utils.py",
+    "reduced_models_unit_status": "Unresolved: exact runtime source revision missing, contemporary common_utils.py is not a substitute."
+  },
+  "inputs_sha256": {
+    "outputs/hbm-capacity-study/v3/runs.json": "e21945cb353e0a8d6d68d7fe6d92da9992005037cfc01b137573598880839b9e",
+    "outputs/hbm-capacity-study/v4/evidence.json": "1fd7326fa46d21be55be49247f8b45626ff48c67bd140f43ccf4d1646422ee96",
+    "outputs/titan-sim/docs/validation/gpt_oss/results.json": "1a2a64216f1fa38b6f7b44344935869957318434ddd1cb07b98510c1f65c0108",
+    "outputs/titan-sim/docs/validation/gpt_oss_probe/experiment_comparison.json": "146ffc9fd079b69450a84a59d36c9d8b848b4b212321e9e3da09beabbe5d6182",
+    "outputs/titan-sim/docs/validation/gpt_oss/parameter_inventory.json": "2351929d10f66baab411a96167e94f1c8ff787211e4fd55f48722712e1615e99",
+    "outputs/titan-sim/docs/validation/other_models/results.json": "d46800d6c64f06cb069aeb41d6919ac8fdf3e585fc882fedc6f7324c2141e283",
+    "outputs/titan-sim/profiles/memory/titan_v3_mxfp8_batch_regimes.json": "372573d7b521e8179cb359a5351c234b88e37b9a6ee25ebe035346ae3b7cabea",
+    "outputs/titan-sim/profiles/memory/titan_v3_nvfp4_batch_regimes.json": "e6d97468dbe796fc9440e316af8d58f1d2025bd90adc1fc41855e1c7b0773598",
+    "outputs/titan-sim/docs/validation/other_models/titan_v3_16b_mxfp8_batch_regimes.json": "4b04834e4baa6feba291ac1fcce58beba7a84a7084d1fdfb538aa9bd0fe49b33",
+    "outputs/titan-sim/docs/validation/other_models/titan_v3_16b_nvfp4_batch_regimes.json": "87182ec565ac5c6e53a99c2e6ccfc200def3cdcb4fe9b25deef3b6327742a2b4"
+  },
+  "verified_raw_sources": {
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-mxfp8-64n-408659935.txt": "9566050928a21de5a4cad6c7bbfa052bba1d20ebf8dee8ec6263a7206aad59e9",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-mxfp8-64n-408659938.txt": "9b80064b3649ae5a64a2b83351a0594d62a413a53bc8673c6a0d75755a5faf6d",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-mxfp8-64n-408659941.txt": "b9af7673ee9800f89a7a917446704d1d8a0c3ac8fbc03cf7e7731b1813e25e22",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-mxfp8-64n-408659944.txt": "bc086092c7a7bb7ddbff2e38b2d464ec6b34642e51904f851b77764f4baedb17",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-mxfp8-64n-408659932.txt": "eae350a6d37789c0573facf33ecdc0f45e33681b34f1d445fdf1a39550102797",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs01-nvfp4-64n-408659950.txt": "53d27f979946dbd20d530d1e100b87dceddbbc2b55a439bb9e7e18cea4f03a2d",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs02-nvfp4-64n-408659953.txt": "06b68796e8090097a62b0d548ad347c511021511636986654d0b9e397054dc58",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs04-nvfp4-64n-408659956.txt": "4334c1b2a5dadd8d00bc30d74d001a7f5098c1ff7c47706398fdfcc6d418faf9",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs08-nvfp4-64n-408659959.txt": "2ddf995ef254c05fdd1ba5af3eb6913c5d635aa4c1f3a9673e75fd818383c59c",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_torchtitan/aws_expA/run_logs/aws_expA-bs16-nvfp4-64n-408659947.txt": "a03315ffd5fe00a6c85b1cfb38d580ab877232fbf2cb887248b63f78e0c1bcd1",
+    "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785779060/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-infra_rd_gsw-gsw.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2565249_0.out": "fea001d875ed22e96fdbb61de88c8d5c0f205fc8e08931a0c05b92783fe2403e",
+    "lustre/fsw/infra_rd_gsw/rmukundan/deepseek_v4_nightly/stage_path/workloads/pretrain_deepseek-v4/experiments/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_1785795269/pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300/log-coreai_dlalgo_llm-llm.pretrain_deepseek_v4_pro_fp8_mx_gpus256_gb300_2568526_0.out": "c3aa50e8098d33bc73009c0df76c8eca4caf7ebb22ff9e6445db4eeefdba1bd6",
+    "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_1782756735/pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus8_tp1_pp1_cp1_vpNone_ep1_etp1_mbs3_gbs24_2238579_0.out": "65cc16454ce10213671aa27bc6d70a692381b69f62ac4d230326ee5b4c497681",
+    "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_1782756688/pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus8_tp1_pp1_cp1_vpNone_ep2_etp1_mbs3_gbs24_2238575_0.out": "93627eae6fd9f78db3741601751e478ae515346d4694bcebbe48d8ed1d1826cc",
+    "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759463/pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238738_0.out": "c5b0abc28525ff558455359833f3402e958c5b6851ddada6e3b079560549e89d",
+    "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_1782759496/pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_nvfp4_gpus72_tp1_pp1_cp2_vpNone_ep4_etp1_mbs1_gbs36_2238742_0.out": "72e3885217f6a7190321dac95868cc85308ecd124c668b2f543997001ff04924",
+    "lustre/fsw/infra_rd_gsw/mollys/26.06.00-gb300/workloads/pretrain_gpt_oss_20b/experiments/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_1782759579/pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64/log-infra_rd_gsw-gsw.pretrain_gpt_oss_20b_fp8_mx_gpus512_tp2_pp1_cp4_vpNone_ep8_etp1_mbs1_gbs64_2238746_0.out": "59db2f2d718bb76260cc324ec762c46ff7419d55c2710b1cd5c496527ca62f12",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs1-405985216-raw.txt": "d675a6d61d335a28fa8d43eca94ac6fb3b2a80966cc90ec8aba831ad157ccecc",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs2-405985220-raw.txt": "6a40e525d866c06d242b13acb46d8b947803ab17f2130762cfaec7eb2c69abb2",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs8-405985230-raw.txt": "de7526b503964cdfc76b7abd690dc3986a7607dc806574ef11cf4378f43fc34d",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs32-405985224-raw.txt": "d043bb6b28ce55a93573c5ed01c2abf6b4aff8a8934ce5270d827bd702d6289a",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-mxfp8-2n-bs64-405985227-raw.txt": "bc5414da35c438f809c0df5fa0fa63e3b71ab601579c3e49a701df54ee992fe5",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs1-405985234-raw.txt": "0a497708c5ad2d2d92a8076b9106ee88367cff47549fb76ff6282e2b4ad617c4",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs2-405985237-raw.txt": "7656fb358e2da89180afef7dc88b99378abd74eec02e20c9300b97cf55989968",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs8-405985247-raw.txt": "f7508beda4f4b019622adc7c1616f97e5e97919c68bd32000074af75e97cf986",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs32-405985241-raw.txt": "2a18b8347a43c4bd25c3d9a4ee11f6a1f2b7924e1c81a5b74dac7875789339fd",
+    "lustre/fsw/coreai_dlfw_dev/rspring/core-models/dsv3/dsv3_performance_megatron/dsv3_16b_m_sweep_performance_aws/run_logs/dsv3-16b-nvfp4-2n-bs64-405985244-raw.txt": "22a7d118591b4a0f268c5c05ff2ff6448cb25f82631332d17887d955c3c48cac"
+  },
+  "full_device_fit_established": false,
+  "capacity_induced_throughput_measured": false
+}
