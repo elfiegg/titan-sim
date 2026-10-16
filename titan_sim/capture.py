@@ -40,6 +40,8 @@ class TensorCapture(TorchDispatchMode):
     not measured DRAM traffic. Unknown FLOP formulas remain explicitly reported.
     """
 
+    supports_higher_order_operators = True
+
     def __init__(self, *, source: str = "cpu_projection", rank: int = 0, modeled_device: str | None = None):
         super().__init__()
         if source not in {"cpu_projection", "gpu_observation"}:
@@ -62,6 +64,9 @@ class TensorCapture(TorchDispatchMode):
         self._event_listener = None
 
     def __enter__(self):
+        from .checkpoint import checkpoint_phase_tracking
+
+        self._stack.enter_context(checkpoint_phase_tracking())
         self._stack.enter_context(self._tracker)
         self._stack.enter_context(torch.autograd.graph.saved_tensors_hooks(self._pack, self._unpack))
         return super().__enter__()
@@ -82,12 +87,15 @@ class TensorCapture(TorchDispatchMode):
             self._phase = previous
 
     def _event(self, kind: str, name: str, **fields):
+        from .checkpoint import execution_phase
+
         defer_notify = fields.pop('_defer_notify', False)
         event_id = f"r{self.rank}:e{len(self.events)}"
         event = dict(event_id=event_id, kind=kind, rank=self.rank, stream=self.stream,
                      name=name, deps=[],
                      flops=0.0, bytes_read=0, bytes_write=0, dtype="float32", size_bytes=0,
                      category=self._phase, reads=[], writes=[], phase=self._phase,
+                     execution_phase=execution_phase(self._phase, in_backward=self._tracker.is_bw),
                      module_scope=sorted(self._tracker.parents), device=self.modeled_device or "cpu")
         event.update(fields)
         if self._host_time_provider is not None:
@@ -196,9 +204,12 @@ class TensorCapture(TorchDispatchMode):
                     self._release(key)
 
     def _pack(self, tensor):
+        from .checkpoint import execution_phase
+
         sid = self.register_tensor(tensor)
         self.saved_tensors.append(dict(storage_id=sid, action="save", event_index=len(self.events),
                                        phase=self._phase, shape=list(tensor.shape),
+                                       execution_phase=execution_phase(self._phase, in_backward=self._tracker.is_bw),
                                        module_scope=sorted(self._tracker.parents)))
         # Saving an output tensor itself can form a grad_fn reference cycle.
         # A detached alias preserves storage lifetime without extending the graph.
@@ -206,12 +217,17 @@ class TensorCapture(TorchDispatchMode):
             return tensor.detach()
 
     def _unpack(self, tensor):
+        from .checkpoint import execution_phase
+
         self.saved_tensors.append(dict(storage_id=self.register_tensor(tensor), action="unpack",
-                                       event_index=len(self.events), phase=self._phase))
+                                       event_index=len(self.events), phase=self._phase,
+                                       execution_phase=execution_phase(self._phase, in_backward=self._tracker.is_bw)))
         return tensor
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
         kwargs = kwargs or {}
+        if isinstance(func, torch._ops.HigherOrderOperator):
+            return self._capture_attention_operator(func, args, kwargs)
         if func._schema.name in {"aten::resize_", "aten::resize_as_"}:
             raise NotImplementedError("Tensor resize_ dispatch is not modeled; FSDP direct storage resize is supported")
         self.sweep()
@@ -291,6 +307,42 @@ class TensorCapture(TorchDispatchMode):
         if blocking_copy or scalar_on_cuda:
             self._event("host_sync", "blocking_host_device_copy" if blocking_copy else "cuda_scalar_read", stream="__host_control__",
                         deps=[event["event_id"]], sync_scope="event", device="cpu")
+        return output
+
+    def _capture_attention_operator(self, func, args, kwargs):
+        """Observe the native FlexAttention boundary without decomposing its math.
+
+        Fake implementations expose outputs and autograd saves, but not fused
+        kernel scratch or an allocator plan. Do not invent a calibration
+        signature for the nested score/mask graphs or accept arbitrary HOPs.
+        """
+        name = func.name()
+        if name not in {"flex_attention", "flex_attention_backward"}:
+            raise NotImplementedError(f"Higher-order storage capture unsupported: {name}")
+        self.sweep()
+        inputs = _tensors((args, kwargs))
+        reads = list(dict.fromkeys(self.register_tensor(t) for t in inputs))
+        output = func(*args, **kwargs)
+        outputs = _tensors(output)
+        output_ids = list(dict.fromkeys(self.register_tensor(t) for t in outputs))
+        # These two native HOP contracts return fresh results and do not mutate
+        # inputs. Keep any exposed aliases from being counted as payload writes.
+        writes = [sid for sid in output_ids if sid not in reads]
+        self.unknown_flop_ops[name] += 1
+        device = self.storages[(output_ids or reads)[0]]["device"] if output_ids or reads else "cpu"
+        self._event("compute", name, reads=reads, writes=writes,
+                    bytes_read=self._payload_bytes(inputs),
+                    bytes_write=self._payload_bytes(outputs), device=device,
+                    dtype=str((outputs or inputs)[0].dtype).removeprefix("torch.") if outputs or inputs else "float32",
+                    shapes=[list(t.shape) for t in inputs],
+                    input_tensors=[self._tensor_metadata(t) for t in inputs],
+                    output_tensors=[self._tensor_metadata(t) for t in outputs],
+                    metadata_only=False, flop_formula="unavailable",
+                    traffic_basis="logical_tensor_payload_not_kernel_traffic",
+                    signature={"version": 1, "status": "unsupported", "arguments": {},
+                               "unsupported_types": ["higher_order_score_and_mask_graphs"]},
+                    storage_coverage="exposed_tensors_only", kernel_workspace_bytes=None,
+                    callback_dependencies_complete=False)
         return output
 
     def _signature(self, func, args, kwargs):

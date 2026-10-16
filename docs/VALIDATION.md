@@ -3,6 +3,28 @@
 This initial implementation is a foundation, not a validated full DeepSeek-V3
 runtime predictor. No 256-GPU training accuracy result is claimed.
 
+## CPU execution milestone, October 15
+
+The [explicit original-model CPU path](CPU_STEP_CAPTURE.md) completes the full
+671B parameter dimensions with original loss, backward, FullAC recomputation
+and direct AdamW. The trace has 848 of 848 trainable parameter tensors with
+gradient metadata and all 61 attention layers in forward, recomputation and
+backward. A reduced model completes two steps. Both runs use 16 tokens,
+unsharded BF16 model parameters, post-initialization scope, and the explicit
+original Flex HOP metadata contract on local PyTorch 2.14.1.
+
+These results supersede the earlier model-operator blockers below only within
+that diagnostic scope. They do not establish distributed TrainingEngine
+completion, production precision, CUDA Inductor allocation, or equivalence to
+the pinned NVIDIA container. The strict/native path remains strict. Compact
+trace-bound evidence is in `results/cpu-step/`.
+
+A separate explicit CPU/AOT diagnostic subsequently completes the reduced-model
+original TrainingEngine step, including its optimizer, with degree-one FSDP and
+with rank 0 under FSDP degree two. Its backend/device/control adaptations are
+documented in the step-capture guide. This is selected-rank semantic execution,
+not an all-rank CUDA memory or distributed timing validation.
+
 ## Current selected validation target
 
 The user replaced the initial tip-of-tree revision with
@@ -15,7 +37,7 @@ Both projection and GPU adapters use this shared configuration.
 
 Configuration integration tests load the actual selected upstream recipe,
 validate the FullAC and compile policies, and resolve dense FSDP=256 / expert
-FSDP=4 through upstream ParallelismContext. The local suite passes 96 tests
+FSDP=4 through upstream ParallelismContext. The earlier local suite passed 96 tests
 with these upstream integration checks enabled (macOS PyTorch 2.14.1).
 
 A local metadata smoke attempt reaches model initialization, then stops at

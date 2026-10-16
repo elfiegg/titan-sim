@@ -1,0 +1,93 @@
+{
+  "trace_file": "debug-fullac-two-steps.json",
+  "trace_sha256": "61689ed023f7748caeda2f74013c18b117f27677de81f075280745e2638c1600",
+  "capture": {
+    "status": "complete",
+    "torchtitan_commit": "607852350b41b4b280d8b8de6340f4847ed71c5e",
+    "torch_version": "2.14.1",
+    "scenario": "unsharded_eager_operator_coverage",
+    "flavor": "debugmodel",
+    "seq_len": 16,
+    "tokens": 16,
+    "fake_device": "cpu",
+    "capture_scope": "post_initialization",
+    "attention_contract": "flex_metadata",
+    "activation_checkpoint": "upstream_FullAC",
+    "steps": 2,
+    "completed_steps": 2,
+    "step_checks": [
+      {
+        "step": 0,
+        "parameter_tensors_with_grad": 72,
+        "optimizer_completed": true
+      },
+      {
+        "step": 1,
+        "parameter_tensors_with_grad": 72,
+        "optimizer_completed": true
+      }
+    ],
+    "model_parameter_count": 33014016,
+    "trainable_parameter_tensors": 72,
+    "production_training_capture": false,
+    "cuda_memory_equivalent": false,
+    "initialization_coverage": {
+      "scope": "post_initialization",
+      "random_parameter_values": "unknown",
+      "initialization_time_included": false,
+      "initialization_peak_included": false,
+      "skipped_parameter_initializers": 53,
+      "initializers": {
+        "normal_": 1,
+        "trunc_normal_": 63
+      }
+    },
+    "attention_coverage": {
+      "scope": "flex_attention_metadata_contract",
+      "implementation": "original_pytorch_flex_hop_and_autograd",
+      "compiler_backend": "disabled_original_flex_hop_metadata",
+      "cpu_training_guard": "validated_on_detached_fake_views",
+      "cuda_dispatch_equivalent": false,
+      "compiled_storage_lifetimes_equivalent": false,
+      "attention_calls": 24,
+      "mask_calls": 1,
+      "score_mod": "identity_only",
+      "callback_tensor_reads": "unobserved_without_compiler_buffer_lifting",
+      "excluded": [
+        "Inductor fusion",
+        "compiled kernel scratch",
+        "numerical values",
+        "CUDA dispatch and scheduling",
+        "mask callback tensor read dependencies"
+      ]
+    }
+  },
+  "all_trainable_parameter_tensors_have_grad_metadata": true,
+  "numerical_gradients_validated": false,
+  "event_count": 32837,
+  "storage_count": 4909,
+  "saved_tensor_record_count": 304,
+  "events_by_execution_phase": {
+    "initialization": 1660,
+    "attention_mask": 344,
+    "forward": 7015,
+    "loss_and_head_backward": 1058,
+    "backward": 13363,
+    "recompute": 6816,
+    "optimizer": 1884,
+    "setup": 697
+  },
+  "attention_operations_by_phase": {
+    "flex_attention:forward": 12,
+    "flex_attention:recompute": 12,
+    "flex_attention_backward:backward": 12
+  },
+  "limitations": [
+    "Logical storage only: excludes CUDA allocator reservations, workspaces and communication buffers hidden from dispatch.",
+    "Releases are observed at operator boundaries; tensor aliases share one StorageImpl.",
+    "Host dispatch durations are diagnostic and are not predicted GPU durations.",
+    "FLOPs are partial when unknown_flop_ops is nonempty; traffic is a union of accessed byte intervals (strided gaps conservatively included), not DRAM measurement.",
+    "Cross-stream ordering is represented only when an explicit runtime shim records waits and stream selection."
+  ],
+  "interpretation": "Logical unsharded model execution evidence only. Does not establish production distributed execution, compiled CUDA allocation, GPU required capacity or runtime. BF16 model parameters retain upstream operation dtype conversions, including FP32 loss operations."
+}

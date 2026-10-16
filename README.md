@@ -13,6 +13,16 @@ For a human-readable explanation of the design, governing calculations,
 TorchTitan fidelity, and evidence limits, read the
 [implementation analysis](docs/IMPLEMENTATION_ANALYSIS.md).
 
+[Original DeepSeek CPU step capture](docs/CPU_STEP_CAPTURE.md) now completes
+unsharded model forward, backward, original FullAC recomputation and direct
+AdamW using an explicit FlexAttention metadata contract. Both the reduced model
+and full 671B parameter dimensions execute with 16 tokens on CPU. This is a
+model-operator milestone: distributed production TrainingEngine capture,
+CUDA compilation and physical GPU memory validation remain incomplete.
+An explicit CPU/AOT diagnostic also completes the original reduced-model
+TrainingEngine step with degree-one FSDP and with rank 0 of degree-two FSDP;
+its backend/device adaptations and all-rank limits are recorded separately.
+
 The newer [execution extensions](docs/EXECUTION_EXTENSIONS.md) describe the CPU
 distributed backend, upstream pipeline schedule lowering, live host waits,
 compiler/quantization plans, and allocator/network scenarios, with their current
@@ -119,14 +129,19 @@ python -m titan_sim.launch project_engine \
 python -m titan_sim.launch gpu_compare --flavor 671B --expert-parallel-degree 64 --steps 10 --output observations
 ```
 
-The smoke path is an explicitly unsharded eager BF16 operator-coverage experiment.
+The smoke path is an explicitly unsharded operator-coverage experiment with BF16
+model parameters and the original operations' dtype conversions.
 It is not the production recipe. `project_engine` attempts the selected recipe with the requested parallelism
 and FullAC overrides while preserving its compiler policy. `--routing-scenario balanced` is a
 conditional equal-split scenario, not a prediction of routing decisions.
 `--capture-scope post_initialization` explicitly omits random parameter sampling
 while preserving buffer initialization. Parameter values remain unknown, and
 initialization runtime/startup memory peaks are excluded. Strict capture remains
-the default. Neither option bypasses unsupported native CUDA/autograd behavior.
+the default. Neither initialization option bypasses unsupported native CUDA/autograd behavior.
+For driverless CPU model execution, explicitly add `--attention-contract flex_metadata
+--full-ac --steps 2` to the smoke command. That separate attention contract disables
+its compiler wrappers and retains the original HOP/autograd metadata kernels;
+it does not establish CUDA compiled storage equivalence.
 
 `launch` uses native container APIs by default. The original compatibility
 wrappers remain available only through explicit `--legacy-import-compat` for
