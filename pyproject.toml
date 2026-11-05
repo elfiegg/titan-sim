@@ -4,15 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "titan-sim"
-version = "0.1.0"
-description = "CPU metadata execution and GPU memory/runtime projections for TorchTitan"
+version = "0.2.0"
+description = "Experimental TorchTitan workload capture, component calibration and recipe simulation"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 dependencies = []
 
 [project.optional-dependencies]
-plots = ["matplotlib>=3.8"]
-test = ["pytest>=8"]
+chakra = ["protobuf==7.36.2"]
 
 [project.scripts]
 titan-sim = "titan_sim.cli:main"
@@ -21,7 +20,4 @@ titan-sim = "titan_sim.cli:main"
 include = ["titan_sim*"]
 
 [tool.setuptools.package-data]
-titan_sim = ["native/*.cpp"]
-
-[tool.ruff]
-line-length = 88
+titan_sim = ["fixtures/*.json", "vendor/*.proto", "vendor/*.json", "vendor/*.md"]

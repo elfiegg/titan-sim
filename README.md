@@ -1,216 +1,275 @@
 # titan-sim
 
-CPU event simulation and metadata capture for PyTorch TorchTitan training.
+Experimental recipe prescreening for TorchTitan: describe a distributed workload,
+measure representative operations on real hardware, then estimate execution time
+and per-device peak memory on CPU.
 
-The target experiment is DeepSeek-V3 671B at the user-selected TorchTitan
-revision on 256 GB200 GPUs: PP=1, EP=64, TP=1, FSDP auto, and full activation
-checkpointing (`FullAC.Config`). It uses the
-newest public NVIDIA PyTorch container resolved in `profiles/versions.json`.
-This is experimental software. Full target validation is recorded separately;
-a passing event-engine test is not a demonstrated 671B training projection.
+**Current status:** the event/storage simulator, small fake-execution captures,
+GPU component benchmarks, calibration import, and held-out two-GEMM validation
+work. The automatic full-model capture → matched calibration → prediction pipeline
+is **not complete**. The included full Kimi graph is a generated analytical
+scenario, not captured native execution or validated throughput/memory fit.
 
-For a human-readable explanation of the design, governing calculations,
-TorchTitan fidelity, and evidence limits, read the
-[implementation analysis](docs/IMPLEMENTATION_ANALYSIS.md).
+This implementation replaces the previous repository contents; earlier work remains
+in Git history. The old event API and microsecond-based files are not compatible
+with this workload schema. Agent instructions are in [AGENTS.md](AGENTS.md).
 
-The [allocation coverage report](docs/ALLOCATION_COVERAGE_REPORT.md) recomputes
-model-by-model memory deltas, separates calibrated totals from state subtotals
-and conditional checks, and links the
-[implementation plan](docs/plans/2026-10-15-allocation-coverage.md) for complete
-allocation sizes, lifetimes, dependencies and matched GPU validation.
+## 1. Motivation
 
-[Original DeepSeek CPU step capture](docs/CPU_STEP_CAPTURE.md) now completes
-unsharded model forward, backward, original FullAC recomputation and direct
-AdamW using an explicit FlexAttention metadata contract. Both the reduced model
-and full 671B parameter dimensions execute with 16 tokens on CPU. This is a
-model-operator milestone: distributed production TrainingEngine capture,
-CUDA compilation and physical GPU memory validation remain incomplete.
-An explicit CPU/AOT diagnostic also completes the original reduced-model
-TrainingEngine step with degree-one FSDP and with rank 0 of degree-two FSDP;
-its backend/device adaptations and all-rank limits are recorded separately.
+A training recipe combines model structure, precision, optimizer state, activation
+checkpointing, parallelism, routing, communication and scheduling. Allocating a
+large GPU cluster for each candidate is expensive. Prescreening should help reject
+obviously unsuitable recipes and identify what needs hardware validation first.
 
-The newer [execution extensions](docs/EXECUTION_EXTENSIONS.md) describe the CPU
-distributed backend, upstream pipeline schedule lowering, live host waits,
-compiler/quantization plans, and allocator/network scenarios, with their current
-coverage boundaries. Full-model validation remains separate.
+The questions are:
 
-The [log-calibrated memory model](docs/LOG_CALIBRATED_MEMORY.md) adds empirical
-V3 runtime allowances and V4 allocator ratios from the supplied GPU logs. It runs
-on CPU, preserves calibration scope, and keeps fitted counter estimates separate
-from independently simulated storage and required-capacity claims.
+- Does the recipe's **peak on every device** fit, including simultaneous tensors
+  and implementation buffers? Aggregate cluster capacity is insufficient.
+- What step time and throughput should we expect under the specified placement
+  and schedule, and which assumptions dominate that estimate?
+- Which operations, memory allocations and performance effects remain unsupported
+  or uncalibrated?
 
-[Expanded-log validation](docs/EXPANDED_LOG_VALIDATION.md) tests those frozen
-factors against a separate batch sweep. It finds 18–20% underestimation at
-batch 1 and up to 5.24% variation in the conditional V4 reservation estimate;
-the original factors remain unchanged and should not be treated as capacity bounds.
+Fake tensors and fake process groups help explore the program's structure without
+real parameter storage or real communication. They do not supply GPU timings,
+network contention, achieved overlap, or native workspace sizes. Those require
+explicit models and measurements. Prescreening does not establish measured
+performance or successful execution at scale.
 
-The [memory-gap diagnosis](docs/MEMORY_GAP_DIAGNOSIS.md) identifies the V3 counter
-as peak reserved memory at the logged historical revision, adds bounded batch
-interpolation, and reduces the largest retrospective non-fitting-point error
-from 12.80% to 2.85%. It also isolates V4's 5.24% discrepancy to reservation
-differences despite equal allocated counters. These are empirical estimates,
-not full-model execution or required-capacity validation.
+## 2. Basic structure: how agents use the toolchain
 
-[Additional model/configuration checks](docs/OTHER_MODEL_VALIDATION.md) apply
-the method to V3 16B with separate calibration (up to 2.20% excluded-batch error)
-and recover legacy allocator counters from two different 15-layer V4 hybrid
-configurations. Their reservation-ratio comparison reaches 0.56% maximum error,
-conditional on measured current allocation; neither result establishes universal
-cross-model prediction accuracy.
+The intended workflow is:
 
-[GPT-OSS CPU cross-validation](docs/GPT_OSS_CPU_VALIDATION.md) now matches the
-logged synthetic vocabulary and every reported per-rank parameter count across
-five Megatron runs. Independent estimates include the FP32 optimizer gradient
-shards retained at the reporting point and leave 2.2–17.5% of current allocation
-unexplained. A retrospective factor transfer still misses larger-run current
-memory by 5.6–7.4%, illustrating the limits of a single multiplier. Training peaks remain
-unmodeled; the actual CPU dispatch probe stops at FlexAttention backward support.
+```text
+Resolved TorchTitan recipe + execution scenario
+                    |
+             TorchTitan capture adapter
+                    |
+          Workload data + calibration targets
+             |                       |
+             |             Native GPU calibration runner
+             |                       |
+             |                Measured cost catalog
+             |                       |
+             +-----------> CPU simulator <----- Hardware/topology model
+                                      |
+                         Timing, per-rank memory, coverage/gaps
+```
 
-The [GPT-OSS allocation experiment](docs/GPT_OSS_ALLOCATION_EXPERIMENT.md)
-completed eight six-step runs on four/eight GB200s with MXFP8/NVFP4. Snapshots
-confirm optimizer-gradient release and identify retained quantized caches,
-allocator slack, dummy gradients and GEMM workspaces. A retrospective transfer
-of fixed overhead components from four to eight GPUs predicts current allocation
-within 0.6%; this does not validate a full CPU training peak model.
+The two outputs of the proposed adapter have different consumers: the simulator
+reads workload descriptions; the calibration runner needs references to executable
+native implementations. There is no conversion from a simulator graph back into
+PyTorch. **The generic adapter and automatic target generation are still planned.**
+Current runnable cases and their narrower scopes are listed below.
 
-## What it models
+### What an agent prepares
 
-- Unique tensor backing storage, aliases, frees, and storage retained by in-flight work.
-- A separate program-order tensor ownership trajectory when host submission timing
-  is unavailable. This is not CUDA allocator `memory_reserved()`.
-- Stream/dependency ordering, device synchronization, and per-rank compute and
-  communication lanes. Overlap is idealized and requires explicit collective dependencies.
-- Dense hardware roofline lower bounds, exact operation/shape/dtype calibration,
-  and hybrid lookup with visible fallback coverage.
-- Actual upstream model operations under PyTorch FakeTensor metadata execution.
-  Unsupported operations and data-dependent control stop the trace explicitly.
-- Independent GPU allocator observations through the original TrainingEngine,
-  with synthetic fixed-length documents and random initialization.
+| Input | Required information |
+|---|---|
+| Recipe | Model/flavor and source revision, optimizer, precision, checkpointing, routing, parallelism and compilation settings |
+| Execution scenario | Sequence length, microbatch size/count, schedule and rank placement; an explicit scenario for data-dependent routing |
+| Capture environment | Compatible pinned TorchTitan/PyTorch/custom-op dependencies, preferably the intended training container |
+| Hardware description | Capacity per device, topology, resource assumptions and provenance; assumed rates must be labelled |
+| Calibration evidence | Matching operation/region signatures, software/hardware settings, timing samples, workspace observations and measurement scope |
 
-The event engine does not need PyTorch or a GPU. Full upstream capture depends on
-PyTorch internals and its native CUDA control-plane requirements. Eager operator
-capture cannot reproduce a compiled allocator plan. Missing scratch storage,
-NCCL allocations, routing imbalance, allocator policy, and execution timings limit
-memory precision. Hardware peak FLOP/s is a ceiling, not achieved utilization.
+The repository is the shared codebase, not a hosted service or an implicit cluster
+allocation. Agents clone a pinned revision and invoke its Python CLI/modules. The
+CPU simulator does not import TorchTitan, PyTorch, CUDA or protobuf. Capture and
+calibration depend on the training environment; calibration additionally uses real
+target GPUs. Fake capture may still encounter native extension or CUDA control-plane
+requirements, so a GPU-free full-model capture is not guaranteed.
 
-## Install and run
+### Install and CPU smoke test
 
-Python 3.10 or newer:
+Python 3.10+ is sufficient for the simulator and generated scenarios:
 
 ```sh
+git clone https://github.com/elfiegg/titan-sim.git
+cd titan-sim
+git rev-parse HEAD                 # record/pin this revision for the experiment
+python -m venv .venv
+. .venv/bin/activate
 python -m pip install -e .
-python -m unittest discover -s tests
-
-titan-sim trace.json --hardware profiles/gb200.json --output report
+titan-sim --help
+titan-sim --case checks --output-dir results/checks
+python -m unittest discover -s tests -v
 ```
 
-A trace is an object containing `events` and optional `metadata`. Event times use
-microseconds; capacities and traffic use bytes; hardware rates use FLOP/s and
-bytes/s. See `tests/test_runtime.py` for small executable event examples.
+`python -m titan_sim` is equivalent to `titan-sim` and works directly from the
+checkout without installation. Installation has no mandatory runtime dependencies.
 
-Use `--timing calibrated --calibrations measurements.json` to reject missing
-measurements, or `--timing hybrid` to report roofline fallbacks. A measurement
-must include operation name, shapes, dtype, duration, and provenance. Measurements
-are specific to a software/hardware environment; users must supply a matched set.
+### Commands available today
 
-Reports contain JSON, CSV, and SVG. Captured diagnostic `capture_wall_us` never
-becomes simulated GPU time. Without explicit `host_time_us` on every event,
-scheduled capacity verdicts are unavailable; use the labeled logical trajectory.
+| Command/case | Required environment | Actual scope/output |
+|---|---|---|
+| `--case checks` | CPU Python | Deterministic dependency, communication-rendezvous, resource and storage checks; `summary.json` |
+| `--case dense` | Compatible PyTorch with FakeTensor/FakeProcessGroup internals | Small dense forward/backward/SGD plus fake all-reduce; 102 nodes on two logical ranks |
+| `--case hybridep` | PyTorch and the pinned TorchTitan source | Four native custom-op fake-function shape probes; no native buffer initialization or GPU transfers |
+| `--case kimi` | CPU Python | Generated PP8/DP32/EP32 analytical stage graph; memory verdict remains inconclusive |
+| `--case calibration` | CPU PyTorch | Local CPU two-matmul calibration/validation plumbing; not GPU evidence |
+| `--simulate-workload PATH` | CPU Python | Load direct workload JSON and simulate with optional matched calibration |
+| `python -m titan_sim.calibration.benchmark` | Authorized GB200 allocation and compatible training runtime | Explicit component measurements, per-rank JSONL |
+| `python -m titan_sim.calibration.summarize RAW OUT` | CPU Python | Validated cost catalogs, held-out workloads/results and a report |
 
-## Upstream integration
-
-Clone the commit in `profiles/versions.json` and install that checkout's
-requirements into an environment using the specified NVIDIA PyTorch build.
-Keep the original container PyTorch version; check it after dependency installation.
-Put the checkout and this package on `PYTHONPATH`.
+For a quick generated scheduling example:
 
 ```sh
-python -m titan_sim.launch torchtitan_adapter \
-  --torchtitan-root /path/to/torchtitan --output cpu-smoke.json
-
-python -m titan_sim.launch project_engine \
-  --torchtitan-root /path/to/torchtitan --expert-parallel-degree 64 --output cpu-full.json
-
-# Run under a suitable torchrun/Slurm launch with the requested world size.
-python -m titan_sim.launch gpu_compare --flavor 671B --expert-parallel-degree 64 --steps 10 --output observations
+titan-sim --case kimi --microbatches 2 --output-dir results/kimi-demo
+titan-sim --simulate-workload results/kimi-demo/kimi/workload.json
+# Expected to fail: this workload contains declared coverage gaps.
+titan-sim --simulate-workload results/kimi-demo/kimi/workload.json --strict
 ```
 
-The smoke path is an explicitly unsharded operator-coverage experiment with BF16
-model parameters and the original operations' dtype conversions.
-It is not the production recipe. `project_engine` attempts the selected recipe with the requested parallelism
-and FullAC overrides while preserving its compiler policy. `--routing-scenario balanced` is a
-conditional equal-split scenario, not a prediction of routing decisions.
-`--capture-scope post_initialization` explicitly omits random parameter sampling
-while preserving buffer initialization. Parameter values remain unknown, and
-initialization runtime/startup memory peaks are excluded. Strict capture remains
-the default. Neither initialization option bypasses unsupported native CUDA/autograd behavior.
-For driverless CPU model execution, explicitly add `--attention-contract flex_metadata
---full-ac --steps 2` to the smoke command. That separate attention contract disables
-its compiler wrappers and retains the original HOP/autograd metadata kernels;
-it does not establish CUDA compiled storage equivalence.
+Use `--microbatches 128` to exercise the full generated 256-rank scenario. This
+changes scenario size, not its evidence quality: historical analytical stage costs
+are not new measured Kimi performance predictions.
 
-`launch` uses native container APIs by default. The original compatibility
-wrappers remain available only through explicit `--legacy-import-compat` for
-the superseded TorchTitan revision; they are not enabled for this target.
-
-The selected profile resolves to dense FSDP=256 and expert FSDP=4 with EP=64.
-The code verifies resolved topology and uses upstream FullAC, including its
-registered-effect handling and RNG-preservation defaults. FlexAttention and the
-upstream local compile regions remain enabled. See
-`profiles/deepseek-v3-256gb200.json` for the complete target.
-
-See [implementation items](docs/IMPLEMENTATION_ITEMS.md) for independent agent
-work units, acceptance checks, and remaining fidelity work.
-
-The [runtime memory analysis](docs/RUNTIME_MEMORY_ANALYSIS.md) audits the supplied
-DeepSeek-V3 and V4 logs, separates measured counters from reconstructed buffer
-payloads, and explains the remaining parallel capture and validation gaps.
-Two additional CPU tools support that analysis:
+For actual small fake capture, use the existing compatible PyTorch environment:
 
 ```sh
-python -m titan_sim.log_observations training.log --output observations.json
-python -m titan_sim.memory_budget examples/memory/deepseek-v3-batch8-conditional.json \
-  --hardware profiles/memory/gb200-observed-1098308.json \
-  --hardware profiles/memory/gb300-observed-rspring.json --output budget.json
+python -m titan_sim --case dense --output-dir results/dense
+TORCHTITAN_PROTOTYPE_SOURCE=/path/to/pinned/torchtitan \
+  python -m titan_sim --case hybridep --output-dir results/hybridep
 ```
 
-The component budget tracks declared lifetimes, rank-local storage aliases,
-and host versus GPU buffers. It is a separate analytical input path: it does
-not generate a TorchTitan pipeline schedule. Incomplete coverage keeps required
-memory unknown, even when the known subtotal is below device capacity.
-Hardware capacity changes do not change declared tensor byte sizes.
+The source pin and hashes are in
+[`torchtitan-provenance.json`](titan_sim/fixtures/torchtitan-provenance.json).
+Do not replace a training container's PyTorch merely to run these examples.
+`--case all` additionally attempts native Kimi dependency/build probes; it is not
+the default and does not perform a complete native Kimi training step.
 
-To reproduce the audited reports with the original private logs and the optional
-`plots` dependency installed:
+### GPU calibration and result import
+
+The current harness benchmarks manually specified full-size GEMM cases, selected
+backward GEMMs, batched expert proxies, HBM copy, NCCL collectives, paired transfers
+and a native HybridEP probe. It does not discover the full compiled model's kernels.
+
+Inside an authorized four-GB200 allocation with the intended runtime:
 
 ```sh
-python scripts/analyze_runtime_logs.py --log-root /path/to/extracted-bundle \
-  --additional-log-dir /path/to/deepseek-1098308 --output results/log-audit
+CALIBRATION_PHASES=compute CALIBRATION_OUTPUT=results/gb200-compute \
+  torchrun --standalone --nproc-per-node=4 --module titan_sim.calibration.benchmark
+python -m titan_sim.calibration.summarize \
+  results/gb200-compute results/gb200-compute-summary
+titan-sim --simulate-workload results/gb200-compute-summary/heldout-cuda_graph/workload.json \
+  --calibration results/gb200-compute-summary/rank-calibration.json --strict
 ```
 
-This script verifies the reviewed source hashes before attaching configuration
-annotations. Raw logs are not included in the repository.
+Use the site's normal multi-node launcher for 32 GPUs and set
+`CALIBRATION_PHASES=communication` to skip compute. `all` runs both phases. Native
+HybridEP requires the compatible DeepEP implementation and runtime dependencies.
+Use a **five-minute scheduler hard limit** for initial calibration. These commands
+do not allocate GPUs or enforce the limit themselves. Completed samples are flushed
+per rank and survive a later failure/timeout.
 
-The [multi-node validation guide](docs/MULTINODE_VALIDATION.md) includes the
-self-running container checks, full 64-node launcher, bounded allocator history,
-and independent comparison export commands.
+The HybridEP case uses 2,048 tokens/rank, hidden 3,584, 896 experts, top-16 forced
+round-robin, BF16, padding multiple **32**, capacity 33,152 rows and 32 ranks. This
+differs from the padding-128 fake-shape/legacy fixture scenario: capacity and cost
+claims are not interchangeable. Match actual rank placement/topology; an intra-domain
+measurement does not calibrate inter-domain communication. The importer currently
+accepts four- or 32-rank measurements and requires all expected hardware records.
 
-Current target-validation limits and historical failures are recorded in
-[validation record](docs/VALIDATION.md).
+### Output an agent reports
 
-For captured projections, calibrated/hybrid CLI runs require a calibration
-`context` matching `torch_version`, `torchtitan_commit`, and the hardware profile
-`name` (stored as `hardware`). Captured operation signatures include tensor
-layout/strides and scalar arguments. Host/device transfer timing additionally
-requires exact calibration or an explicitly supplied effective host-link
-bandwidth; HBM bandwidth is not used for that link.
+Case commands save `summary.json` and per-case `workload.json`/`result.json` under
+`--output-dir` (default `results/titan-sim`). Simulation of an existing workload
+prints a JSON summary. Calibration import saves `calibration.json`,
+`rank-calibration.json`, `summary.json`, `REPORT.md` and held-out workload/results.
 
-Run optional upstream configuration integration tests with:
+Report elapsed time/throughput **with** `status`, `cost_coverage` and `unresolved`.
+Report the worst rank and modeled memory categories, not an aggregate cluster
+capacity comparison. `memory_verdict=inconclusive` must remain inconclusive.
+Allocated memory is contained in reserved memory; never add the two.
 
-```sh
-TORCHTITAN_ROOT=/path/to/torchtitan python -m unittest discover -s tests
+`--strict` rejects declared workload gaps and uncalibrated operation costs. It does
+not independently prove that the producer captured every allocation or operation.
+The simulator's storage output is a modeled logical peak, not automatically a CUDA
+allocator-reserved or device-wide physical peak.
+
+## 3. Design structure
+
+The simulator's direct interface is ordinary Python data:
+
+```python
+from titan_sim.core import Node, Storage, simulate
+
+result = simulate(nodes, storages, manifest, hardware, calibration, strict=True)
 ```
 
-An explicitly reduced debug integration run uses `--flavor debugmodel
---expert-parallel-degree 1 --seq-len 128 --tokens 1024`; its results do not
-validate the 256-rank production configuration.
+| Component | Source | Input | Output/responsibility |
+|---|---|---|---|
+| Capture probes | `capture.py` | Example code or pinned native fake definitions | Operation occurrences, tensor shape/dtype/stride metadata, backing storages, manifests and explicit gaps |
+| Analytical scenario builder | `kimi.py` | Recipe fixture and microbatch count | Generated stage regions, PP ordering, transfers, FSDP rendezvous and coarse storage lifetimes |
+| Workload contract | `core.py`: `Node`, `Storage` | Producer-created Python records | Framework-independent simulator input; node occurrence IDs and cost lookup signatures have distinct roles |
+| Persistence | `workload.py` | Nodes/storages/manifest/hardware | Versioned JSON and reconstruction; rejects unsupported schema/time units; no executable code |
+| Calibration runner | `calibration/benchmark.py` | Explicit operation cases and real GPU runtime | Independent timings and allocator observations, retaining raw samples and unsupported operations |
+| Calibration importer | `calibration/summarize.py` | Rank JSONL files | Descriptor/evidence validation, per-rank and aggregate cost maps, held-out comparison |
+| Cost resolver | `core.py`: `CostModel` | Operation attributes, hardware and optional catalog | Exact-key measured cost or explicitly labelled analytical/historical fallback |
+| Event/storage simulator | `core.py`: `simulate` | Workload plus costs/resources | Dependency-aware timings and storage lifetimes/peaks on each rank |
+| Optional transport | `bundle.py` | Same workload records | Chakra protobuf files plus custom attributes/sidecars; not used for kernel discovery |
+| CLI | `cli.py` | Case or workload path, calibration and output options | Reproducible invocation and reports |
+
+The workload fields are:
+
+- **Node:** occurrence ID, operation/region name, rank, kind, dependency IDs and
+  attributes such as cost key, tensor metadata, communication peers/participants,
+  rendezvous identity and required resources.
+- **Storage:** backing-allocation ID, rank, byte size, producer, consumers,
+  persistence and category. Aliases share the same backing-allocation identity.
+- **Manifest:** recipe/scope/provenance, ranks, useful tokens and unresolved gaps.
+- **Hardware:** device capacity, reserve allowance and explicit rate/resource
+  assumptions. Placement and communication groups are declared by the producer.
+- **Calibration:** cost signature → duration/samples, hardware identity and
+  evidence checksum. The current signatures are not a complete cross-version
+  implementation-fingerprint registry.
+
+All durations use **seconds**, byte quantities use **bytes**, and modeled rates
+use FLOP/s or bytes/s. The direct JSON schema is `recipe-prescreen-workload`,
+version 1. The simulator does not need a graph-to-PyTorch conversion.
+
+The engine waits for all participants in a communication rendezvous, respects
+dependencies, and reserves declared resources until an event completes. Storage
+starts at its declared producer and survives all declared consumers. These rules
+only model the information actually supplied. Resource exclusion is not a full
+bandwidth-sharing or compute/communication-interference model.
+
+Chakra is optional: install `.[chakra]` and use `--format chakra` for the historical
+transport round trip. Vendored schema license and provenance are in `titan_sim/vendor`.
+Our custom attributes/sidecars require a compatible consumer; generic Chakra
+simulator compatibility is not asserted. The default CPU path uses neither
+protobuf nor PyTorch.
+
+## Evidence, limitations and development sequence
+
+The initial experiment captured the small dense example and four HybridEP fake
+operations, and exercised a generated 180,736-node, 256-rank Kimi scenario at 128
+microbatches. Native full-model capture was blocked by runtime/native dependency
+requirements. The generated Kimi graph uses historical analytical stage costs;
+its memory verdict is inconclusive and strict mode rejects it.
+
+A four-GB200 component run completed 39 operation configurations. An independently
+measured two-GEMM chain, excluded from the calibration catalog, differed from the
+component-cost prediction by **+3.2% eager** and **+4.0% CUDA graph replay**. This
+validates that narrow composition experiment only. The software stack was PyTorch
+`2.14.0a0+b2c75dd062.nv26.09` and CUDA 13.4. Private raw logs/device identifiers and
+cluster launch files are not published here; run calibration to obtain a usable
+catalog for your environment. No EP32 measurements are included in this package.
+
+Important gaps:
+
+- The generic native TorchTitan adapter and automatic calibration-target generation
+  are not implemented. Current capture and GPU benchmark signatures are not yet
+  joined automatically for the full model.
+- Fake capture currently inserts conservative sequential ordering; it does not
+  faithfully capture all asynchronous streams, waits, or runtime overlap.
+- Compiled/fused implementation identities, native MLA/KDA and grouped/SiTU expert
+  kernels, and complete backward/optimizer coverage remain unresolved.
+- Full-step native communication buffers, CUDA graph pools, Muon workspaces,
+  allocator reservation, and gradient/activation lifetimes are not fully modeled.
+- Full-scale placement, contention and pipeline overlap need independent validation.
+
+Development should proceed by capturing **one native Kimi block**, retaining its
+original executable calibration targets, matching measured costs back to its graph,
+and validating time and memory independently. Then extend to communication and
+pipeline scheduling before claiming full-model accuracy. A successful simulator
+test or small held-out chain does not close these coverage gaps.

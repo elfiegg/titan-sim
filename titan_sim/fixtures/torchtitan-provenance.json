@@ -1,0 +1,17 @@
+{
+  "commit": "5f5fc93e5d225d9056b1a41fc917d5e9c6e15801",
+  "repository": "https://github.com/pytorch/torchtitan",
+  "files": {
+    "torchtitan/models/kimi_k3/flavors.py": "1d7238bde8c8868ab66a26cff532adab4600056103167ea9c9ca2362c61e7a77",
+    "torchtitan/models/kimi_k3/model.py": "3487ccafc97cfd2a5b7824751cfb2d3af6403b4e253b75e8f67dbdf83674b479",
+    "torchtitan/models/common/moe/moe.py": "00ca4edf4d97f59003a456c21e65990e0596fda002d84f6e1d2cc1421cf579a9",
+    "torchtitan/models/common/moe/token_dispatcher.py": "1565face09bffc7246f1d9ddc1a1304fe814ade500605df2f66517fd8a270dfa",
+    "torchtitan/distributed/deepep/hybridep.py": "22425ee015546681145a95e9cc744f2c66d6f5114c5081b8be753929f6f95a34",
+    "torchtitan/distributed/pipeline_parallel.py": "21f503def70b1cb570be163729cacd4fd6c0ccb27d376c4ed1c15323495cb5bb",
+    "torchtitan/distributed/flex_shard/dist_muon.py": "c3491d4a0210c88d429c638ab2c085387c0f1044256e478d78da47e0f50aec4e",
+    "torchtitan/config/configs.py": "3465866709813651cc91114c4a006a5cc3c05d6069e9f04200e68d10c91c3659",
+    "torchtitan/config/parallelism.py": "64e4a9d95288e2de09146dd99dd075760a74265f9e8c2384a36f0995d3546232",
+    "torchtitan/distributed/accelerator_graph.py": "dec500ca70df82c8c8388b41e49970cd9dbbdd2a1c287217c4783827b576e9d5",
+    "torchtitan_recipes/tests/models/kimi_k3.py": "10e8b85a47a3beabce5c9bf7cc7b6dc496712790140647ed3c2b084f881ccf56"
+  }
+}

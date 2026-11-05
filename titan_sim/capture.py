@@ -1,423 +1,208 @@
-"""Tensor-dispatch traces of logical storage and operations, never GPU predictions.
-
-The same observer accepts fake tensors for projections and real tensors for
-observations. Logical storage bytes exclude allocator blocks and kernel scratch.
-"""
+"""Actual TorchDispatch/FakeTensor/FakeProcessGroup capture, isolated from simulator."""
 from __future__ import annotations
-
-import contextlib
-import math
-import time
+import ast
 from collections import Counter
-from typing import Any
-
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
 import torch
-from torch.multiprocessing.reductions import StorageWeakRef
-from torch.utils._python_dispatch import TorchDispatchMode, _disable_current_modes
-from torch.utils._pytree import tree_flatten, tree_map
-from torch.utils.flop_counter import flop_registry
-from torch.utils.module_tracker import ModuleTracker
+from torch._subclasses.fake_tensor import FakeTensorMode
+from torch.utils._python_dispatch import TorchDispatchMode
+from torch.utils._pytree import tree_leaves
+from torch.testing._internal.distributed.fake_pg import FakeProcessGroup
+from .core import Node, Storage
+from .kimi import hardware
+
+ROOT=Path(__file__).parent
+SOURCE=Path(os.environ.get('TORCHTITAN_PROTOTYPE_SOURCE','upstream/torchtitan'))
 
 
-def _local_tensor(tensor):
-    from torch.distributed.tensor import DTensor
-    # Parameter DTensors are wrappers: storage and calibration use the local
-    # rank's tensor. Calling to_local here would itself introduce dispatch.
-    return tensor._local_tensor if isinstance(tensor, DTensor) else tensor
+def verify_source():
+    manifest=json.loads((ROOT/'fixtures/torchtitan-provenance.json').read_text())
+    for name,digest in manifest['files'].items():
+        if hashlib.sha256((SOURCE/name).read_bytes()).hexdigest()!=digest:
+            raise ValueError('source revision mismatch: '+name)
 
 
-def _tensors(value):
-    return [_local_tensor(item) for item in tree_flatten(value)[0] if isinstance(item, torch.Tensor)]
-
-
-class TensorCapture(TorchDispatchMode):
-    """Record dispatch, unique StorageImpl lifetimes, aliases and autograd saves.
-
-    Enter inside FakeTensorMode so this mode observes its user-visible results.
-    Storage expiration is checked at each operator boundary; release timestamps
-    therefore have operator-boundary precision. No tensor or storage is retained
-    by the observer. Event byte traffic is a logical tensor payload estimate,
-    not measured DRAM traffic. Unknown FLOP formulas remain explicitly reported.
-    """
-
-    supports_higher_order_operators = True
-
-    def __init__(self, *, source: str = "cpu_projection", rank: int = 0, modeled_device: str | None = None):
+class Capture(TorchDispatchMode):
+    def __init__(self,rank,start=1):
         super().__init__()
-        if source not in {"cpu_projection", "gpu_observation"}:
-            raise ValueError("source must be cpu_projection or gpu_observation")
-        self.source, self.rank = source, rank
-        self.modeled_device = modeled_device
-        self.stream = "compute"
-        self.events: list[dict[str, Any]] = []
-        self.storages: dict[str, dict[str, Any]] = {}
-        self.saved_tensors: list[dict[str, Any]] = []
-        self.unknown_flop_ops: Counter = Counter()
-        self._live: dict[int, tuple[str, StorageWeakRef]] = {}
-        self._phase = "setup"
-        self._tracker = ModuleTracker()
-        self._stack = contextlib.ExitStack()
-        self._last_by_stream: dict[str, str] = {}
-        self._writers: dict[str, str] = {}
-        self._readers: dict[str, set[str]] = {}
-        self._host_time_provider = None
-        self._event_listener = None
+        self.rank,self.next=rank,start
+        self.nodes,self.storage=[],{}
+        self.last_writer,self.refs={},[]
+        self.previous=None
+        self.phase='forward'
+        self.collective_index=0
 
-    def __enter__(self):
-        from .checkpoint import checkpoint_phase_tracking
+    def tensors(self,value):
+        return [x for x in tree_leaves(value) if isinstance(x,torch.Tensor)]
 
-        self._stack.enter_context(checkpoint_phase_tracking())
-        self._stack.enter_context(self._tracker)
-        self._stack.enter_context(torch.autograd.graph.saved_tensors_hooks(self._pack, self._unpack))
-        return super().__enter__()
+    def sid(self,t,producer=None,persistent=False):
+        st=t.untyped_storage()
+        # Retain wrappers so tensor/storage identity is never recycled by Python.
+        self.refs.extend([t,st])
+        key=f'r{self.rank}:s{st._cdata}'
+        if key not in self.storage:
+            self.storage[key]=Storage(key,self.rank,st.nbytes(),producer,persistent=persistent,
+                                      category='persistent_input' if persistent else 'captured_tensor')
+        return key
 
-    def __exit__(self, *exc):
-        result = super().__exit__(*exc)
-        self._stack.close()
-        self.sweep()
+    def persist(self,t):
+        self.sid(t,persistent=True)
+
+    def record(self,name,inputs,outputs,attrs=None,kind='compute'):
+        nid=self.next
+        self.next+=1
+        deps=[] if self.previous is None else [self.previous]
+        for t in inputs:
+            sid=self.sid(t,persistent=True)
+            s=self.storage[sid]
+            if nid not in s.consumers:s.consumers.append(nid)
+            if sid in self.last_writer:deps.append(self.last_writer[sid])
+        for t in outputs:
+            sid=self.sid(t,producer=nid)
+            self.last_writer[sid]=nid
+        meta={'phase':self.phase,'evidence':'captured_fake_execution',
+              'inputs':[{'shape':list(t.shape),'dtype':str(t.dtype),'stride':list(t.stride()),'storage':self.sid(t)} for t in inputs],
+              'outputs':[{'shape':list(t.shape),'dtype':str(t.dtype),'stride':list(t.stride()),'storage':self.sid(t)} for t in outputs]}
+        meta.update(attrs or {})
+        signature={'op':name,'inputs':[(list(t.shape),str(t.dtype),list(t.stride())) for t in inputs],
+                   'torch_version':torch.__version__,
+                   'communication':{k:meta[k] for k in ['participants','comm_type','payload_bytes','group','peer'] if k in meta}}
+        meta['cost_key']=hashlib.sha256(json.dumps(signature,sort_keys=True).encode()).hexdigest()
+        self.nodes.append(Node(nid,name,self.rank,kind,list(dict.fromkeys(deps)),meta))
+        self.previous=nid
+
+    def __torch_dispatch__(self,func,types,args=(),kwargs=None):
+        kwargs=kwargs or {}
+        inputs=self.tensors((args,kwargs))
+        out=func(*args,**kwargs)
+        outputs=self.tensors(out)
+        name=str(func)
+        byte_count=sum(t.numel()*t.element_size() for t in inputs+outputs)
+        attrs={'bytes':byte_count}
+        if name.startswith('aten.mm.'):
+            attrs['flops']=2*args[0].shape[0]*args[0].shape[1]*args[1].shape[1]
+        elif name.startswith('aten.bmm.'):
+            attrs['flops']=2*args[0].shape[0]*args[0].shape[1]*args[0].shape[2]*args[1].shape[2]
+        elif name.startswith(('aten.view.','aten._unsafe_view.','aten.t.','aten.transpose.','aten.detach.','aten.expand.','aten.empty','aten.as_strided.','aten.alias.')):
+            attrs={'zero_cost_semantic':True}
+        elif not name.startswith('aten.'):
+            attrs['unmodeled_semantics']=True
+        self.record(name,inputs,outputs,attrs)
+        return out
+
+    def allreduce(self,t,pg,world):
+        # Explicit process-group interception: fake work really executes and
+        # waits, but its wall time is NOT used as a communication duration.
+        pg.allreduce([t]).wait()
+        index=self.collective_index
+        self.collective_index+=1
+        self.record('process_group.allreduce',[t],[t],dict(
+            rendezvous=f'allreduce:{index}',participants=list(range(world)),
+            comm_type=0,payload_bytes=t.numel()*t.element_size(),
+            resources=['allreduce_link'],evidence='intercepted_real_FakeProcessGroup_call'),
+            kind='collective')
+
+
+def capture_dense():
+    nodes,storage=[],[]
+    start=1
+    for rank in range(2):
+        pg=FakeProcessGroup._create_internal(rank,2,None)
+        with FakeTensorMode():
+            # CPU fake tensors permit native autograd on a CPU-only wheel.
+            # The exported logical rank is mapped to a modeled GPU separately.
+            w=torch.empty(64,128,dtype=torch.bfloat16,requires_grad=True)
+            x=torch.empty(32,64,dtype=torch.bfloat16)
+            c=Capture(rank,start)
+            c.persist(w);c.persist(x)
+            with c:
+                y=(x@w).relu()
+                loss=y.float().square().mean()
+                c.phase='backward'
+                loss.backward()
+            c.phase='gradient_reduction'
+            c.allreduce(w.grad,pg,2)
+            c.phase='optimizer'
+            with torch.no_grad(),c:
+                w.add_(w.grad,alpha=-8e-4)
+        nodes.extend(c.nodes);storage.extend(c.storage.values());start=c.next
+    manifest={'case':'captured_dense_fake_pg','ranks':[0,1],'useful_tokens':64,
+              'torch_version':torch.__version__,
+              'export_mode':'actual CPU FakeTensor forward/backward/SGD and FakeProcessGroup allreduce',
+              'unresolved':['GPU kernel implementation/workspaces are not captured','hardware costs are analytical, not calibrated']}
+    return nodes,storage,manifest,hardware()
+
+
+def probe_hybridep():
+    """Execute unmodified native custom-op/fake functions extracted from pinned source.
+
+    Only the dependency-loading/native-buffer wrapper is excluded. This is a
+    component capability probe, explicitly NOT a native model execution.
+    """
+    verify_source()
+    p=SOURCE/'torchtitan/distributed/deepep/hybridep.py'
+    tree=ast.parse(p.read_text())
+    wanted={'_num_permuted_tokens_for_non_blocking','_dispatch_impl','_dispatch_fake',
+            '_combine_impl','_combine_fake','_dispatch_bwd_impl','_dispatch_bwd_fake',
+            '_combine_bwd_impl','_combine_bwd_fake'}
+    body=[ast.ImportFrom(module='__future__',names=[ast.alias(name='annotations')],level=0)]
+    body.extend(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in wanted)
+    ns={'torch':torch,'_buffer':None}
+    exec(compile(ast.fix_missing_locations(ast.Module(body=body,type_ignores=[])),str(p),'exec'),ns)
+    with FakeTensorMode():
+        x=torch.empty(2048,3584,device='cuda',dtype=torch.bfloat16)
+        idx=torch.empty(2048,16,device='cuda',dtype=torch.int64)
+        scores=torch.empty(2048,16,device='cuda',dtype=torch.float32)
+        c=Capture(0)
+        for t in [x,idx,scores]:c.persist(t)
+        with c:
+            h,s,tpe,handle=torch.ops.hybridep.dispatch(x,idx,scores,896,32,'fake_ep32',True,0.0316162109375,128)
+            out=torch.ops.hybridep.combine(h,handle,2048,128)
+            c.phase='backward_component_probe'
+            dh=torch.ops.hybridep.dispatch_bwd(out,handle,h.shape[0],128)
+            dx,ds=torch.ops.hybridep.combine_bwd(dh,s,handle,2048,896)
+        shapes={'dispatch':list(h.shape),'combine':list(out.shape),
+                'dispatch_backward':list(dh.shape),'combine_backward':[list(dx.shape),list(ds.shape)]}
+        assert shapes['dispatch']==[33152,3584]
+        assert shapes['combine']==[2048,3584]
+    manifest={'case':'native_hybridep_fake_component','ranks':[0],
+              'export_mode':'source-extracted native fake implementations; buffers intentionally not initialized',
+              'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+              'shapes':shapes,'torch_version':torch.__version__,
+              'unresolved':['native CUDA/IPC buffer initialization not executed',
+                            'custom communication costs are missing; byte-only cost is NOT predictive',
+                            'backward custom ops invoked explicitly, not full-model autograd',
+                            'opaque handle and workspace lifetimes are not modeled']}
+    return c.nodes,list(c.storage.values()),manifest,hardware()
+
+
+def probe_native_import():
+    sys.path.insert(0,str(SOURCE))
+    try:
+        verify_source()
+        from torchtitan.models.kimi_k3 import build_model_config
+        from torchtitan.config.parallelism import ParallelismConfig
+        from dataclasses import replace
+        parallelism=ParallelismConfig(data_parallel_shard_degree=32,pipeline_parallel_degree=8,
+                                      expert_parallel_degree=32,tensor_parallel_degree=1,context_parallel_degree=1)
+        config=build_model_config('Kimi-K3',parallelism=parallelism,seq_len=2048)
+        config=replace(config,vision_encoder=None)
+        result={'import_and_config':'passed','layers':len(config.layers),'width':config.dim,
+                'model_executed':False,'build_probes':{}}
+        for device in ['cuda','meta']:
+            try:
+                with FakeTensorMode(),torch.device(device):
+                    model=config.build()
+                result['build_probes'][device]={'status':'built','parameters':sum(p.numel() for p in model.parameters())}
+            except Exception as e:
+                result['build_probes'][device]={'status':'blocked','exception':type(e).__name__,
+                                               'message':str(e),'traceback':traceback.format_exc()}
         return result
-
-    @contextlib.contextmanager
-    def phase(self, name: str):
-        previous, self._phase = self._phase, name
-        try:
-            yield self
-        finally:
-            self.sweep()
-            self._phase = previous
-
-    def _event(self, kind: str, name: str, **fields):
-        from .checkpoint import execution_phase
-
-        defer_notify = fields.pop('_defer_notify', False)
-        event_id = f"r{self.rank}:e{len(self.events)}"
-        event = dict(event_id=event_id, kind=kind, rank=self.rank, stream=self.stream,
-                     name=name, deps=[],
-                     flops=0.0, bytes_read=0, bytes_write=0, dtype="float32", size_bytes=0,
-                     category=self._phase, reads=[], writes=[], phase=self._phase,
-                     execution_phase=execution_phase(self._phase, in_backward=self._tracker.is_bw),
-                     module_scope=sorted(self._tracker.parents), device=self.modeled_device or "cpu")
-        event.update(fields)
-        if self._host_time_provider is not None:
-            event['host_time_us'] = self._host_time_provider()
-        deps = set(event["deps"])
-        stream = event["stream"]
-        if stream in self._last_by_stream:
-            deps.add(self._last_by_stream[stream])
-        accesses = set(event["reads"]) | set(event["writes"])
-        if kind == "release":
-            accesses.add(event["storage_id"])
-        for sid in accesses:
-            if sid in self._writers:
-                deps.add(self._writers[sid])
-            if sid in event["writes"] or kind == "release":
-                deps.update(self._readers.get(sid, ()))
-        event["deps"] = sorted(deps)
-        self.events.append(event)
-        self._last_by_stream[stream] = event_id
-        for sid in event["reads"]:
-            self._readers.setdefault(sid, set()).add(event_id)
-        for sid in event["writes"]:
-            self._writers[sid] = event_id
-            self._readers[sid] = set()
-        if kind == "allocate":
-            self._writers[event["storage_id"]] = event_id
-        if not defer_notify:
-            self._notify_event(event)
-        return event
-
-    def _notify_event(self, event):
-        if self._event_listener is not None:
-            self._event_listener(event)
-
-    def register_tensor(self, tensor, *, category: str | None = None, name: str | None = None, modeled_device: str | None = None):
-        tensor = _local_tensor(tensor)
-        if tensor.layout != torch.strided:
-            raise NotImplementedError(f"Storage accounting requires strided tensors: {tensor.layout}")
-        from torch._subclasses.fake_tensor import FakeTensor
-        if self.source == "cpu_projection" and tensor.is_cuda and not isinstance(tensor, FakeTensor):
-            raise ValueError("Real CUDA tensors cannot supply a CPU projection")
-        storage = tensor.untyped_storage()
-        key = storage._cdata
-        if key in self._live and self._live[key][1].expired():
-            self._release(key)
-        reallocation_of = None
-        if key in self._live and int(storage.nbytes()) != self.storages[self._live[key][0]]["size_bytes"]:
-            reallocation_of = self._live[key][0]
-            self._release(key)
-        if key not in self._live:
-            sid = f"r{self.rank}:s{len(self.storages)}"
-            self._live[key] = sid, StorageWeakRef(storage)
-            entry = dict(storage_id=sid, size_bytes=int(storage.nbytes()),
-                         dtype=str(tensor.dtype).removeprefix("torch."), device=modeled_device or (self.modeled_device if isinstance(tensor, FakeTensor) else None) or str(tensor.device),
-                         capture_device=str(tensor.device),
-                         category=category or self._phase, name=name,
-                         allocation_event=len(self.events), release_event=None, reallocation_of=reallocation_of)
-            self.storages[sid] = entry
-            self._event("allocate", name or "tensor_storage", storage_id=sid,
-                        size_bytes=entry["size_bytes"], dtype=entry["dtype"], category=entry["category"], device=entry["device"])
-        sid = self._live[key][0]
-        entry = self.storages[sid]
-        if category is not None:
-            entry["category"] = category
-            self.events[entry["allocation_event"]]["category"] = category
-        if name is not None:
-            entry["name"] = name
-        if modeled_device is not None:
-            entry["device"] = modeled_device
-            self.events[entry["allocation_event"]]["device"] = modeled_device
-        if category is not None or modeled_device is not None:
-            self._notify_event(self.events[entry["allocation_event"]])
-        return sid
-
-    def register_model(self, model):
-        for name, tensor in model.named_parameters():
-            self.register_tensor(tensor, category="parameters", name=name)
-            if tensor.grad is not None:
-                self.register_tensor(tensor.grad, category="gradients", name=name + ".grad")
-        for name, tensor in model.named_buffers():
-            self.register_tensor(tensor, category="buffers", name=name)
-
-    def register_optimizer(self, optimizer):
-        for index, state in enumerate(optimizer.state.values()):
-            for name, value in state.items():
-                for tensor in _tensors(value):
-                    self.register_tensor(tensor, category="optimizer", name=f"state.{index}.{name}",
-                                         modeled_device="cpu" if name == "step" and tensor.device.type == "cpu" else None)
-
-    def _release(self, key):
-        sid, _ = self._live.pop(key)
-        entry = self.storages[sid]
-        entry["release_event"] = len(self.events)
-        self._event("release", entry["name"] or "tensor_storage", storage_id=sid,
-                    size_bytes=entry["size_bytes"], dtype=entry["dtype"], category=entry["category"], device=entry["device"])
-
-    def sweep(self):
-        for key, (sid, ref) in list(self._live.items()):
-            if ref.expired():
-                self._release(key)
-            else:
-                # FSDP frees backing memory with storage.resize_(0), outside
-                # tensor dispatch, while views of the StorageImpl remain alive.
-                storage = torch.UntypedStorage._new_with_weak_ptr(ref.cdata)
-                if int(storage.nbytes()) != self.storages[sid]["size_bytes"]:
-                    self._release(key)
-
-    def _pack(self, tensor):
-        from .checkpoint import execution_phase
-
-        sid = self.register_tensor(tensor)
-        self.saved_tensors.append(dict(storage_id=sid, action="save", event_index=len(self.events),
-                                       phase=self._phase, shape=list(tensor.shape),
-                                       execution_phase=execution_phase(self._phase, in_backward=self._tracker.is_bw),
-                                       module_scope=sorted(self._tracker.parents)))
-        # Saving an output tensor itself can form a grad_fn reference cycle.
-        # A detached alias preserves storage lifetime without extending the graph.
-        with _disable_current_modes():
-            return tensor.detach()
-
-    def _unpack(self, tensor):
-        from .checkpoint import execution_phase
-
-        self.saved_tensors.append(dict(storage_id=self.register_tensor(tensor), action="unpack",
-                                       event_index=len(self.events), phase=self._phase,
-                                       execution_phase=execution_phase(self._phase, in_backward=self._tracker.is_bw)))
-        return tensor
-
-    def __torch_dispatch__(self, func, types, args=(), kwargs=None):
-        kwargs = kwargs or {}
-        if isinstance(func, torch._ops.HigherOrderOperator):
-            return self._capture_attention_operator(func, args, kwargs)
-        if func._schema.name in {"aten::resize_", "aten::resize_as_"}:
-            raise NotImplementedError("Tensor resize_ dispatch is not modeled; FSDP direct storage resize is supported")
-        self.sweep()
-        inputs = _tensors((args, kwargs))
-        reads = list(dict.fromkeys(self.register_tensor(tensor) for tensor in inputs))
-        start = time.perf_counter_ns()
-        output = func(*args, **kwargs)
-        capture_wall_us = (time.perf_counter_ns() - start) / 1000
-        outputs = _tensors(output)
-        output_ids = list(dict.fromkeys(self.register_tensor(tensor) for tensor in outputs))
-        mutated = []
-        mutated_tensors = []
-        for index, argument in enumerate(func._schema.arguments):
-            if argument.alias_info is not None and argument.alias_info.is_write:
-                value = args[index] if index < len(args) else kwargs.get(argument.name)
-                mutated_tensors.extend(_tensors(value))
-                mutated.extend(self.register_tensor(tensor) for tensor in _tensors(value))
-        # Views create aliases, but cause no data write or DRAM transfer themselves.
-        is_alias = bool(outputs) and all(sid in reads for sid in output_ids) and not mutated
-        writes = list(dict.fromkeys(mutated + ([] if is_alias else output_ids)))
-        name = str(func)
-        metadata_only = func._schema.name in {
-            "aten::empty", "aten::empty_like", "aten::empty_strided", "aten::new_empty",
-            "aten::new_empty_strided", "prim::device", "aten::sym_size", "aten::sym_stride",
-            "aten::sym_numel", "aten::size", "aten::stride", "aten::numel", "aten::is_contiguous",
-        }
-        scalar_read = func._schema.name == "aten::_local_scalar_dense"
-        scalar_on_cuda = scalar_read and any(self.storages[sid]["device"].startswith("cuda") for sid in reads)
-        if scalar_read and not scalar_on_cuda:
-            metadata_only = True
-        formula = flop_registry.get(func._overloadpacket)
-        flops = 0
-        if formula is not None:
-            flops = formula(*tree_map(_local_tensor, args), **tree_map(_local_tensor, kwargs),
-                            out_val=tree_map(_local_tensor, output))
-        elif not is_alias and not metadata_only:
-            self.unknown_flop_ops[str(func)] += 1
-        kind = "collective" if any(word in name for word in ("all_reduce", "all_gather", "reduce_scatter", "all_to_all")) else "compute"
-        if "wait_tensor" in name:
-            kind = "wait"
-        event = self._event(kind, name, _defer_notify=True, reads=reads, writes=writes, flops=float(flops),
-                           stream="__host_control__" if scalar_read and not scalar_on_cuda else self.stream,
-                           bytes_read=0 if is_alias or metadata_only else self._payload_bytes(inputs),
-                           bytes_write=0 if is_alias or metadata_only else self._payload_bytes(outputs + mutated_tensors),
-                           dtype=str((outputs or inputs)[0].dtype).removeprefix("torch.") if outputs or inputs else "float32",
-                           capture_wall_us=capture_wall_us, aliases=output_ids if is_alias else [],
-                           flop_formula="pytorch_registry" if formula else "unavailable")
-        event["traffic_basis"] = "unique_contiguous_regions_or_strided_enclosing_regions"
-        event["metadata_only"] = metadata_only or is_alias
-        if metadata_only or is_alias:
-            event["flops"] = 0.0
-            event["execution_kind"] = "metadata"
-        event["signature"] = self._signature(func, args, kwargs)
-        event["input_tensors"] = [self._tensor_metadata(t) for t in inputs]
-        event["output_tensors"] = [self._tensor_metadata(t) for t in outputs]
-        event["shapes"] = [list(t.shape) for t in inputs]
-        if inputs or outputs:
-            sid = (output_ids or reads)[0]
-            event["device"] = self.storages[sid]["device"]
-        devices = {self.storages[sid]["device"].split(":")[0] for sid in reads + output_ids}
-        blocking_copy = False
-        if "cpu" in devices and "cuda" in devices and func._schema.name in {"aten::_to_copy", "aten::copy_"}:
-            event["traffic_domain"] = "host_device"
-            event["device"] = next(self.storages[sid]["device"] for sid in reads + output_ids
-                                   if self.storages[sid]["device"].startswith("cuda"))
-            event["host_device_transfer_bytes"] = max(event["bytes_read"], event["bytes_write"])
-            non_blocking = next(
-                args[index] if index < len(args) else kwargs.get(argument.name, argument.default_value)
-                for index, argument in enumerate(func._schema.arguments)
-                if argument.name == "non_blocking"
-            )
-            blocking_copy = not non_blocking
-        if scalar_on_cuda:
-            event["traffic_domain"] = "host_device"
-            event["host_device_transfer_bytes"] = event["bytes_read"]
-        self._notify_event(event)
-        if blocking_copy or scalar_on_cuda:
-            self._event("host_sync", "blocking_host_device_copy" if blocking_copy else "cuda_scalar_read", stream="__host_control__",
-                        deps=[event["event_id"]], sync_scope="event", device="cpu")
-        return output
-
-    def _capture_attention_operator(self, func, args, kwargs):
-        """Observe the native FlexAttention boundary without decomposing its math.
-
-        Fake implementations expose outputs and autograd saves, but not fused
-        kernel scratch or an allocator plan. Do not invent a calibration
-        signature for the nested score/mask graphs or accept arbitrary HOPs.
-        """
-        name = func.name()
-        if name not in {"flex_attention", "flex_attention_backward"}:
-            raise NotImplementedError(f"Higher-order storage capture unsupported: {name}")
-        self.sweep()
-        inputs = _tensors((args, kwargs))
-        reads = list(dict.fromkeys(self.register_tensor(t) for t in inputs))
-        output = func(*args, **kwargs)
-        outputs = _tensors(output)
-        output_ids = list(dict.fromkeys(self.register_tensor(t) for t in outputs))
-        # These two native HOP contracts return fresh results and do not mutate
-        # inputs. Keep any exposed aliases from being counted as payload writes.
-        writes = [sid for sid in output_ids if sid not in reads]
-        self.unknown_flop_ops[name] += 1
-        device = self.storages[(output_ids or reads)[0]]["device"] if output_ids or reads else "cpu"
-        self._event("compute", name, reads=reads, writes=writes,
-                    bytes_read=self._payload_bytes(inputs),
-                    bytes_write=self._payload_bytes(outputs), device=device,
-                    dtype=str((outputs or inputs)[0].dtype).removeprefix("torch.") if outputs or inputs else "float32",
-                    shapes=[list(t.shape) for t in inputs],
-                    input_tensors=[self._tensor_metadata(t) for t in inputs],
-                    output_tensors=[self._tensor_metadata(t) for t in outputs],
-                    metadata_only=False, flop_formula="unavailable",
-                    traffic_basis="logical_tensor_payload_not_kernel_traffic",
-                    signature={"version": 1, "status": "unsupported", "arguments": {},
-                               "unsupported_types": ["higher_order_score_and_mask_graphs"]},
-                    storage_coverage="exposed_tensors_only", kernel_workspace_bytes=None,
-                    callback_dependencies_complete=False)
-        return output
-
-    def _signature(self, func, args, kwargs):
-        unsupported = set()
-
-        def value(item):
-            if isinstance(item, torch.Tensor):
-                item = _local_tensor(item)
-                sid = self.register_tensor(item)
-                return {"tensor": {"shape": list(item.shape), "stride": list(item.stride()),
-                                   "dtype": str(item.dtype), "layout": str(item.layout),
-                                   "storage_offset": item.storage_offset(),
-                                   "device_type": self.storages[sid]["device"].split(":")[0]}}
-            if item is None or isinstance(item, (str, bool, int)):
-                return item
-            if isinstance(item, float):
-                return item if math.isfinite(item) else {"float": str(item)}
-            if isinstance(item, complex):
-                return {"complex": [value(item.real), value(item.imag)]}
-            if isinstance(item, torch.device):
-                return {"device_type": self.modeled_device.split(":")[0] if self.modeled_device else item.type}
-            if isinstance(item, (torch.dtype, torch.layout, torch.memory_format)):
-                return str(item)
-            if isinstance(item, (tuple, list)):
-                return [value(element) for element in item]
-            if isinstance(item, dict) and all(isinstance(key, str) for key in item):
-                return {key: value(element) for key, element in sorted(item.items())}
-            type_name = f"{type(item).__module__}.{type(item).__qualname__}"
-            unsupported.add(type_name)
-            return {"unsupported_type": type_name}
-
-        arguments = {}
-        for index, argument in enumerate(func._schema.arguments):
-            item = args[index] if index < len(args) else kwargs.get(argument.name, argument.default_value)
-            arguments[argument.name] = value(item)
-        return dict(version=1, status="unsupported" if unsupported else "complete",
-                    arguments=arguments, unsupported_types=sorted(unsupported))
-
-    def _payload_bytes(self, tensors):
-        intervals = {}
-        for tensor in tensors:
-            if tensor.numel() == 0:
-                continue
-            sid = self.register_tensor(tensor)
-            item_bytes = tensor.element_size()
-            start = tensor.storage_offset() * item_bytes
-            # Exact for contiguous views. Strided views use the enclosing byte
-            # interval, a conservative upper bound that includes stride gaps.
-            span = 1 + sum((size - 1) * stride for size, stride in zip(tensor.shape, tensor.stride()))
-            intervals.setdefault(sid, []).append((start, start + span * item_bytes))
-        total = 0
-        for regions in intervals.values():
-            cursor_start, cursor_end = sorted(regions)[0]
-            for start, end in sorted(regions)[1:]:
-                if start > cursor_end:
-                    total += cursor_end - cursor_start
-                    cursor_start, cursor_end = start, end
-                else:
-                    cursor_end = max(cursor_end, end)
-            total += cursor_end - cursor_start
-        return total
-
-    @staticmethod
-    def _tensor_metadata(tensor):
-        return dict(shape=list(tensor.shape), stride=list(tensor.stride()),
-                    dtype=str(tensor.dtype).removeprefix("torch."), layout=str(tensor.layout),
-                    device=str(tensor.device), storage_offset=tensor.storage_offset())
-
-    def document(self, *, metadata=None):
-        self.sweep()
-        return dict(schema_version=1, source=self.source, metadata=metadata or {},
-                    events=self.events, storages=list(self.storages.values()),
-                    saved_tensors=self.saved_tensors, unknown_flop_ops=dict(self.unknown_flop_ops),
-                    limitations=["Logical storage only: excludes CUDA allocator reservations, workspaces and communication buffers hidden from dispatch.",
-                                 "Releases are observed at operator boundaries; tensor aliases share one StorageImpl.",
-                                 "Host dispatch durations are diagnostic and are not predicted GPU durations.",
-                                 "FLOPs are partial when unknown_flop_ops is nonempty; traffic is a union of accessed byte intervals (strided gaps conservatively included), not DRAM measurement.",
-                                 "Cross-stream ordering is represented only when an explicit runtime shim records waits and stream selection."])
+    except Exception as e:
+        return {'import_and_config':'blocked','exception':type(e).__name__,
+                'message':str(e),'traceback':traceback.format_exc(),'model_executed':False}

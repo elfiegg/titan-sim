@@ -1,0 +1,405 @@
+{
+  "kind": "Full-shape analytical prescreen; hardware validation unavailable; no new DLSim run",
+  "source_commit": "5f5fc93e5d225d9056b1a41fc917d5e9c6e15801",
+  "configuration": {
+    "gpus": 256,
+    "pp": 8,
+    "dp_shard": 32,
+    "ep": 32,
+    "tp": 1,
+    "cp": 1,
+    "sequence": 2048,
+    "microbatch": 1,
+    "microbatches": 128,
+    "global_sequences": 4096,
+    "global_tokens_per_update": 8388608,
+    "precision": "BF16 stored parameters/gradients/optimizer states and compute; FP32 reductions",
+    "optimizer": "DistMuon + AdamW",
+    "learning_rate": 0.0008,
+    "weight_decay": 0,
+    "activation_checkpointing": "full",
+    "cuda_graph": true,
+    "text_only": true,
+    "pipeline_schedule": "1F1B",
+    "stage_layers": [
+      11,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      10
+    ]
+  },
+  "parameters": {
+    "muon": 2777072664576,
+    "adamw": 2411714656,
+    "total": 2779484379232,
+    "experts_per_rank_per_moe_layer": 28
+  },
+  "routing": {
+    "max_routed_rows_per_rank": 33152,
+    "min_routed_rows_per_rank": 32256,
+    "mean_routed_rows_per_rank": 32768.0,
+    "selected_capacity_factor": 0.0316162109375,
+    "allocated_rows": 33152,
+    "pad_multiple": 128,
+    "local_expert_assignment": "contiguous 28-expert shards",
+    "all_sources_restart_route_at_zero": true,
+    "capacity_1_over_32_overflows": true,
+    "bf16_dispatch_gib": 0.2213134765625,
+    "bf16_w13_output_gib": 0.37939453125,
+    "factor_one_dispatch_gib": 7.0,
+    "factor_one_w13_output_gib": 12.0
+  },
+  "memory": {
+    "verdict": "inconclusive",
+    "reason": "Unbounded graph/native buffers and unverified lifetime policy; scenarios do not establish a bound.",
+    "capacity_gib": 184.3065185546875,
+    "budget_gib": 165.87586669921876,
+    "stages": [
+      {
+        "stage": 0,
+        "layers": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 9506529439.0,
+        "weights_gib": 17.70729094557464,
+        "optimizer_states_gib": 17.776123639196157,
+        "dense_compute_materialization_gib": 15.38331025838852,
+        "gradient_coexistence_scenario_gib": 65.21974551677704,
+        "checkpoint_inputs_scenario_gib": 4.8125,
+        "residual_blocks_scenario_gib": 0.4375,
+        "scenario_base_gib": 121.33647035993636,
+        "peak_inflight_microbatches": 8,
+        "remaining_before_headroom_gib": 62.97004819475114,
+        "extra_memory_allowed_at_10pct_headroom_gib": 44.539396339282405
+      },
+      {
+        "stage": 1,
+        "layers": [
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 11315937471.0,
+        "weights_gib": 21.077576039358974,
+        "optimizer_states_gib": 21.0780532322824,
+        "dense_compute_materialization_gib": 12.982433259487152,
+        "gradient_coexistence_scenario_gib": 67.3086165189743,
+        "checkpoint_inputs_scenario_gib": 4.59375,
+        "residual_blocks_scenario_gib": 0.57421875,
+        "scenario_base_gib": 127.61464780010283,
+        "peak_inflight_microbatches": 7,
+        "remaining_before_headroom_gib": 56.69187075458467,
+        "extra_memory_allowed_at_10pct_headroom_gib": 38.26121889911593
+      },
+      {
+        "stage": 2,
+        "layers": [
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 11315937471.0,
+        "weights_gib": 21.077576039358974,
+        "optimizer_states_gib": 21.0780532322824,
+        "dense_compute_materialization_gib": 12.982433259487152,
+        "gradient_coexistence_scenario_gib": 67.3086165189743,
+        "checkpoint_inputs_scenario_gib": 3.9375,
+        "residual_blocks_scenario_gib": 0.65625,
+        "scenario_base_gib": 127.04042905010283,
+        "peak_inflight_microbatches": 6,
+        "remaining_before_headroom_gib": 57.26608950458467,
+        "extra_memory_allowed_at_10pct_headroom_gib": 38.83543764911593
+      },
+      {
+        "stage": 3,
+        "layers": [
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 11315937471.0,
+        "weights_gib": 21.077576039358974,
+        "optimizer_states_gib": 21.0780532322824,
+        "dense_compute_materialization_gib": 12.982433259487152,
+        "gradient_coexistence_scenario_gib": 67.3086165189743,
+        "checkpoint_inputs_scenario_gib": 3.28125,
+        "residual_blocks_scenario_gib": 0.68359375,
+        "scenario_base_gib": 126.41152280010283,
+        "peak_inflight_microbatches": 5,
+        "remaining_before_headroom_gib": 57.89499575458467,
+        "extra_memory_allowed_at_10pct_headroom_gib": 39.46434389911593
+      },
+      {
+        "stage": 4,
+        "layers": [
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 11315937471.0,
+        "weights_gib": 21.077576039358974,
+        "optimizer_states_gib": 21.0780532322824,
+        "dense_compute_materialization_gib": 12.982433259487152,
+        "gradient_coexistence_scenario_gib": 67.3086165189743,
+        "checkpoint_inputs_scenario_gib": 2.625,
+        "residual_blocks_scenario_gib": 0.65625,
+        "scenario_base_gib": 125.72792905010283,
+        "peak_inflight_microbatches": 4,
+        "remaining_before_headroom_gib": 58.57858950458467,
+        "extra_memory_allowed_at_10pct_headroom_gib": 40.14793764911593
+      },
+      {
+        "stage": 5,
+        "layers": [
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 11315937471.0,
+        "weights_gib": 21.077576039358974,
+        "optimizer_states_gib": 21.0780532322824,
+        "dense_compute_materialization_gib": 12.982433259487152,
+        "gradient_coexistence_scenario_gib": 67.3086165189743,
+        "checkpoint_inputs_scenario_gib": 1.96875,
+        "residual_blocks_scenario_gib": 0.57421875,
+        "scenario_base_gib": 124.98964780010283,
+        "peak_inflight_microbatches": 3,
+        "remaining_before_headroom_gib": 59.31687075458467,
+        "extra_memory_allowed_at_10pct_headroom_gib": 40.88621889911593
+      },
+      {
+        "stage": 6,
+        "layers": [
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 11315937471.0,
+        "weights_gib": 21.077576039358974,
+        "optimizer_states_gib": 21.0780532322824,
+        "dense_compute_materialization_gib": 12.982433259487152,
+        "gradient_coexistence_scenario_gib": 67.3086165189743,
+        "checkpoint_inputs_scenario_gib": 1.3125,
+        "residual_blocks_scenario_gib": 0.4375,
+        "scenario_base_gib": 124.19667905010283,
+        "peak_inflight_microbatches": 2,
+        "remaining_before_headroom_gib": 60.10983950458467,
+        "extra_memory_allowed_at_10pct_headroom_gib": 41.67918764911593
+      },
+      {
+        "stage": 7,
+        "layers": [
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92
+        ],
+        "rank_count": 32,
+        "local_parameter_elements": 9456732586.0,
+        "weights_gib": 17.614537078887224,
+        "optimizer_states_gib": 17.683221496641636,
+        "dense_compute_materialization_gib": 12.415186524391174,
+        "gradient_coexistence_scenario_gib": 59.28349804878235,
+        "checkpoint_inputs_scenario_gib": 0.546875,
+        "residual_blocks_scenario_gib": 0.24609375,
+        "scenario_base_gib": 107.78941189870238,
+        "peak_inflight_microbatches": 1,
+        "remaining_before_headroom_gib": 76.51710665598512,
+        "extra_memory_allowed_at_10pct_headroom_gib": 58.08645480051638
+      }
+    ],
+    "limiting_scenario_stage": 1,
+    "extra_allowance_scenarios": [
+      {
+        "extra_gib": 8,
+        "peak_gib": 135.61464780010283,
+        "margin_gib": 30.26121889911593
+      },
+      {
+        "extra_gib": 16,
+        "peak_gib": 143.61464780010283,
+        "margin_gib": 22.26121889911593
+      },
+      {
+        "extra_gib": 32,
+        "peak_gib": 159.61464780010283,
+        "margin_gib": 6.261218899115931
+      },
+      {
+        "extra_gib": 48,
+        "peak_gib": 175.61464780010283,
+        "margin_gib": -9.738781100884069
+      }
+    ],
+    "omitted": [
+      "CUDA graph retained storage/pool fragmentation",
+      "HybridEP native all-to-all buffers and handles",
+      "DistMuon rolling buckets and Newton-Schulz temporaries",
+      "KDA/MLA/expert recompute workspace",
+      "loss/logit workspace",
+      "FSDP reduction transition buffers",
+      "small preserved-FP32 parameters and buffers",
+      "initialization/checkpoint load peaks; no checkpoint load assumed"
+    ]
+  },
+  "throughput": {
+    "status": "conditional historical-cost extrapolation; not validated throughput",
+    "nominal_step_seconds": 23.509956420636787,
+    "nominal_global_tokens_per_second": 356810.8698252018,
+    "nominal_tokens_per_second_per_gpu": 1393.7924602546946,
+    "stage_forward_seconds": [
+      0.051726169284775,
+      0.05663265420203757,
+      0.05822305772354377,
+      0.05983074360890628,
+      0.061438050044681225,
+      0.06304346894344383,
+      0.06464766316664372,
+      0.05619091986766246
+    ],
+    "stage_backward_seconds": [
+      0.08136846422141901,
+      0.08882711616031275,
+      0.09040184982284397,
+      0.09198961474751885,
+      0.0935879808629939,
+      0.09518737565971896,
+      0.09678689992602525,
+      0.0861086870514126
+    ],
+    "stage_optimizer_seconds": [
+      1.1622283398031992,
+      1.245524173372799,
+      1.245524173372799,
+      1.245524173372799,
+      1.245524173372799,
+      1.245524173372799,
+      1.245524173372799,
+      1.0393026050447995
+    ],
+    "pipeline_seconds": 22.046333085130488,
+    "fsdp_proxy_seconds": 0.21809916213349997,
+    "sensitivity_scenarios": [
+      {
+        "cost_multiplier": 1.0,
+        "step_seconds": 23.509956420636787,
+        "global_tokens_per_second": 356810.8698252018
+      },
+      {
+        "cost_multiplier": 1.25,
+        "step_seconds": 29.190640215742615,
+        "global_tokens_per_second": 287373.2106593535
+      },
+      {
+        "cost_multiplier": 1.5,
+        "step_seconds": 34.87132401084839,
+        "global_tokens_per_second": 240558.91876632854
+      },
+      {
+        "cost_multiplier": 2.0,
+        "step_seconds": 46.23269160106003,
+        "global_tokens_per_second": 181443.21062647505
+      }
+    ],
+    "assumptions": [
+      "Per-microbatch F/B cost scales linearly with sequence length; smaller GEMM efficiency and static memory traffic not recalculated.",
+      "Expert and nonexpert optimizer cost scales 2x with doubled local ownership; historical FP32-state cost retained as proxy for BF16.",
+      "Historical fused HybridEP costs retained despite different fanout; no new communication calibration.",
+      "1F1B dependencies recalculated for 128 microbatches and current default partition.",
+      "PP transfer scenario uses 50 GB/s plus 5us per hop, 16-bit residual stacks, no shared-link contention.",
+      "FSDP exposed cost reused from historical EP64 model; no new schedule-frequency validation.",
+      "No CUDA-graph speedup credited; graph replay/host launch/capture costs not measured.",
+      "Sensitivity multipliers are chosen scenarios, not confidence intervals or performance bounds."
+    ]
+  },
+  "validation": {
+    "full_architecture_ledger_matches_independent_historical_ledger": true,
+    "source_extracted_full_stage_split_passed": true,
+    "source_extracted_routing_capacity_passed": true,
+    "homogeneous_pipeline_scheduler_checks_passed": true,
+    "executed_fake_process_groups": false,
+    "executed_gpu_training": false,
+    "lyris_status": "Maintenance banner and authentication refusal observed"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/mlcommons/chakra",
+  "commit": "f5df2a16eb4de8c15f15348227b8d37170df07f7",
+  "files": {
+    "et_def.proto": "3e7f44c2e184df5410674d08a27f3d2ddd9053eba3b1fa32a20573b16e6d383c",
+    "storage.proto": "9282ad99d9cff6f1fa9863e8ed29f588d38bf7f09bdab638afc4dfefaf617b92",
+    "LICENSE.md": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+  }
+}
