@@ -303,6 +303,10 @@ the comparison as independent validation.
 
 ## Scope and validation
 
+The [native workflow validation record](docs/validation/native-workflow.md)
+separates real GPU capture/measurement checks from held-out prediction accuracy
+and lists the remaining unsupported scope.
+
 Durations use seconds, sizes use bytes, and rates use FLOP/s or bytes/s. The JSON
 schema is `recipe-prescreen-workload`, version 1. Hardware supports uniform capacity or explicit per-device capacities and placement. The simulator models declared exclusive resources and
 communication rendezvous. Bandwidth sharing, compute/communication interference,
