@@ -165,6 +165,7 @@ class ProfilerCapture:
                 'Execution trace disabled explicitly; GPU costs are occurrence-only, without reusable operator/shape/scalar matching.',
                 'Chrome-only capture does not reconstruct backing allocations, tensor lifetimes, aliases or physical memory coverage.',
                 'Cross-stream dependencies, CUDA event waits and stream contention require explicit evidence.',
+                'GPU-only projection excludes CPU launch, data loading and host synchronization costs.',
                 'Profiler instrumentation and shape recording can perturb timing and tensor lifetimes.',
                 'Initialization, checkpointing and work outside selected train_step calls are excluded.',
             }

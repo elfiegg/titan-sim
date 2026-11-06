@@ -67,6 +67,45 @@ def _evidence(config, required=False):
             raise ValueError('explicit preparation assertions require evidence source and sha256')
 
 
+def _function_repr_config_match(manifests):
+    """Compare legacy config dumps differing only in function repr addresses.
+
+    Qualified names remain significant. No other hexadecimal value or repr is
+    changed, and every source must retain its hash-matching raw configuration.
+    This establishes lexical agreement only, never closure/callable identity.
+    """
+    pattern = re.compile(r'<function ([A-Za-z_][A-Za-z0-9_.<>]*) at 0x[0-9a-fA-F]+>')
+
+    def normalize(value, path, paths):
+        if isinstance(value, str):
+            match = pattern.fullmatch(value)
+            if match:
+                paths.append(path)
+                return '<function ' + match[1] + ' at <process-address>>'
+        if isinstance(value, list):
+            return [normalize(item, path + '/' + str(index), paths) for index, item in enumerate(value)]
+        if isinstance(value, dict):
+            return {key: normalize(item, path + '/' + key.replace('~', '~0').replace('/', '~1'), paths)
+                    for key, item in value.items()}
+        return value
+
+    normalized, path_sets, sources = [], [], []
+    for manifest in manifests:
+        provenance = manifest.get('provenance', {})
+        raw = provenance.get('recipe_config')
+        if not isinstance(raw, dict) or _digest(raw) != provenance.get('resolved_config_sha256'):
+            return None
+        paths = []
+        normalized.append(_digest(normalize(raw, '', paths)))
+        path_sets.append(sorted(paths))
+        sources.append(dict(ranks=manifest['ranks'], resolved_config_sha256=provenance['resolved_config_sha256']))
+    if not path_sets[0] or len(set(normalized)) != 1 or any(paths != path_sets[0] for paths in path_sets):
+        return None
+    return dict(method='anchored_python_function_repr_address_only', normalized_paths=path_sets[0],
+                path_format='JSON Pointer within provenance.recipe_config', sources=sources,
+                comparison_sha256=normalized[0], callable_identity_verified=False)
+
+
 def _chrome(workload, entries, maps, gaps):
     """Lower only directly correlated GPU events, retaining unmatched nodes."""
     nodes = {n.id: n for n in workload.nodes}
@@ -233,6 +272,8 @@ def prepare(workloads, config=None):
             world_sizes.add(workload.manifest['world_size'])
         manifests.append(deepcopy(workload.manifest))
         gaps.update(workload.manifest.get('unresolved', []))
+        if workload.manifest.get('observer') == 'pytorch_profiler_chrome_only':
+            gaps.add('GPU-only projection excludes CPU launch, data loading and host synchronization costs.')
         artifacts.extend(workload.manifest.get('native_trace_artifacts', []))
         mapping = {n.id: len(nodes) + i for i, n in enumerate(workload.nodes)}
         for node in workload.nodes:
@@ -259,9 +300,15 @@ def prepare(workloads, config=None):
         gaps.add('All-rank preparation is incomplete: expected ranks ' + str(list(range(expected))) + '.')
     # Recipe/runtime identity must agree when present. Capture-side fields such
     # as device rank or artifact paths need not be identical.
+    config_comparison = None
     for key in ('recipe_args', 'resolved_config_sha256', 'torchtitan_python_source_sha256', 'torch_version', 'cuda_version'):
         values = [_digest(m.get('provenance', {}).get(key)) for m in manifests]
         if len(set(values)) > 1:
+            if key == 'resolved_config_sha256':
+                config_comparison = _function_repr_config_match(manifests)
+                if config_comparison is not None:
+                    gaps.add('Recipe configuration comparison normalized Python function repr addresses; closure and callable identity remain unverified.')
+                    continue
             raise ValueError('rank workloads have mismatched provenance: ' + key)
     statuses = [m.get('capture_status', 'complete') for m in manifests]
     if any(status != 'complete' for status in statuses):
@@ -271,6 +318,8 @@ def prepare(workloads, config=None):
                     capture_status='blocked' if 'blocked' in statuses else ('incomplete' if 'incomplete' in statuses else 'complete'),
                     preparation=dict(version=1, evidence=config.get('evidence'), input_count=len(inputs)),
                     provenance=deepcopy(manifests[0].get('provenance', {})))
+    if config_comparison is not None:
+        manifest['preparation']['recipe_config_comparison'] = config_comparison
     if 'useful_tokens' in config:
         manifest['useful_tokens'] = _nonnegative(config['useful_tokens'], 'useful_tokens')
     elif len(inputs) == 1 and 'useful_tokens' in manifests[0]:

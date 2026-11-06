@@ -1,4 +1,5 @@
 import hashlib
+from copy import deepcopy
 import json
 from pathlib import Path
 import tempfile
@@ -47,6 +48,43 @@ class PrepareTests(unittest.TestCase):
         b.manifest['provenance']['recipe_args'] = ['different.recipe']
         with self.assertRaisesRegex(ValueError, 'mismatched provenance'):
             prepare([workload(0, 2), b])
+
+    def test_config_function_repr_addresses_allow_only_audited_lexical_agreement(self):
+        def attach(w, config):
+            w.manifest['provenance']['recipe_config'] = config
+            w.manifest['provenance']['resolved_config_sha256'] = hashlib.sha256(json.dumps(
+                config, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+            return w
+
+        config = {'layers': [{'initializer': '<function fused_qkv_param_init.<locals>._make_init.<locals>._init at 0xfffc531e60c0>',
+                              'shape': [8, 16], 'hex_arg': '0xabc'}]}
+        other = deepcopy(config)
+        other['layers'][0]['initializer'] = other['layers'][0]['initializer'].replace('0xfffc531e60c0', '0xab0123')
+        a, b = attach(workload(0, 2), config), attach(workload(1, 2), other)
+        result = prepare([a, b])
+        comparison = result.manifest['preparation']['recipe_config_comparison']
+        self.assertEqual(comparison['normalized_paths'], ['/layers/0/initializer'])
+        self.assertFalse(comparison['callable_identity_verified'])
+        self.assertTrue(any('closure and callable identity' in gap for gap in result.manifest['unresolved']))
+        self.assertEqual(result.manifest['source_manifests'][1]['provenance'], b.manifest['provenance'])
+        self.assertEqual(result.manifest['provenance'], a.manifest['provenance'])
+        for field, changed in [('initializer', '<function different_name at 0xab0123>'),
+                               ('shape', [8, 32]), ('hex_arg', '0xdef'),
+                               ('initializer', 'prefix <function fused_qkv_param_init at 0xab0123>')]:
+            bad_config = deepcopy(other)
+            bad_config['layers'][0][field] = changed
+            bad = attach(workload(1, 2), bad_config)
+            with self.subTest(field=field, changed=changed):
+                with self.assertRaisesRegex(ValueError, 'mismatched provenance'):
+                    prepare([a, bad])
+        missing = deepcopy(b)
+        del missing.manifest['provenance']['recipe_config']
+        with self.assertRaisesRegex(ValueError, 'mismatched provenance'):
+            prepare([a, missing])
+        tampered = deepcopy(b)
+        tampered.manifest['provenance']['resolved_config_sha256'] = 'f' * 64
+        with self.assertRaisesRegex(ValueError, 'mismatched provenance'):
+            prepare([a, tampered])
 
     def test_paths_json_and_global_tokens(self):
         with tempfile.TemporaryDirectory() as root:
