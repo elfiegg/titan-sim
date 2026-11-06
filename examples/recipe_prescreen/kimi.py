@@ -7,7 +7,7 @@ gaps; strict simulation must reject them. Native capture lives in capture.py.
 from __future__ import annotations
 import json
 from pathlib import Path
-from .core import Node, Storage
+from titan_sim.core import Node, Storage
 
 GIB = 2**30
 ROOT = Path(__file__).parent

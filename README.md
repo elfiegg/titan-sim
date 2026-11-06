@@ -1,275 +1,277 @@
 # titan-sim
 
-Experimental recipe prescreening for TorchTitan: describe a distributed workload,
-measure representative operations on real hardware, then estimate execution time
-and per-device peak memory on CPU.
+A workload-neutral interface for capture, calibration and CPU simulation of
+execution time and per-device peak storage. Framework-specific code belongs in
+explicit adapters; models and communication libraries are not CLI modes.
 
-**Current status:** the event/storage simulator, small fake-execution captures,
-GPU component benchmarks, calibration import, and held-out two-GEMM validation
-work. The automatic full-model capture → matched calibration → prediction pipeline
-is **not complete**. The included full Kimi graph is a generated analytical
-scenario, not captured native execution or validated throughput/memory fit.
+**Status:** generic adapter invocation, workload persistence, structural validation,
+exact-key cost lookup and the event/storage simulator are implemented. Automatic
+native TorchTitan recipe capture and compiled implementation matching remain
+unfinished. The [recipe experiments](examples/recipe_prescreen/README.md) are
+examples with narrower evidence, not built-in support for every workload.
 
-This implementation replaces the previous repository contents; earlier work remains
-in Git history. The old event API and microsecond-based files are not compatible
-with this workload schema. Agent instructions are in [AGENTS.md](AGENTS.md).
+## Motivation
 
-## 1. Motivation
+Prescreening should help evaluate candidate training recipes before allocating a
+large cluster. It needs to account for per-device placement and peak simultaneous
+storage rather than aggregate capacity, and estimate step time under explicit
+scheduling and communication assumptions.
 
-A training recipe combines model structure, precision, optimizer state, activation
-checkpointing, parallelism, routing, communication and scheduling. Allocating a
-large GPU cluster for each candidate is expensive. Prescreening should help reject
-obviously unsuitable recipes and identify what needs hardware validation first.
+Fake execution can help capture operations, dependencies and tensor metadata.
+It does not measure GPU durations, achieved overlap, native workspaces or network
+contention. Calibration supplies measured component costs; simulation applies
+those costs to the workload's dependencies and resource constraints. Unsupported
+operations and missing memory coverage must stay visible. Prescreening does not
+establish measured performance or successful execution at scale.
 
-The questions are:
+The simulator should not care whether a workload comes from TorchTitan, another
+framework, a synthetic generator or a manually constructed graph. Producers must
+supply a compatible workload description. A generic interface does **not** mean
+all frameworks or execution semantics are already supported.
 
-- Does the recipe's **peak on every device** fit, including simultaneous tensors
-  and implementation buffers? Aggregate cluster capacity is insufficient.
-- What step time and throughput should we expect under the specified placement
-  and schedule, and which assumptions dominate that estimate?
-- Which operations, memory allocations and performance effects remain unsupported
-  or uncalibrated?
-
-Fake tensors and fake process groups help explore the program's structure without
-real parameter storage or real communication. They do not supply GPU timings,
-network contention, achieved overlap, or native workspace sizes. Those require
-explicit models and measurements. Prescreening does not establish measured
-performance or successful execution at scale.
-
-## 2. Basic structure: how agents use the toolchain
-
-The intended workflow is:
+## Basic structure: how agents use it
 
 ```text
-Resolved TorchTitan recipe + execution scenario
-                    |
-             TorchTitan capture adapter
-                    |
-          Workload data + calibration targets
-             |                       |
-             |             Native GPU calibration runner
-             |                       |
-             |                Measured cost catalog
-             |                       |
-             +-----------> CPU simulator <----- Hardware/topology model
-                                      |
-                         Timing, per-rank memory, coverage/gaps
+Recipe/configuration --> Capture adapter --> Workload
+                                               |
+                               +---------------+---------------+
+                               |                               |
+                         Measurement runner               CPU simulator
+                               |                               ^
+                               +------ Measured catalog -------+
+                                                               |
+                                                 Timing, memory, coverage/gaps
 ```
 
-The two outputs of the proposed adapter have different consumers: the simulator
-reads workload descriptions; the calibration runner needs references to executable
-native implementations. There is no conversion from a simulator graph back into
-PyTorch. **The generic adapter and automatic target generation are still planned.**
-Current runnable cases and their narrower scopes are listed below.
+The repository is code that agents install or invoke from a pinned checkout. It
+is not a hosted service or a cluster allocation. Read [AGENTS.md](AGENTS.md) before
+running a workload. Record the repository revision and upstream/container versions.
 
-### What an agent prepares
+### Install
 
-| Input | Required information |
-|---|---|
-| Recipe | Model/flavor and source revision, optimizer, precision, checkpointing, routing, parallelism and compilation settings |
-| Execution scenario | Sequence length, microbatch size/count, schedule and rank placement; an explicit scenario for data-dependent routing |
-| Capture environment | Compatible pinned TorchTitan/PyTorch/custom-op dependencies, preferably the intended training container |
-| Hardware description | Capacity per device, topology, resource assumptions and provenance; assumed rates must be labelled |
-| Calibration evidence | Matching operation/region signatures, software/hardware settings, timing samples, workspace observations and measurement scope |
-
-The repository is the shared codebase, not a hosted service or an implicit cluster
-allocation. Agents clone a pinned revision and invoke its Python CLI/modules. The
-CPU simulator does not import TorchTitan, PyTorch, CUDA or protobuf. Capture and
-calibration depend on the training environment; calibration additionally uses real
-target GPUs. Fake capture may still encounter native extension or CUDA control-plane
-requirements, so a GPU-free full-model capture is not guaranteed.
-
-### Install and CPU smoke test
-
-Python 3.10+ is sufficient for the simulator and generated scenarios:
+Python 3.10+; CPU simulation has no mandatory third-party dependencies:
 
 ```sh
 git clone https://github.com/elfiegg/titan-sim.git
 cd titan-sim
-git rev-parse HEAD                 # record/pin this revision for the experiment
+git rev-parse HEAD                  # record/pin the revision
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install -e .
 titan-sim --help
-titan-sim --case checks --output-dir results/checks
 python -m unittest discover -s tests -v
 ```
 
-`python -m titan_sim` is equivalent to `titan-sim` and works directly from the
-checkout without installation. Installation has no mandatory runtime dependencies.
+`python -m titan_sim` is equivalent to `titan-sim` and works from the checkout.
+The simulator does not import PyTorch, TorchTitan, CUDA, model examples or protobuf.
+Capture and measurement adapters run in their own required software environment.
 
-### Commands available today
+## Commands available today
 
-| Command/case | Required environment | Actual scope/output |
-|---|---|---|
-| `--case checks` | CPU Python | Deterministic dependency, communication-rendezvous, resource and storage checks; `summary.json` |
-| `--case dense` | Compatible PyTorch with FakeTensor/FakeProcessGroup internals | Small dense forward/backward/SGD plus fake all-reduce; 102 nodes on two logical ranks |
-| `--case hybridep` | PyTorch and the pinned TorchTitan source | Four native custom-op fake-function shape probes; no native buffer initialization or GPU transfers |
-| `--case kimi` | CPU Python | Generated PP8/DP32/EP32 analytical stage graph; memory verdict remains inconclusive |
-| `--case calibration` | CPU PyTorch | Local CPU two-matmul calibration/validation plumbing; not GPU evidence |
-| `--simulate-workload PATH` | CPU Python | Load direct workload JSON and simulate with optional matched calibration |
-| `python -m titan_sim.calibration.benchmark` | Authorized GB200 allocation and compatible training runtime | Explicit component measurements, per-rank JSONL |
-| `python -m titan_sim.calibration.summarize RAW OUT` | CPU Python | Validated cost catalogs, held-out workloads/results and a report |
+| Command | Input | Output | Runtime |
+|---|---|---|---|
+| `capture` | Explicit Python adapter and adapter-owned JSON config | Workload JSON | Whatever the adapter requires; native capture usually needs the pinned training environment |
+| `validate` | Workload JSON | Structural counts and declared gaps | CPU Python |
+| `calibrate` | Workload, explicit Python measurement runner and runner-owned JSON config | Cost catalog, missing cost keys and unkeyed operation count | Runner-dependent; actual GPU calibration needs authorized target hardware |
+| `simulate` | Workload and optional matching cost catalog/hardware override | Timing, per-rank modeled peak storage and coverage | CPU Python |
 
-For a quick generated scheduling example:
+There is no model selector or `--case` argument. Kimi and HybridEP were prototype
+experiments; they have moved to [examples/recipe_prescreen](examples/recipe_prescreen).
+Existing workloads remain readable; the old `--case` command syntax has changed.
 
-```sh
-titan-sim --case kimi --microbatches 2 --output-dir results/kimi-demo
-titan-sim --simulate-workload results/kimi-demo/kimi/workload.json
-# Expected to fail: this workload contains declared coverage gaps.
-titan-sim --simulate-workload results/kimi-demo/kimi/workload.json --strict
-```
+### Runnable, framework-free example
 
-Use `--microbatches 128` to exercise the full generated 256-rank scenario. This
-changes scenario size, not its evidence quality: historical analytical stage costs
-are not new measured Kimi performance predictions.
-
-For actual small fake capture, use the existing compatible PyTorch environment:
+From the repository checkout:
 
 ```sh
-python -m titan_sim --case dense --output-dir results/dense
-TORCHTITAN_PROTOTYPE_SOURCE=/path/to/pinned/torchtitan \
-  python -m titan_sim --case hybridep --output-dir results/hybridep
+titan-sim capture --adapter examples.minimal:capture \
+  --config examples/minimal.json --output results/minimal/workload.json
+
+titan-sim validate results/minimal/workload.json
+
+titan-sim simulate results/minimal/workload.json \
+  --output results/minimal/result.json
 ```
 
-The source pin and hashes are in
-[`torchtitan-provenance.json`](titan_sim/fixtures/torchtitan-provenance.json).
-Do not replace a training container's PyTorch merely to run these examples.
-`--case all` additionally attempts native Kimi dependency/build probes; it is not
-the default and does not perform a complete native Kimi training step.
+This example generates two synthetic operations; it does not capture a real model.
+It explicitly declares analytical rates and missing workspace coverage, so its
+memory verdict is `inconclusive`. Adding `--strict` rejects it. Example modules
+are available in the checkout and are not installed as part of the simulator wheel.
 
-### GPU calibration and result import
+### Bring a framework adapter and measurement runner
 
-The current harness benchmarks manually specified full-size GEMM cases, selected
-backward GEMMs, batched expert proxies, HBM copy, NCCL collectives, paired transfers
-and a native HybridEP probe. It does not discover the full compiled model's kernels.
-
-Inside an authorized four-GB200 allocation with the intended runtime:
+The following are invocation templates: `my_project` refers to functions you
+provide, not a bundled TorchTitan implementation.
 
 ```sh
-CALIBRATION_PHASES=compute CALIBRATION_OUTPUT=results/gb200-compute \
-  torchrun --standalone --nproc-per-node=4 --module titan_sim.calibration.benchmark
-python -m titan_sim.calibration.summarize \
-  results/gb200-compute results/gb200-compute-summary
-titan-sim --simulate-workload results/gb200-compute-summary/heldout-cuda_graph/workload.json \
-  --calibration results/gb200-compute-summary/rank-calibration.json --strict
+titan-sim capture --adapter my_project.capture:build_workload \
+  --config recipe.json --output results/workload.json
+
+titan-sim calibrate results/workload.json \
+  --runner my_project.measure:measure_workload \
+  --config measurement.json --output results/costs.json
+
+titan-sim simulate results/workload.json \
+  --calibration results/costs.json --strict --output results/prediction.json
 ```
 
-Use the site's normal multi-node launcher for 32 GPUs and set
-`CALIBRATION_PHASES=communication` to skip compute. `all` runs both phases. Native
-HybridEP requires the compatible DeepEP implementation and runtime dependencies.
-Use a **five-minute scheduler hard limit** for initial calibration. These commands
-do not allocate GPUs or enforce the limit themselves. Completed samples are flushed
-per rank and survive a later failure/timeout.
+Adapters are explicit trusted Python imports (`module:function`), not executable
+code embedded in workload JSON. Their modules must be installed or importable on
+`PYTHONPATH`. Loading a workload for validation/simulation does not import its
+recorded adapter or execute native model code.
 
-The HybridEP case uses 2,048 tokens/rank, hidden 3,584, 896 experts, top-16 forced
-round-robin, BF16, padding multiple **32**, capacity 33,152 rows and 32 ranks. This
-differs from the padding-128 fake-shape/legacy fixture scenario: capacity and cost
-claims are not interchangeable. Match actual rank placement/topology; an intra-domain
-measurement does not calibrate inter-domain communication. The importer currently
-accepts four- or 32-rank measurements and requires all expected hardware records.
+A measurement runner owns representative input construction, compilation/warmup,
+GPU timing, distributed coordination and result aggregation. The generic command
+invokes it and validates the returned catalog; it does not discover kernels,
+choose hardware, submit Slurm jobs or impose time limits. Invoke the catalog-writing
+command once from the runner's coordinating process, not on every distributed rank
+with the same output path. Use authorized allocations and explicit scheduler limits;
+the initial recipe examples use five minutes.
 
-### Output an agent reports
+### What agents prepare and report
 
-Case commands save `summary.json` and per-case `workload.json`/`result.json` under
-`--output-dir` (default `results/titan-sim`). Simulation of an existing workload
-prints a JSON summary. Calibration import saves `calibration.json`,
-`rank-calibration.json`, `summary.json`, `REPORT.md` and held-out workload/results.
+Prepare the resolved recipe/scenario, upstream and software versions, a compatible
+capture adapter, declared rank placement/schedule, hardware identity/capacity,
+and a measurement runner or existing matched catalog. No default GB200 profile is
+silently applied by the generic CLI. `simulate --hardware FILE` explicitly replaces
+the embedded hardware description; a mismatched calibration is rejected.
 
-Report elapsed time/throughput **with** `status`, `cost_coverage` and `unresolved`.
-Report the worst rank and modeled memory categories, not an aggregate cluster
-capacity comparison. `memory_verdict=inconclusive` must remain inconclusive.
-Allocated memory is contained in reserved memory; never add the two.
+Commands print JSON. `capture --output` writes workload JSON, `calibrate --output`
+writes catalog JSON, and `simulate --output` writes the full result including event
+times. The simulation summary printed to stdout omits the detailed event timeline.
+Runtime/contract errors return exit code 2 with a JSON error on stderr; argument
+syntax errors use argparse's ordinary error message.
 
-`--strict` rejects declared workload gaps and uncalibrated operation costs. It does
-not independently prove that the producer captured every allocation or operation.
-The simulator's storage output is a modeled logical peak, not automatically a CUDA
-allocator-reserved or device-wide physical peak.
+Report `status`, `cost_coverage`, `unresolved`, worst-rank storage and
+`memory_verdict` with any timing estimate. `validate` checks DAG/storage references;
+it does not establish valid real execution, communication matching, calibrated
+costs or capture completeness. Simulation additionally checks communication
+rendezvous. `--strict` rejects declared gaps and uncalibrated costs, but does not
+independently prove that the adapter captured every operation or allocation.
 
-## 3. Design structure
+Allocated storage is included in reserved memory: never add them. A logical storage
+peak is not automatically a CUDA allocator-reserved or physical device-wide peak.
 
-The simulator's direct interface is ordinary Python data:
+## Design structure
+
+### Stable component boundaries
+
+| Component | Implementation | Input | Output / responsibility |
+|---|---|---|---|
+| Capture adapter | User/framework Python function | JSON config | `Workload`; owns native capture semantics and fidelity/provenance |
+| Adapter invocation | `titan_sim.adapters` | Explicit function reference and config | Calls adapter; records reference/config digest; validates return contract |
+| Workload contract | `titan_sim.workload.Workload`, `core.Node`, `core.Storage` | Producer records | Framework-independent Python structures |
+| Persistence | `titan_sim.workload` | Python records or JSON | Versioned JSON serialization/reconstruction; no native execution |
+| Measurement runner | User/framework Python function | `Workload` and JSON config | Catalog of measured costs, with samples and hardware identity |
+| Catalog validation | `titan_sim.adapters.validate_catalog` | Catalog and expected hardware identity | Checks shapes of records, finite durations, sample checksums and hardware match |
+| Cost resolver | `titan_sim.core.CostModel` | Operation signature, hardware and catalog | Matched measured cost, or explicitly labelled analytical/historical fallback |
+| Simulator | `titan_sim.core.simulate` | Workload, resource assumptions and catalog | Event timing, per-rank storage peaks, verdict and cost coverage |
+| Optional transport | `titan_sim.bundle` | Same records | Chakra files with custom attributes/sidecars; not kernel discovery |
+
+### Adapter contracts
 
 ```python
-from titan_sim.core import Node, Storage, simulate
+from titan_sim.workload import Workload
 
-result = simulate(nodes, storages, manifest, hardware, calibration, strict=True)
+# Capture adapter: supported by `titan-sim capture`.
+def build_workload(config: dict) -> Workload:
+    ...  # execute/instrument the intended framework or generate declared events
+
+# Measurement runner: supported by `titan-sim calibrate`.
+def measure_workload(workload: Workload, config: dict) -> dict:
+    ...  # run original implementations and return records keyed by cost signature
 ```
 
-| Component | Source | Input | Output/responsibility |
-|---|---|---|---|
-| Capture probes | `capture.py` | Example code or pinned native fake definitions | Operation occurrences, tensor shape/dtype/stride metadata, backing storages, manifests and explicit gaps |
-| Analytical scenario builder | `kimi.py` | Recipe fixture and microbatch count | Generated stage regions, PP ordering, transfers, FSDP rendezvous and coarse storage lifetimes |
-| Workload contract | `core.py`: `Node`, `Storage` | Producer-created Python records | Framework-independent simulator input; node occurrence IDs and cost lookup signatures have distinct roles |
-| Persistence | `workload.py` | Nodes/storages/manifest/hardware | Versioned JSON and reconstruction; rejects unsupported schema/time units; no executable code |
-| Calibration runner | `calibration/benchmark.py` | Explicit operation cases and real GPU runtime | Independent timings and allocator observations, retaining raw samples and unsupported operations |
-| Calibration importer | `calibration/summarize.py` | Rank JSONL files | Descriptor/evidence validation, per-rank and aggregate cost maps, held-out comparison |
-| Cost resolver | `core.py`: `CostModel` | Operation attributes, hardware and optional catalog | Exact-key measured cost or explicitly labelled analytical/historical fallback |
-| Event/storage simulator | `core.py`: `simulate` | Workload plus costs/resources | Dependency-aware timings and storage lifetimes/peaks on each rank |
-| Optional transport | `bundle.py` | Same workload records | Chakra protobuf files plus custom attributes/sidecars; not used for kernel discovery |
-| CLI | `cli.py` | Case or workload path, calibration and output options | Reproducible invocation and reports |
+The signatures are generic; there are no hardcoded recipe names or GPU counts.
+The framework adapter/runner supplies the implementation-specific behavior.
+A complete native TorchTitan implementation of these contracts is not yet bundled.
 
-The workload fields are:
+The workload contains:
 
-- **Node:** occurrence ID, operation/region name, rank, kind, dependency IDs and
-  attributes such as cost key, tensor metadata, communication peers/participants,
-  rendezvous identity and required resources.
-- **Storage:** backing-allocation ID, rank, byte size, producer, consumers,
-  persistence and category. Aliases share the same backing-allocation identity.
-- **Manifest:** recipe/scope/provenance, ranks, useful tokens and unresolved gaps.
-- **Hardware:** device capacity, reserve allowance and explicit rate/resource
-  assumptions. Placement and communication groups are declared by the producer.
-- **Calibration:** cost signature → duration/samples, hardware identity and
-  evidence checksum. The current signatures are not a complete cross-version
-  implementation-fingerprint registry.
+```python
+Workload(
+    nodes=[...],       # Node occurrence IDs, operation names, ranks, deps, attributes
+    storage=[...],     # unique backing allocation IDs, bytes, producer/consumers
+    manifest={...},    # ranks, scope/provenance, useful tokens, unresolved gaps
+    hardware={...},    # identity, capacity and explicit rate/resource assumptions
+)
+```
 
-All durations use **seconds**, byte quantities use **bytes**, and modeled rates
-use FLOP/s or bytes/s. The direct JSON schema is `recipe-prescreen-workload`,
-version 1. The simulator does not need a graph-to-PyTorch conversion.
+The direct Python simulator interface remains:
 
-The engine waits for all participants in a communication rendezvous, respects
-dependencies, and reserves declared resources until an event completes. Storage
-starts at its declared producer and survives all declared consumers. These rules
-only model the information actually supplied. Resource exclusion is not a full
-bandwidth-sharing or compute/communication-interference model.
+```python
+result = simulate(*workload.arguments(), calibration=catalog, strict=True)
+```
 
-Chakra is optional: install `.[chakra]` and use `--format chakra` for the historical
-transport round trip. Vendored schema license and provenance are in `titan_sim/vendor`.
-Our custom attributes/sidecars require a compatible consumer; generic Chakra
-simulator compatibility is not asserted. The default CPU path uses neither
-protobuf nor PyTorch.
+`Node` supports `compute`, `send`, `recv` and `collective` events. Operation names
+are arbitrary; attributes provide cost keys, shape/layout information, resource
+IDs and communication peers/participants. A cost key describes a calibration case;
+a node ID identifies an occurrence. The producer must choose signatures that include
+relevant implementation, precision, shape/layout, scalar settings, software and
+communication context. Kernel names alone are insufficient.
 
-## Evidence, limitations and development sequence
+`Storage` identifies backing allocations so aliases are not counted twice. It
+records rank, byte size, producer, consumers, persistence and category. The engine
+allocates at the declared producer and retains storage through all declared users.
+A model-specific adapter must supply hidden workspaces and buffer lifetimes as
+well as tensors if it wants to make complete memory predictions.
 
-The initial experiment captured the small dense example and four HybridEP fake
-operations, and exercised a generated 180,736-node, 256-rank Kimi scenario at 128
-microbatches. Native full-model capture was blocked by runtime/native dependency
-requirements. The generated Kimi graph uses historical analytical stage costs;
-its memory verdict is inconclusive and strict mode rejects it.
+The manifest must list ranks and declared gaps; adapters should also record source
+revision, container/software identity, capture adaptations and compilation mode.
+The wrapper's config digest is not a substitute for that provenance.
 
-A four-GB200 component run completed 39 operation configurations. An independently
-measured two-GEMM chain, excluded from the calibration catalog, differed from the
-component-cost prediction by **+3.2% eager** and **+4.0% CUDA graph replay**. This
-validates that narrow composition experiment only. The software stack was PyTorch
-`2.14.0a0+b2c75dd062.nv26.09` and CUDA 13.4. Private raw logs/device identifiers and
-cluster launch files are not published here; run calibration to obtain a usable
-catalog for your environment. No EP32 measurements are included in this package.
+### Calibration record
 
-Important gaps:
+```text
+catalog[cost_key] = {
+    hardware_id: identity matching workload.hardware.id,
+    seconds: representative measured duration,
+    samples_seconds: nonempty list of raw durations,
+    evidence_sha256: SHA256 of compact JSON encoding of that sample list,
+    ... additional implementation/provenance/method metadata ...
+}
+```
 
-- The generic native TorchTitan adapter and automatic calibration-target generation
-  are not implemented. Current capture and GPU benchmark signatures are not yet
-  joined automatically for the full model.
-- Fake capture currently inserts conservative sequential ordering; it does not
-  faithfully capture all asynchronous streams, waits, or runtime overlap.
-- Compiled/fused implementation identities, native MLA/KDA and grouped/SiTU expert
-  kernels, and complete backward/optimizer coverage remain unresolved.
-- Full-step native communication buffers, CUDA graph pools, Muon workspaces,
-  allocator reservation, and gradient/activation lifetimes are not fully modeled.
-- Full-scale placement, contention and pipeline overlap need independent validation.
+The sample checksum detects inconsistency; it does not prove measurements were
+collected correctly. Implementation compatibility and coverage remain the runner's
+responsibility. An empty/partial catalog is allowed for collection; the command
+reports unmatched keys and unkeyed nonsemantic nodes. Strict simulation rejects
+unmeasured nonsemantic operation costs. Held-out validation data must not be used
+as fitted component costs.
 
-Development should proceed by capturing **one native Kimi block**, retaining its
-original executable calibration targets, matching measured costs back to its graph,
-and validating time and memory independently. Then extend to communication and
-pipeline scheduling before claiming full-model accuracy. A successful simulator
-test or small held-out chain does not close these coverage gaps.
+All durations use **seconds**; sizes use **bytes**; rates use FLOP/s or bytes/s.
+The JSON schema is `recipe-prescreen-workload`, version 1. Current hardware capacity
+is a uniform per-device value. The engine uses declared exclusive resources and
+communication rendezvous; bandwidth sharing, realistic compute/communication
+interference, heterogeneous capacities and dynamic scheduling need extensions or
+explicit approximations. Unsupported semantics must be declared, not silently
+claimed to be supported by the generic interface.
+
+### Chakra is optional
+
+The default path uses Python records and JSON. Install `.[chakra]` only for the
+optional `titan_sim.bundle` API. Its schema/license/provenance are in
+`titan_sim/vendor`. Custom attributes/sidecars require a compatible consumer;
+arbitrary Chakra simulator compatibility is not asserted. Serialization does not
+select kernels or reconstruct executable PyTorch code.
+
+## Examples, evidence and next work
+
+[Recipe-prescreen examples](examples/recipe_prescreen/README.md) retain the earlier
+small FakeTensor/FPG capture, HybridEP fake-shape probe, generated Kimi schedule,
+GB200 benchmark cases and held-out validation importer. Their model names and
+four-/32-rank constraints are local to those experiments.
+
+The completed four-GB200 experiment measured 39 operation configurations. An
+independent two-GEMM chain differed from the component-cost prediction by +3.2%
+eager and +4.0% CUDA graph replay. This is narrow composition evidence, not a general
+accuracy claim. Full Kimi capture, automatic native implementation matching,
+complete physical memory lifetimes, and full-scale overlap/contention remain gaps.
+
+The next workload adapter should capture one native model block, retain the original
+executable calibration regions, and validate predicted time and memory against an
+independent run. Extend to distributed scheduling after that connection works.
+A generic CLI is an interface milestone, not proof of full-workload support.
+
+This revision supersedes the initial `--case` CLI. Earlier implementations and
+experiments remain available in Git history; pin a commit when reproducing them.

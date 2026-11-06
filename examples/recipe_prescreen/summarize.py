@@ -1,6 +1,6 @@
 """Import completed GB200 measurements; never substitute synthetic timings.
 
-Usage: python -m titan_sim.calibration.summarize RAW_DIRECTORY OUTPUT_DIRECTORY
+Usage: python -m examples.recipe_prescreen.summarize RAW_DIRECTORY OUTPUT_DIRECTORY
 RAW_DIRECTORY contains rank-*.jsonl and allocation/hardware metadata.
 """
 from __future__ import annotations
@@ -12,8 +12,8 @@ from pathlib import Path
 import statistics
 import sys
 
-from ..core import Node, Storage, simulate
-from ..workload import write_bundle, read_bundle
+from titan_sim.core import Node, Storage, simulate
+from titan_sim.workload import write_bundle, read_bundle
 
 
 def digest(value):

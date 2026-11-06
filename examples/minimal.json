@@ -1,0 +1,11 @@
+{
+  "hardware": {
+    "id": "synthetic-example",
+    "capacity_bytes": 1073741824,
+    "reserve_fraction": 0.1,
+    "effective_flops_per_second": 1000000,
+    "effective_hbm_bytes_per_second": 1000000000,
+    "launch_seconds": 0,
+    "provenance": "Explicit synthetic rates for a CPU-only interface demonstration; not GPU calibration"
+  }
+}

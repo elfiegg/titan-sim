@@ -1,4 +1,4 @@
-"""Throwaway, framework-independent discrete-event and storage simulator."""
+"""Experimental, framework-independent discrete-event and storage simulator."""
 from __future__ import annotations
 
 from collections import Counter, defaultdict, deque
@@ -37,6 +37,10 @@ def validate(nodes, storage, manifest):
     ranks = set(manifest['ranks'])
     remaining, successors = {}, defaultdict(list)
     for n in nodes:
+        if n.kind not in ['compute', 'send', 'recv', 'collective']:
+            raise ValueError('unsupported event kind: '+str(n.kind))
+        if 'cost_key' in n.attrs and (not isinstance(n.attrs['cost_key'], str) or not n.attrs['cost_key']):
+            raise ValueError('cost_key must be a nonempty string')
         if n.rank not in ranks:
             raise ValueError('unknown rank')
         if len(set(n.deps)) != len(n.deps):

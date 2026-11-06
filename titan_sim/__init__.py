@@ -1,2 +1,2 @@
-"""Experimental recipe prescreening; importing this package does not load Torch."""
-__version__ = '0.2.0'
+"""Workload-neutral event simulation; package import does not load a framework."""
+__version__ = "0.3.0"

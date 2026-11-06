@@ -1,36 +1,44 @@
-# Using titan-sim
+# Agent entry points
 
-1. Pin and record this repository's commit SHA. Read README.md and run
-   `python -m titan_sim --help` before choosing a command.
-2. Start with `python -m titan_sim --case checks`. Simulation and generated
-   scenarios need only Python 3.10+; do not install or replace PyTorch for them.
-3. Select an implemented capture case explicitly. `dense` is a small example;
-   `hybridep` is a source-extracted fake-shape probe; `kimi` is a generated
-   analytical stage graph. None captures a complete native Kimi training step.
-4. Native capture belongs in a pinned training environment. Set
-   `TORCHTITAN_PROTOTYPE_SOURCE` to a matching upstream checkout. Preserve the
-   container's PyTorch/CUDA/custom-op versions. Record failures and adaptations.
-5. Calibration requires authorized GPU resources. Use the site's launcher and a
-   five-minute scheduler hard limit unless the user requests another limit. The
-   benchmark does not allocate resources or enforce a timeout itself. Never run
-   GPU calibration on a login node. `CALIBRATION_PHASES=compute` skips communication;
-   `communication` skips compute. The current importer accepts four- or 32-rank runs.
-6. Keep raw logs, private paths, credentials, GPU identifiers and generated results
-   out of commits. Do not modify external skill files as a side effect of this work.
-7. Check `unresolved`, `cost_coverage`, `status`, and `memory_verdict` in outputs.
-   Exploratory success is not successful recipe execution. `--strict` rejects
-   declared gaps and uncalibrated costs; it does not independently prove capture
-   completeness. Fake-execution wall time is never GPU time. Do not add allocated
-   and reserved bytes or treat component memory as a full-model peak.
-8. Match operation signatures, implementation settings, software, hardware and
-   topology before reusing calibration. Held-out validation measurements must not
-   enter the fitted cost catalog. Unknown operations remain unresolved.
+Pin and record this repository's commit SHA. Read README.md and run
+`python -m titan_sim --help`. The public operations are **capture, validate,
+calibrate, simulate**. There is no `--case` or built-in model selection.
 
-Run `python -m unittest discover -s tests -v` for CPU changes. Report actual GPU
-validation scope separately. The simulator uses seconds and bytes. The previous
-repository implementation used a different event API and microsecond units;
-historical traces and calibration files are not automatically compatible.
+- CPU simulation and structural validation require Python 3.10+ only. Do not
+  install or replace PyTorch for these operations.
+- `capture --adapter module:function --config config.json --output workload.json`
+  invokes an explicit trusted Python adapter. The adapter returns `Workload`.
+  It owns framework dependencies, semantics and source/container provenance.
+- `calibrate workload.json --runner module:function --config measurement.json
+  --output costs.json` invokes a trusted measurement runner with `(workload, config)`.
+  The runner owns native implementation matching and distributed measurement;
+  the generic CLI validates the returned catalog. Do not invent measured samples.
+- `validate workload.json` checks structural references and reports declared gaps.
+  It does not establish real execution or complete capture.
+- `simulate workload.json --calibration costs.json --strict --output result.json`
+  uses exact cost keys and rejects declared gaps or uncalibrated costs.
+- Model-specific prototypes are in `examples/recipe_prescreen/README.md`, not the
+  simulator API. A full native TorchTitan adapter and automatic compiled-kernel
+  calibration planner are not bundled. Do not present them as implemented.
 
-The proposed general `TorchTitanAdapter.capture(recipe, scenario)` and automatic
-native calibration-target generation are not implemented. Do not present them as
-available tools. See the README's component table and development sequence.
+Use a compatible pinned training environment for native capture/calibration and
+preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires
+explicitly authorized allocations; a repo invocation does not authorize cluster
+jobs. Use a five-minute scheduler hard limit for initial benchmarks unless the
+user requests another limit. The Python harness does not enforce that limit.
+Do not run GPU calibration on a login node. Use one coordinating process to write
+an aggregate catalog, not competing distributed ranks writing the same output.
+
+Report `status`, `cost_coverage`, `unresolved` and `memory_verdict`. Fake-execution
+wall time is not GPU time. Do not add allocated and reserved bytes or promote
+incomplete logical storage coverage to a physical memory-fit claim. Hardware and
+sample checksums are necessary checks, not proof of native implementation fidelity.
+Keep held-out validation separate from fitted costs.
+
+Keep credentials, private paths, GPU identifiers, raw logs, environments and
+generated results out of commits. Do not modify external skill files as a side
+effect of running this repository. Run `python -m unittest discover -s tests -v`
+for CPU changes and report actual GPU validation scope separately.
+
+Durations use seconds, sizes use bytes. Pin an older commit to reproduce the
+superseded `--case` CLI or the earlier microsecond-based event implementation.
