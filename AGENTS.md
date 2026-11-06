@@ -17,9 +17,15 @@ calibrate, simulate**. There is no `--case` or built-in model selection.
   It does not establish real execution or complete capture.
 - `simulate workload.json --calibration costs.json --strict --output result.json`
   uses exact cost keys and rejects declared gaps or uncalibrated costs.
-- Model-specific prototypes are in `examples/recipe_prescreen/README.md`, not the
-  simulator API. A full native TorchTitan adapter and automatic compiled-kernel
-  calibration planner are not bundled. Do not present them as implemented.
+- The experimental native TorchTitan adapter is `titan_sim.torchtitan:capture`.
+  Read `docs/native-torchtitan.md`. Native execution defaults to PyTorch's profiler;
+  explicit fake/eager dispatch capture has narrower compatibility. Neither path
+  establishes universal model support, complete distributed lowering, or automatic
+  native compiled-kernel calibration. Do not present these gaps as implemented.
+- Native capture executes the original recipe and its configured side effects.
+  Require explicit execution mode, use a fresh trace directory, preserve original
+  model code, and write one output per rank with `{rank}` in the output path.
+- Model-specific prototypes remain in `examples/recipe_prescreen/README.md`.
 
 Use a compatible pinned training environment for native capture/calibration and
 preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires

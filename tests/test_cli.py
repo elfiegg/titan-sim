@@ -7,6 +7,7 @@ import sys
 import tempfile
 import types
 import unittest
+from unittest.mock import patch
 from titan_sim.cli import main
 from titan_sim.core import Node, Storage
 from titan_sim.workload import Workload, write_workload
@@ -84,6 +85,36 @@ class GenericCLITests(unittest.TestCase):
                                         '--output',Path(temp)/'workload.json')
             self.assertEqual(code,2)
             self.assertTrue(json.loads(stderr)['error'])
+
+    def test_partial_capture_is_written_but_returns_failure(self):
+        workload = Workload([], [], {'ranks':[0], 'capture_status':'blocked',
+                           'unresolved':['native initialization failed']}, {'id':'test','capacity_bytes':1024})
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            config = root/'config.json'; config.write_text('{}')
+            with patch('titan_sim.adapters.capture', return_value=workload):
+                code, stdout, stderr = self.invoke('capture', '--adapter', 'test:call', '--config', config,
+                                                   '--output', root/'workload.json')
+            self.assertEqual(code, 2, stderr)
+            self.assertEqual(json.loads(stdout)['capture_status'], 'blocked')
+            self.assertTrue((root/'workload.json').is_file())
+
+    def test_distributed_output_requires_rank_placeholder(self):
+        workload = Workload([], [], {'ranks':[2], 'unresolved':[]}, {'id':'test','capacity_bytes':1024})
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            config = root/'config.json'; config.write_text('{}')
+            with patch.dict('os.environ', WORLD_SIZE='4', RANK='2'):
+                with patch('titan_sim.adapters.capture', return_value=workload) as invoke:
+                    code, _, stderr = self.invoke('capture', '--adapter', 'test:call', '--config', config,
+                                                  '--output', root/'workload.json')
+                    self.assertEqual(code, 2)
+                    invoke.assert_not_called()
+                    self.assertIn('collisions', stderr)
+                    code, _, stderr = self.invoke('capture', '--adapter', 'test:call', '--config', config,
+                                                  '--output', root/'workload.rank{rank}.json')
+                    self.assertEqual(code, 0, stderr)
+                    self.assertTrue((root/'workload.rank2.json').is_file())
 
 
 if __name__ == '__main__':

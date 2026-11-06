@@ -1,6 +1,7 @@
 """Capture through explicit adapters, validate workloads, calibrate, or simulate."""
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 from .core import simulate, validate
@@ -43,9 +44,16 @@ def main(argv=None):
     try:
         if args.command == 'capture':
             from .adapters import capture as invoke
+            output = str(args.output)
+            if int(os.environ.get('WORLD_SIZE', 1)) > 1 and '{rank}' not in output:
+                raise ValueError('distributed capture requires {rank} in --output to prevent rank file collisions')
             workload = invoke(args.adapter, read_json(args.config))
-            write_workload(args.output, workload)
-            result = dict(command='capture', output=str(args.output),
+            ranks = workload.manifest.get('ranks', [])
+            rank = str(ranks[0]) if len(ranks) == 1 else os.environ.get('RANK', '0')
+            output = Path(output.replace('{rank}', rank))
+            write_workload(output, workload)
+            result = dict(command='capture', output=str(output),
+                          capture_status=workload.manifest.get('capture_status', 'unspecified'),
                           **validate(workload.nodes, workload.storage, workload.manifest),
                           unresolved=workload.manifest.get('unresolved', []))
         else:
@@ -75,6 +83,8 @@ def main(argv=None):
                     emit(result, args.output)
                 result = {k:v for k,v in result.items() if k != 'timing'}
         print(emit(result), end='')
+        if args.command == 'capture' and result['capture_status'] in ('blocked', 'incomplete'):
+            return 2
     except (OSError, ValueError, TypeError, KeyError, ImportError, RuntimeError, ArithmeticError) as error:
         print(emit({'error':str(error), 'command':args.command}), end='', file=sys.stderr)
         return 2

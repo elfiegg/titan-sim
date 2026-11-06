@@ -98,7 +98,23 @@ It explicitly declares analytical rates and missing workspace coverage, so its
 memory verdict is `inconclusive`. Adding `--strict` rejects it. Example modules
 are available in the checkout and are not installed as part of the simulator wheel.
 
-### Bring a framework adapter and measurement runner
+### Native TorchTitan capture
+
+An experimental, model-independent adapter is now bundled:
+
+```sh
+titan-sim capture --adapter titan_sim.torchtitan:capture \
+  --config capture.json --output 'results/workload.rank{rank}.json'
+```
+
+It loads your original native recipe and observes its original training steps.
+Native execution uses PyTorch's execution-trace/profiler observer; fake/eager
+dispatch capture is an explicit alternative. No model-specific forward is copied.
+See [native capture inputs, outputs and validation limits](docs/native-torchtitan.md)
+before running it. Full-model GPU/distributed capture is not yet validated, and
+the conservative graph projection still declares scheduling and memory gaps.
+
+### Bring another framework adapter and measurement runner
 
 The following are invocation templates: `my_project` refers to functions you
 provide, not a bundled TorchTitan implementation.
@@ -184,7 +200,8 @@ def measure_workload(workload: Workload, config: dict) -> dict:
 
 The signatures are generic; there are no hardcoded recipe names or GPU counts.
 The framework adapter/runner supplies the implementation-specific behavior.
-A complete native TorchTitan implementation of these contracts is not yet bundled.
+The experimental native TorchTitan capture adapter implements the capture contract;
+complete distributed lowering and automatic native calibration remain separate gaps.
 
 The workload contains:
 
@@ -268,10 +285,11 @@ eager and +4.0% CUDA graph replay. This is narrow composition evidence, not a ge
 accuracy claim. Full Kimi capture, automatic native implementation matching,
 complete physical memory lifetimes, and full-scale overlap/contention remain gaps.
 
-The next workload adapter should capture one native model block, retain the original
-executable calibration regions, and validate predicted time and memory against an
-independent run. Extend to distributed scheduling after that connection works.
-A generic CLI is an interface milestone, not proof of full-workload support.
+The native adapter now retains original execution/Chrome traces and a conservative
+workload projection. Next, validate full native recipes in their training runtime,
+match original executable calibration regions, and reconcile distributed schedules
+and physical allocations before comparing predictions to independent runs.
+A completed capture is not proof of complete simulation semantics.
 
 This revision supersedes the initial `--case` CLI. Earlier implementations and
 experiments remain available in Git history; pin a commit when reproducing them.
