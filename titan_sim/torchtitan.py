@@ -38,7 +38,7 @@ def _register_state(recorder, engine):
 
 
 def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=None,
-                    observer='profiler', trace_dir=None):
+                    observer='profiler', trace_dir=None, execution_trace=True):
     """Run a bounded native train loop and return a rank-local Workload.
 
     The caller owns trainer/process-group creation and cleanup. This function
@@ -54,6 +54,10 @@ def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=No
     for name in ('train', 'train_step', 'should_continue_training'):
         if not callable(getattr(trainer, name, None)):
             raise ValueError('unsupported TorchTitan trainer contract: missing '+name)
+    if type(execution_trace) is not bool:
+        raise ValueError('execution_trace must be a boolean')
+    if observer != 'profiler' and not execution_trace:
+        raise ValueError('execution_trace=false applies only to profiler observation')
     engine = trainer.engine
     dist = torch.distributed
     rank = dist.get_rank() if dist.is_initialized() else int(os.environ.get('RANK', 0))
@@ -63,7 +67,7 @@ def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=No
             raise ValueError('native profiler capture requires trace_dir (a fresh output directory)')
         from .profiler_capture import ProfilerCapture
         recorder = ProfilerCapture(trace_dir=trace_dir, rank=rank, world_size=world,
-                                   device=engine.device, provenance=provenance)
+                                   device=engine.device, provenance=provenance, execution_trace=execution_trace)
     elif observer == 'dispatch':
         recorder = TorchCapture(rank=rank, world_size=world, device=engine.device, provenance=provenance)
     else:
@@ -73,7 +77,10 @@ def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=No
     manifest = dict(scope='native TorchTitan rank-local train_step operators', observer=observer,
                     capture_status='complete', requested_steps=steps, warmup_steps=warmup_steps,
                     adaptations=['bounded native training loop', observer+' instrumentation'],
-                    calibration_scope='operator signatures are candidates; native kernel matching still required')
+                    execution_trace=execution_trace if observer == 'profiler' else None,
+                    calibration_scope=('GPU occurrence costs only; reusable implementation matching unavailable'
+                                       if observer == 'profiler' and not execution_trace else
+                                       'operator signatures are candidates; native kernel matching still required'))
 
     def observed_step(*args, **kwargs):
         nonlocal completed, captured
@@ -185,17 +192,31 @@ def capture(config):
     observer = config.get('observer', 'profiler' if execution == 'native' else 'dispatch')
     if observer not in ('profiler', 'dispatch'):
         raise ValueError('observer must be profiler or dispatch')
+    execution_trace = config.get('execution_trace', True)
+    if type(execution_trace) is not bool:
+        raise ValueError('execution_trace must be a boolean')
+    if observer != 'profiler' and not execution_trace:
+        raise ValueError('execution_trace=false applies only to profiler observation')
     if observer == 'profiler' and not isinstance(config.get('trace_dir'), str):
         raise ValueError('profiler observer requires trace_dir')
+    handoff = None
+    if config.get('runtime_manifest'):
+        from .runtime import check_runtime
+        handoff = check_runtime(config['runtime_manifest'], config.get('capability_report'),
+                                config.get('expected_runtime'))
+        if handoff['status'] != 'ready':
+            raise ValueError('prepare-runtime handoff is blocked: '+'; '.join(handoff['unresolved']))
     import torch
     from .torch_capture import TorchCapture
     from torch._subclasses.fake_tensor import FakeTensorMode
 
     provenance = dict(torch_version=str(torch.__version__), cuda_version=torch.version.cuda,
-                      execution=execution, observer=observer, recipe_args=argv,
+                      execution=execution, observer=observer, execution_trace=execution_trace, recipe_args=argv,
                       runtime=config.get('runtime_provenance', {}),
                       allow_tf32=torch.backends.cuda.matmul.allow_tf32,
                       float32_matmul_precision=torch.get_float32_matmul_precision())
+    if handoff is not None:
+        provenance['runtime_handoff'] = handoff
     trainer, workload = None, None
     owns_group = not torch.distributed.is_initialized()
     context = FakeTensorMode(allow_non_fake_inputs=True) if execution == 'fake' else nullcontext()
@@ -222,7 +243,7 @@ def capture(config):
             provenance['trainer'] = _source_manifest(importlib.import_module(type(trainer).__module__))
             workload = capture_trainer(trainer, hardware=config['hardware'],
                 steps=config.get('steps', 1), warmup_steps=config.get('warmup_steps', 0),
-                provenance=provenance, observer=observer, trace_dir=config.get('trace_dir'))
+                provenance=provenance, observer=observer, trace_dir=config.get('trace_dir'), execution_trace=execution_trace)
     except Exception as error:
         recorder = TorchCapture(rank=int(os.environ.get('RANK', 0)),
                                 world_size=int(os.environ.get('WORLD_SIZE', 1)), provenance=provenance)

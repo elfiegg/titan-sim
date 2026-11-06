@@ -1,12 +1,14 @@
-"""Native execution-trace capture, compatible with compiled PyTorch execution.
+"""Native Kineto capture with explicitly optional execution-trace observation.
 
-Raw execution and Chrome traces are retained. The Workload projection preserves
-leaf operations and tensor references, but deliberately declares incomplete
-stream, communication and allocation semantics. It is not a ready timing model.
+ET mode retains leaf operations and tensor references. Chrome-only mode avoids
+ExecutionTraceObserver and binds individual GPU activities to retained evidence,
+without claiming reusable operator signatures or tensor storage coverage. Both
+modes declare incomplete stream, communication and allocation semantics.
 """
 from contextlib import contextmanager
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import torch
@@ -92,10 +94,57 @@ def project_trace(trace, *, rank, step, device, offset, provenance_key):
     return nodes, list(storages.values())
 
 
+def project_chrome_trace(trace, *, rank, step, offset, artifact_sha256,
+                         provenance_key, hardware_id=None, stream_tails=None):
+    """Bind GPU occurrences without inferring missing ET shapes or identities.
+
+    Exact keys include artifact/index, so a symbol cannot silently reuse a cost
+    across different captured occurrences. This is observed timing, not an
+    executable-region implementation match or an allocation reconstruction.
+    """
+    from .native_runner import GPU_CATEGORIES, native_cost_key
+    tails = {} if stream_tails is None else stream_tails
+    events = []
+    for index, event in enumerate(trace.get('traceEvents', [])):
+        if event.get('ph') != 'X' or event.get('cat') not in GPU_CATEGORIES:
+            continue
+        if any(isinstance(event.get(k), bool) or not isinstance(event.get(k), (int, float))
+               or not math.isfinite(event[k]) or event[k] < 0 for k in ('ts', 'dur')):
+            raise ValueError('invalid Chrome GPU event timestamp/duration')
+        events.append((event['ts'], index, event))
+    nodes = []
+    for _, index, event in sorted(events, key=lambda item: (item[0], item[1])):
+        args = event.get('args', {})
+        implementation = dict(name=event['name'], category=event['cat'],
+            launch={k: args[k] for k in ('grid', 'block', 'registers per thread', 'shared memory', 'bytes') if k in args})
+        context = dict(hardware_id=hardware_id, occurrence_only=True,
+                       artifact_sha256=artifact_sha256, event_index=index,
+                       rank=rank, step=step, provenance_sha256=provenance_key)
+        binding = dict(kind='chrome_gpu_event', artifact_sha256=artifact_sha256,
+                       event_index=index, event_name=event['name'], event_category=event['cat'],
+                       implementation=implementation, context=context)
+        stream = args.get('stream')
+        stream_key = (rank, str(args.get('device', event.get('pid'))), str(stream))
+        dependencies = [tails[stream_key]] if stream is not None and stream_key in tails else []
+        node = Node(offset+len(nodes), event['name'], rank, deps=dependencies,
+            attrs=dict(operator=event['name'], step=step, stream=stream,
+                       resources=[f'gpu:{rank}:stream:{stream}'] if stream is not None else [f'gpu:{rank}'],
+                       cost_key=native_cost_key(implementation, context), native_measurement=binding,
+                       measurement_scope='occurrence_only'))
+        nodes.append(node)
+        if stream is not None:
+            tails[stream_key] = node.id
+    return nodes
+
+
 class ProfilerCapture:
     """One native profiler session per captured step; no Python dispatch mode."""
 
-    def __init__(self, *, trace_dir, rank=0, world_size=1, device='cpu', provenance=None):
+    def __init__(self, *, trace_dir, rank=0, world_size=1, device='cpu', provenance=None, execution_trace=True):
+        if type(execution_trace) is not bool:
+            raise ValueError('execution_trace must be a boolean')
+        self.execution_trace = execution_trace
+        self.stream_tails = {}
         self.root = Path(trace_dir)/f'rank{rank}'
         self.root.mkdir(parents=True, exist_ok=False)
         self.rank, self.world_size, self.device = rank, world_size, torch.device(device)
@@ -111,6 +160,14 @@ class ProfilerCapture:
             'Operator signatures still require native kernel/compiled-region matching and held-out validation.',
             'Initialization, checkpointing and work outside selected train_step calls are excluded.',
         }
+        if not execution_trace:
+            self.gaps = {
+                'Execution trace disabled explicitly; GPU costs are occurrence-only, without reusable operator/shape/scalar matching.',
+                'Chrome-only capture does not reconstruct backing allocations, tensor lifetimes, aliases or physical memory coverage.',
+                'Cross-stream dependencies, CUDA event waits and stream contention require explicit evidence.',
+                'Profiler instrumentation and shape recording can perturb timing and tensor lifetimes.',
+                'Initialization, checkpointing and work outside selected train_step calls are excluded.',
+            }
         if world_size > 1:
             self.gaps.add('Rank-local traces require all-rank communication/group/rendezvous reconciliation.')
 
@@ -128,37 +185,62 @@ class ProfilerCapture:
     def __enter__(self):
         self.et_path = self.root/f'step{self.step}.et.json'
         self.chrome_path = self.root/f'step{self.step}.chrome.json'
-        observer = torch.profiler.ExecutionTraceObserver().register_callback(str(self.et_path))
+        observer = None
+        if self.execution_trace:
+            observer = torch.profiler.ExecutionTraceObserver().register_callback(str(self.et_path))
         activities = [torch.profiler.ProfilerActivity.CPU]
         if self.device.type == 'cuda':
             activities.append(torch.profiler.ProfilerActivity.CUDA)
-        self.profiler = torch.profiler.profile(activities=activities, record_shapes=True,
-                                             profile_memory=True, execution_trace_observer=observer)
+        options = dict(activities=activities, record_shapes=True, profile_memory=True)
+        if observer is not None:
+            options['execution_trace_observer'] = observer
+        self.profiler = torch.profiler.profile(**options)
         try:
             self.profiler.__enter__()
         except BaseException:
-            observer.cleanup()
+            if observer is not None:
+                observer.cleanup()
             raise
         return self
 
     def __exit__(self, *exc):
         self.profiler.__exit__(*exc)
         self.profiler.export_chrome_trace(str(self.chrome_path))
-        trace = json.loads(self.et_path.read_text())
-        nodes, storage = project_trace(trace, rank=self.rank, step=self.step, device=self.device,
-                                      offset=len(self.nodes), provenance_key=self.provenance_key)
-        self.nodes.extend(nodes)
-        self.storage.extend(storage)
-        for path in (self.et_path, self.chrome_path):
-            self.artifacts.append(dict(path=str(path.resolve()), sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+        if self.execution_trace:
+            trace = json.loads(self.et_path.read_text())
+            nodes, storage = project_trace(trace, rank=self.rank, step=self.step, device=self.device,
+                                          offset=len(self.nodes), provenance_key=self.provenance_key)
+            self.nodes.extend(nodes)
+            self.storage.extend(storage)
+            paths = (self.et_path, self.chrome_path)
+        else:
+            raw = self.chrome_path.read_bytes()
+            nodes = project_chrome_trace(json.loads(raw), rank=self.rank, step=self.step,
+                offset=len(self.nodes), artifact_sha256=hashlib.sha256(raw).hexdigest(),
+                provenance_key=self.provenance_key, stream_tails=self.stream_tails)
+            self.nodes.extend(nodes)
+            if any(n.attrs['stream'] is None for n in nodes):
+                self.gaps.add('GPU activities without stream identity cannot establish execution dependencies.')
+            paths = (self.chrome_path,)
+        for path in paths:
+            self.artifacts.append(dict(path=str(path.resolve()), sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                                       step=self.step))
 
     def finish(self, *, hardware, manifest=None):
+        if not self.execution_trace:
+            from .native_runner import native_cost_key
+            for node in self.nodes:
+                binding = node.attrs['native_measurement']
+                binding['context']['hardware_id'] = hardware['id']
+                node.attrs['cost_key'] = native_cost_key(binding['implementation'], binding['context'])
         details = dict(manifest or {})
+        details['memory'] = dict(details.get('memory', {}), storage_evidence='unverified')
         details.update(ranks=[self.rank], world_size=self.world_size, provenance=self.provenance,
                        native_trace_artifacts=self.artifacts, model_state=self.state_observer.state,
                        state_storage_metadata=self.state_observer.storage_metadata,
                        observed_state_storage=[dict(id=s.id, size_bytes=s.size, category=s.category)
                                                for s in self.state_observer.storage],
-                       observer='pytorch_execution_trace_and_profiler',
+                       execution_trace=self.execution_trace,
+                       observer='pytorch_execution_trace_and_profiler' if self.execution_trace else 'pytorch_profiler_chrome_only',
                        unresolved=sorted(self.gaps | set(details.get('unresolved', []))))
         return Workload(self.nodes, self.storage, details, hardware)

@@ -119,6 +119,8 @@ class CostModel:
 
 
 def simulate(nodes, storage, manifest, hardware, calibration=None, strict=False):
+    from .hardware import validate_hardware
+    validate_hardware(hardware)
     validation = validate(nodes, storage, manifest)
     if strict and manifest.get('unresolved'):
         raise ValueError('incomplete workload: ' + '; '.join(manifest['unresolved']))
@@ -153,7 +155,9 @@ def simulate(nodes, storage, manifest, hardware, calibration=None, strict=False)
         durations[key] = max(model.seconds(n) for n in ns)
         resources[key] = set()
         for n in ns:
-            resources[key].update(n.attrs.get('resources', ['gpu:' + str(n.rank)]))
+            placement = manifest.get('rank_placement', {})
+            device = placement.get(str(n.rank), placement.get(n.rank, n.rank))
+            resources[key].update(n.attrs.get('resources', ['gpu:' + str(device)]))
         deps[key] = {owner[d] for n in ns for d in n.deps}
         if key in deps[key]:
             raise ValueError('dependency within communication rendezvous')
@@ -240,17 +244,33 @@ def simulate(nodes, storage, manifest, hardware, calibration=None, strict=False)
     if len(done) != len(groups):
         raise ValueError('rendezvous contraction created a cycle / unresolved dependency')
     total_tokens = manifest.get('useful_tokens', 0)
-    budget = hardware['capacity_bytes'] * (1 - hardware.get('reserve_fraction', 0.1))
+    budget = (hardware['capacity_bytes'] * (1 - hardware.get('reserve_fraction', 0.1))
+              if 'capacity_bytes' in hardware else None)
     worst = max(peak, key=peak.get) if peak else None
     incomplete = bool(manifest.get('unresolved'))
+    from .memory import assess_memory
+    node_timing = {str(n.id): timing[owner[n.id]] for n in nodes}
+    physical = assess_memory(nodes, storage, node_timing, hardware, manifest)
+    evidence_kinds = Counter()
+    cost_limitations = set()
+    for node in nodes:
+        record = (calibration or {}).get(node.attrs.get('cost_key'))
+        if record:
+            evidence_kinds[record.get('measurement_kind', 'external_catalog')] += 1
+            cost_limitations.update(record.get('limitations', []))
     return {
         'validation': validation, 'event_count': len(groups), 'seconds': now,
         'useful_tokens_per_second': total_tokens / now if now else None,
         'cost_coverage': dict(model.coverage),
-        'memory_verdict': 'inconclusive' if incomplete else ('estimated_fit' if max(peak.values(), default=0) <= budget else 'estimated_not_fit'),
+        'cost_evidence': dict(evidence_kinds),
+        'cost_limitations': sorted(cost_limitations),
+        'memory_verdict': physical['memory_verdict'],
+        'physical_memory': physical,
+        'memory_unresolved': physical['memory_unresolved'],
+        'logical_memory_verdict': 'inconclusive' if incomplete or budget is None else ('estimated_fit' if max(peak.values(), default=0) <= budget else 'estimated_not_fit'),
         'status': 'exploratory_uncalibrated' if incomplete or any(k not in ['measured_exact_key','semantic_zero'] for k in model.coverage) else 'calibrated_prediction',
         'worst_rank': worst, 'modeled_peak_bytes': dict(peak),
         'peak_time_seconds': peak_times, 'peak_categories_bytes': peak_categories,
         'budget_bytes': budget, 'unresolved': manifest.get('unresolved', []),
-        'timing': {str(n.id): timing[owner[n.id]] for n in nodes},
+        'timing': node_timing,
     }

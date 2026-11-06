@@ -1,8 +1,8 @@
 # Agent entry points
 
 Pin and record this repository's commit SHA. Read README.md and run
-`python -m titan_sim --help`. The public operations are **capture, validate,
-calibrate, simulate**. There is no `--case` or built-in model selection.
+`python -m titan_sim --help`. The public operations are **runtime-check, capture,
+prepare, validate, calibrate, simulate**. There is no `--case` or built-in model selection.
 
 - CPU simulation and structural validation require Python 3.10+ only. Do not
   install or replace PyTorch for these operations.
@@ -26,6 +26,21 @@ calibrate, simulate**. There is no `--case` or built-in model selection.
   Require explicit execution mode, use a fresh trace directory, preserve original
   model code, and write one output per rank with `{rank}` in the output path.
 - Model-specific prototypes remain in `examples/recipe_prescreen/README.md`.
+- The repository-owned `skills/simulate-torchtitan/SKILL.md` consumes the upstream
+  prepare-runtime handoff and caller-owned execution context. Runtime artifact
+  readiness is not a live container probe or full-scale recipe qualification.
+- `prepare` reconciles rank artifacts, direct GPU correlations and explicit
+  execution/storage assertions. Missing ranks, failed capture and unsupported
+  semantics remain blockers. Evidence-backed gap resolutions are labeled
+  integration assertions, not automatic empirical verification.
+- The bundled runner `titan_sim.native_runner:measure` imports matched profiler
+  GPU observations or times trusted native callable regions. Preserve that
+  distinction and exact context identities. Existing all-rank process groups are
+  supported; distributed graph/subgroup-only measurements are not.
+- `memory_verdict` now reports physical-device envelopes; `logical_memory_verdict`
+  retains the simpler storage-only assessment. Report `memory_unresolved` too.
+  `--require-memory-fit` checks capacity independently of timing `--strict`.
+  Do not mark all coverage flags true without supporting evidence.
 
 Use a compatible pinned training environment for native capture/calibration and
 preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires

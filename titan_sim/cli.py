@@ -29,9 +29,18 @@ def main(argv=None):
     capture.add_argument('--output', type=Path, required=True, help='workload JSON file')
     check = commands.add_parser('validate', help='check workload structure, not runtime fidelity or capacity')
     check.add_argument('workload', type=Path)
+    runtime = commands.add_parser('runtime-check', help='check prepare-runtime handoff artifacts without launching work')
+    runtime.add_argument('manifest', type=Path)
+    runtime.add_argument('--capability-report', type=Path)
+    runtime.add_argument('--expected', type=Path, help='expected recipe, source, image, target and required check IDs')
+    runtime.add_argument('--output', type=Path)
+    prepare = commands.add_parser('prepare', help='reconcile captured ranks and explicit execution/storage evidence')
+    prepare.add_argument('workloads', type=Path, nargs='+')
+    prepare.add_argument('--config', type=Path, help='preparation evidence JSON')
+    prepare.add_argument('--output', type=Path, required=True)
     calibrate = commands.add_parser('calibrate', help='invoke a trusted measurement runner for a workload')
     calibrate.add_argument('workload', type=Path)
-    calibrate.add_argument('--runner', required=True, help='importable.module:function; may execute GPU work')
+    calibrate.add_argument('--runner', default='titan_sim.native_runner:measure', help='importable.module:function; defaults to bundled native runner')
     calibrate.add_argument('--config', type=Path, required=True, help='runner-owned JSON configuration')
     calibrate.add_argument('--output', type=Path, required=True, help='calibration catalog JSON file')
     run = commands.add_parser('simulate', help='simulate a supplied workload with explicit costs')
@@ -39,10 +48,25 @@ def main(argv=None):
     run.add_argument('--calibration', type=Path)
     run.add_argument('--hardware', type=Path, help='explicit replacement hardware JSON; no implicit defaults')
     run.add_argument('--strict', action='store_true', help='reject declared gaps and uncalibrated operation costs')
+    run.add_argument('--require-memory-fit', action='store_true', help='return failure unless physical memory has an estimated_fit verdict')
     run.add_argument('--output', type=Path, help='full result JSON file; summary is also printed')
     args = parser.parse_args(argv)
     try:
-        if args.command == 'capture':
+        if args.command == 'runtime-check':
+            from .runtime import check_runtime
+            result = check_runtime(args.manifest, args.capability_report,
+                                   read_json(args.expected) if args.expected else None)
+            result['command'] = args.command
+            if args.output:
+                emit(result, args.output)
+        elif args.command == 'prepare':
+            from .prepare import prepare as prepare_workload
+            workload = prepare_workload(args.workloads, read_json(args.config) if args.config else None)
+            write_workload(args.output, workload)
+            result = dict(command=args.command, output=str(args.output),
+                          **validate(workload.nodes, workload.storage, workload.manifest),
+                          unresolved=workload.manifest.get('unresolved', []))
+        elif args.command == 'capture':
             from .adapters import capture as invoke
             output = str(args.output)
             if int(os.environ.get('WORLD_SIZE', 1)) > 1 and '{rank}' not in output:
@@ -65,10 +89,18 @@ def main(argv=None):
                               scope='DAG and storage references only; not execution, calibration or memory-fit validation')
             elif args.command == 'calibrate':
                 from .adapters import calibrate as invoke
-                catalog = invoke(args.runner, workload, read_json(args.config))
-                emit(catalog, args.output)
+                config = read_json(args.config)
+                distributed = int(os.environ.get('WORLD_SIZE', 1)) > 1
+                bundled = args.runner == 'titan_sim.native_runner:measure'
+                if distributed and not bundled:
+                    raise ValueError('custom distributed calibration must be coordinated outside this CLI')
+                catalog = invoke(args.runner, workload, config)
+                coordinator = not distributed or int(os.environ.get('RANK', 0)) == config.get('coordinator_rank', 0)
+                if coordinator:
+                    emit(catalog, args.output)
                 required = {n.attrs['cost_key'] for n in workload.nodes if 'cost_key' in n.attrs}
                 result = dict(command='calibrate', output=str(args.output), records=len(catalog),
+                              coordinator=coordinator,
                               missing_cost_keys=sorted(required-set(catalog)),
                               unkeyed_nonsemantic_nodes=sum(not n.attrs.get('cost_key') and not n.attrs.get('zero_cost_semantic') for n in workload.nodes))
             else:
@@ -84,6 +116,10 @@ def main(argv=None):
                 result = {k:v for k,v in result.items() if k != 'timing'}
         print(emit(result), end='')
         if args.command == 'capture' and result['capture_status'] in ('blocked', 'incomplete'):
+            return 2
+        if args.command == 'runtime-check' and result['status'] != 'ready':
+            return 2
+        if args.command == 'simulate' and args.require_memory_fit and result['memory_verdict'] != 'estimated_fit':
             return 2
     except (OSError, ValueError, TypeError, KeyError, ImportError, RuntimeError, ArithmeticError) as error:
         print(emit({'error':str(error), 'command':args.command}), end='', file=sys.stderr)

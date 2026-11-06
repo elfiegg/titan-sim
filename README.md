@@ -1,6 +1,8 @@
 # titan-sim
 
-titan-sim is an experimental tool for prescreening distributed training recipes.
+titan-sim is an experimental tool for prescreening native TorchTitan training recipes.
+It is intended to run as a simulation subagent after the training runtime has
+been prepared and qualified.
 It is designed to answer two questions before a full training run:
 
 - Will the recipe's peak memory fit on **each device**, given its placement and schedule?
@@ -26,7 +28,7 @@ benchmarks the corresponding implementations on the target hardware. The
 per-rank storage peaks.
 
 ```text
-Training recipe + original framework
+prepare-runtime handoff + native TorchTitan recipe
                    |
              Capture adapter
                    |
@@ -59,9 +61,9 @@ Capture, calibration and simulation have different responsibilities:
 
 The simulator is independent of the training framework. It reads data; it does not
 import a model or discover its kernels. Adapters and runners are explicit Python
-functions executed in the environments their frameworks require. This separation
-lets different frameworks use the same simulator without copying their model
-implementations into it.
+functions executed in the environments their frameworks require. The core remains
+framework-independent, while the supported integration workflow targets native
+TorchTitan recipes without copying model implementations into the simulator.
 
 ### The data connecting the components
 
@@ -89,15 +91,19 @@ and allocator behavior. Calibrated timing alone cannot establish memory fit.
 |---|---|
 | Workload JSON, structural checks, adapter/runner invocation | Implemented |
 | Exact-key measured cost lookup and CPU event/storage simulation | Implemented |
-| Native TorchTitan capture | Experimental adapter that observes original training steps and preserves raw traces |
-| Native trace-to-compiled-region matching and distributed workload preparation | Requires integration work; not automatic |
-| General native TorchTitan GPU measurement runner | Not bundled; provide a runner or a compatible existing catalog |
-| Complete physical-memory modeling and full-model GPU/distributed validation | Incomplete |
+| Native TorchTitan capture | Original training-step observation; ET+Kineto by default, explicit Kineto-only mode for ET-incompatible runtimes; raw evidence retained |
+| Native trace-to-GPU matching and rank preparation | Bundled `prepare`: checksum-verified direct correlations, rank merging and evidence-backed region/dependency/rendezvous assertions; ambiguous correlations and unknown waits remain gaps |
+| Native GPU measurement runner | Bundled trace-cost importer and callable-region timer; providers retain native implementations; existing all-rank process groups supported, distributed graph/subgroup-only rounds unsupported |
+| Per-device physical-memory bounds | Placement-aware lifetime envelopes, heterogeneous capacities, aliases, external allocations and lifecycle peaks; complete coverage requires explicit evidence |
+| Full-model GPU/distributed accuracy across recipes | Requires held-out validation for each claimed scope; universal configuration support is not established |
 
+The repository-owned [simulation skill](skills/simulate-torchtitan/SKILL.md) consumes
+the [prepare-runtime handoff](docs/native-torchtitan.md#before-you-start).
 You can run the framework-free example below, simulate an existing compatible
 workload, or develop a capture/calibration integration. For TorchTitan, start with
-the [native integration guide](docs/native-torchtitan.md). Its bundled capture path
-does not yet provide an automatic recipe-to-prediction pipeline.
+the [native integration guide](docs/native-torchtitan.md). The bundled pipeline preserves
+unsupported semantics as gaps; it does not automatically recover every compiled
+region, stream dependency or allocation from a trace.
 
 ## Get started
 
@@ -142,10 +148,12 @@ are not installed as part of the simulator wheel.
 
 ### Use your own workload
 
-The CLI exposes four operations:
+The CLI exposes these operations:
 
 | Command | Required inputs | Output | Where it runs |
 |---|---|---|---|
+| `runtime-check` | Runtime manifest, capability evidence and expected identities | Readiness/gaps and artifact hashes | CPU |
+| `prepare` | Rank workloads and optional preparation evidence | Combined workload with explicit semantics/gaps | CPU |
 | `capture` | Adapter reference and adapter-owned configuration | Workload JSON | Adapter's framework environment |
 | `validate` | Workload JSON | Structural counts and declared gaps | CPU |
 | `calibrate` | Workload, measurement runner and runner-owned configuration | Cost catalog and unmatched-key report | Runner's measurement environment, usually GPUs |
@@ -164,7 +172,9 @@ titan-sim simulate workload.json --calibration results/costs.json \
   --strict --output results/prediction.json
 ```
 
-The runner performs compilation, warmup, GPU timing and distributed coordination.
+The bundled runner supports trace import and executable-region timing; see
+[calibration](docs/native-calibration.md). A provider owns native region construction
+and compilation; the runner performs warmup, GPU timing and supported distributed coordination.
 The CLI invokes it and checks its returned records. A coordinating process should
 write the aggregate catalog; distributed ranks must not compete for one output
 path. GPU execution needs an authorized allocation and an explicit scheduler
@@ -184,8 +194,10 @@ Interpret these fields together:
 |---|---|
 | `seconds`, `useful_tokens_per_second` | Predicted duration and throughput for the declared workload scope; throughput requires a correct useful-token count |
 | `modeled_peak_bytes`, `worst_rank`, `peak_categories_bytes` | Per-rank storage peaks under the supplied lifetime model |
-| `memory_verdict` | Fit assessment against the hardware capacity and reserve; unresolved coverage makes it inconclusive |
+| `memory_verdict`, `physical_memory` | Per-device lower/upper envelope and capacity verdict; missing placement or memory coverage makes fit inconclusive |
+| `memory_unresolved` | Missing physical-memory evidence, distinct from timing/workload gaps |
 | `cost_coverage` | Which costs came from exact measured keys, analytical assumptions or historical proxies |
+| `cost_evidence`, `cost_limitations` | Whether exact costs are profiler observations, executable-region measurements or external records, with retained measurement limitations |
 | `unresolved` | Limitations declared by the producer or integration |
 | `status` | Whether the result used complete declared coverage and calibrated costs, or remains exploratory |
 
@@ -193,8 +205,9 @@ Interpret these fields together:
 execution, complete capture or memory sufficiency. `simulate` additionally checks
 communication rendezvous. `--strict` rejects declared gaps and uncalibrated
 nonsemantic operation costs; it cannot discover every omission in a producer's
-model. A `calibrated_prediction` is still a prediction, not a successful training
-run.
+model. A `calibrated_prediction` qualifies the declared timing model; it can still have
+inconclusive physical memory. Use `--require-memory-fit` to require a physical
+`estimated_fit` result. See the [memory contract](docs/native-memory.md).
 
 The storage peak is not automatically CUDA allocator-reserved or device-wide
 memory. Per-rank peaks describe per-device usage only when the placement model
@@ -277,6 +290,11 @@ the comparison as independent validation.
 | [`cli.py`](titan_sim/cli.py) | Commands, artifact paths and result reporting |
 | [`adapters.py`](titan_sim/adapters.py) | Explicit function invocation and catalog validation |
 | [`workload.py`](titan_sim/workload.py) | Workload contract and JSON persistence |
+| [`runtime.py`](titan_sim/runtime.py) | Prepare-runtime artifact consistency and request identity checks |
+| [`prepare.py`](titan_sim/prepare.py) | Native evidence matching, rank merging and explicit semantics |
+| [`native_runner.py`](titan_sim/native_runner.py) | Trace observations and repeated native GPU measurements |
+| [`memory.py`](titan_sim/memory.py) | Physical placement, allocation/lifecycle envelopes and fit verdicts |
+| [`hardware.py`](titan_sim/hardware.py) | Explicit capacity/rate validation; specification assumptions |
 | [`torchtitan.py`](titan_sim/torchtitan.py) | Native recipe loading and bounded trainer observation |
 | [`profiler_capture.py`](titan_sim/profiler_capture.py) | Native profiler evidence and preliminary workload projection |
 | [`torch_capture.py`](titan_sim/torch_capture.py) | Explicit fake/eager dispatch observation |
@@ -286,10 +304,9 @@ the comparison as independent validation.
 ## Scope and validation
 
 Durations use seconds, sizes use bytes, and rates use FLOP/s or bytes/s. The JSON
-schema is `recipe-prescreen-workload`, version 1. Hardware capacity is currently
-uniform per device. The simulator models declared exclusive resources and
+schema is `recipe-prescreen-workload`, version 1. Hardware supports uniform capacity or explicit per-device capacities and placement. The simulator models declared exclusive resources and
 communication rendezvous. Bandwidth sharing, compute/communication interference,
-heterogeneous capacities and dynamic scheduling need extensions or explicit
+dynamic scheduling need extensions or explicit
 approximations.
 
 Run the tests with:
