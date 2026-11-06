@@ -56,10 +56,25 @@ matched GPU events is an error. A workload containing explicit executable-region
 bindings requires execute mode for those bindings; trace mode does not fabricate
 samples for them. Preparation gaps remain unresolved after collecting costs.
 
+Trace catalog records reference the input workload's full provenance through
+`provenance.source_provenance_location` (`input workload /manifest/provenance`)
+and `provenance.source_provenance_sha256`. Retain that input workload unchanged
+alongside the catalog and raw trace artifacts. The SHA256 is computed once from
+`json.dumps(workload.manifest.get("provenance", {}), sort_keys=True,
+separators=(",", ":"), allow_nan=False).encode()`. Records may also include short
+PyTorch/CUDA version strings. They do not repeat the full recipe configuration
+per GPU occurrence. Sample checksums and individual trace artifact references
+remain separate. Trace parsing retains one artifact tree at a time; memory also
+includes the prepared workload, compact catalog and largest parsed trace.
+
 If artifacts moved, add `artifact_paths`, a mapping from their full SHA256 strings
 to their current paths. Checksums remain mandatory. Trace hardware identity is
 based on the captured workload and the caller's target attestation; retained
-`deviceProperties` are preserved where available. Importing traces does not
+`deviceProperties` remain in the original trace. Where present, each sample audit
+references them with `device_properties_location: "/deviceProperties"` and
+`device_properties_sha256`, using the same canonical JSON hash algorithm as
+source provenance. Full device property objects are not repeated per sample.
+Importing traces does not
 independently query the original GPUs. Profiler overhead and training contention
 remain part of these observations.
 

@@ -86,7 +86,8 @@ def _trace(workload, config):
     for item in workload.manifest.get('native_trace_artifacts', []):
         if isinstance(item, dict) and item.get('sha256') and item.get('path'):
             artifacts[item['sha256']] = item['path']
-    loaded, samples, sources, identities = {}, defaultdict(list), defaultdict(list), {}
+    grouped = defaultdict(list)
+    samples, sources, identities = defaultdict(list), defaultdict(list), {}
     used = set()
     for node in workload.nodes:
         if node.attrs.get('zero_cost_semantic') or 'native_measurement' not in node.attrs:
@@ -97,52 +98,75 @@ def _trace(workload, config):
         sha, index = binding.get('artifact_sha256'), binding.get('event_index')
         if type(index) is not int or index < 0 or sha not in artifacts:
             raise ValueError('GPU event binding has no retained artifact/index')
-        if sha not in loaded:
-            path = Path(config.get('artifact_paths', {}).get(sha, artifacts[sha]))
-            raw = path.read_bytes()
-            if hashlib.sha256(raw).hexdigest() != sha:
-                raise ValueError('native trace artifact checksum mismatch')
-            loaded[sha] = json.loads(raw)
-        trace = loaded[sha]
-        events = trace.get('traceEvents', [])
-        if index >= len(events):
-            raise ValueError('GPU event index outside retained trace')
-        event = events[index]
-        if event.get('ph') != 'X' or event.get('cat') not in GPU_CATEGORIES:
-            raise ValueError('bound trace event is not a completed GPU activity')
-        if (event.get('name') != binding.get('event_name') or
-                event.get('cat') != binding.get('event_category')):
-            raise ValueError('GPU event implementation identity mismatch')
-        args = event.get('args', {})
-        implementation = dict(name=event['name'], category=event['cat'],
-                              launch={k: args[k] for k in ('grid', 'block', 'registers per thread',
-                                                          'shared memory', 'bytes') if k in args})
-        if binding['implementation'] != implementation:
-            raise ValueError('GPU launch implementation differs from exact cost descriptor')
-        if binding['context'].get('hardware_id') != workload.hardware['id']:
-            raise ValueError('trace context hardware does not match workload')
-        # Chrome/Kineto complete event timestamps and durations are microseconds;
-        # displayTimeUnit only controls viewer presentation, not stored units.
-        duration = event.get('dur')
-        if isinstance(duration, bool) or not isinstance(duration, (int, float)):
-            raise ValueError('GPU event duration missing or invalid')
-        key = node.attrs['cost_key']
         if (sha, index) in used:
             raise ValueError('same GPU event charged by multiple workload nodes')
         used.add((sha, index))
-        samples[key].append(duration / 1e6)
-        identities[key] = binding
-        sources[key].append(dict(artifact_sha256=sha, event_index=index, rank=node.rank,
-                                 step=node.attrs.get('step'), event_name=event['name'],
-                                 event_category=event['cat'],
-                                 device_properties=trace.get('deviceProperties', [])))
+        if binding['context'].get('occurrence_only') is True:
+            for field, value in dict(artifact_sha256=sha, event_index=index, rank=node.rank,
+                                     step=node.attrs.get('step')).items():
+                if binding['context'].get(field) != value:
+                    raise ValueError('GPU occurrence context differs from bound '+field)
+        grouped[sha].append((node, binding, index))
+    # Parsed Chrome JSON can be much larger than the retained file. Process one
+    # artifact at a time even when workload nodes interleave ranks/steps. Never
+    # retain all-rank trace trees in a cache; only compact sample audits survive.
+    for sha, bindings in grouped.items():
+        path = Path(config.get('artifact_paths', {}).get(sha, artifacts[sha]))
+        raw = path.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != sha:
+            raise ValueError('native trace artifact checksum mismatch')
+        trace = json.loads(raw)
+        del raw
+        events = trace.get('traceEvents', [])
+        device_metadata = (dict(device_properties_sha256=_digest(trace['deviceProperties']),
+                                device_properties_location='/deviceProperties')
+                           if 'deviceProperties' in trace else {})
+        for node, binding, index in bindings:
+            if index >= len(events):
+                raise ValueError('GPU event index outside retained trace')
+            event = events[index]
+            if event.get('ph') != 'X' or event.get('cat') not in GPU_CATEGORIES:
+                raise ValueError('bound trace event is not a completed GPU activity')
+            if (event.get('name') != binding.get('event_name') or
+                    event.get('cat') != binding.get('event_category')):
+                raise ValueError('GPU event implementation identity mismatch')
+            args = event.get('args', {})
+            implementation = dict(name=event['name'], category=event['cat'],
+                                  launch={k: args[k] for k in ('grid', 'block', 'registers per thread',
+                                                              'shared memory', 'bytes') if k in args})
+            if binding['implementation'] != implementation:
+                raise ValueError('GPU launch implementation differs from exact cost descriptor')
+            if binding['context'].get('hardware_id') != workload.hardware['id']:
+                raise ValueError('trace context hardware does not match workload')
+            # Chrome/Kineto complete event timestamps and durations are microseconds;
+            # displayTimeUnit only controls viewer presentation, not stored units.
+            duration = event.get('dur')
+            if isinstance(duration, bool) or not isinstance(duration, (int, float)):
+                raise ValueError('GPU event duration missing or invalid')
+            key = node.attrs['cost_key']
+            samples[key].append(duration / 1e6)
+            identities[key] = binding
+            sources[key].append(dict(artifact_sha256=sha, event_index=index, rank=node.rank,
+                                     step=node.attrs.get('step'), event_name=event['name'],
+                                     event_category=event['cat'], **device_metadata))
+        del events, trace
     if not samples:
         raise ValueError('no matched native GPU events are available for trace costs')
+    # The source recipe/runtime manifest is retained in the input workload.
+    # Repeating it for every occurrence can inflate a catalog by gigabytes.
+    # Bind it once and keep a compact immutable-source reference in each record.
+    source_provenance = workload.manifest.get('provenance', {})
+    provenance_reference = dict(source_provenance_location='input workload /manifest/provenance',
+                                source_provenance_sha256=_digest(source_provenance))
+    for field in ('torch_version', 'cuda_version'):
+        value = source_provenance.get(field)
+        if isinstance(value, str) and len(value) <= 128:
+            provenance_reference[field] = value
     return {key: _record(workload, values, measurement_kind='profiled_gpu_activity',
                         timing_method='kineto_chrome_gpu_duration',
                         implementation=identities[key]['implementation'],
                         context=identities[key]['context'], sources=sources[key],
-                        provenance=workload.manifest.get('provenance', {}),
+                        provenance=provenance_reference,
                         profiling_overhead_accepted=True,
                         hardware_identity_basis='captured_workload_and_user_attestation',
                         limitations=['Profiler instrumentation may perturb durations.',

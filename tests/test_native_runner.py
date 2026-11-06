@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 import types
 import unittest
+import weakref
 from unittest.mock import patch
 
 from titan_sim.core import Node
@@ -103,6 +104,91 @@ class NativeRunnerTests(unittest.TestCase):
         self.workload.manifest['native_trace_artifacts'][0]['path'] = '/unavailable/original/location'
         self.config['artifact_paths'] = {self.sha: str(self.path)}
         self.assertIn(self.key, measure(self.workload, self.config))
+
+    def test_trace_processing_releases_each_parsed_artifact_before_loading_next(self):
+        second_path = Path(self.temp.name)/'step1.chrome.json'
+        second_path.write_text(json.dumps({'traceEvents': self.events, 'fixture': 'second synthetic artifact'}))
+        second_sha = hashlib.sha256(second_path.read_bytes()).hexdigest()
+        self.workload.manifest['native_trace_artifacts'].append(dict(path=str(second_path), sha256=second_sha))
+        second = copy.deepcopy(self.workload.nodes[0])
+        second.id = 1
+        second.attrs['native_measurement']['artifact_sha256'] = second_sha
+        third = copy.deepcopy(self.workload.nodes[0])
+        third.id = 2
+        third.attrs['native_measurement']['event_index'] = 2
+        # Deliberately interleave artifacts. Each is parsed once, not per node.
+        self.workload.nodes.extend([second, third])
+        class TrackedTrace(dict): pass
+        class TrackedEvents(list): pass
+        live_refs, load_count = [], []
+        original_loads = json.loads
+        def tracked_loads(raw):
+            self.assertTrue(all(reference() is None for reference in live_refs),
+                            'previous parsed Chrome tree survived into the next load')
+            trace = TrackedTrace(original_loads(raw))
+            trace['traceEvents'] = TrackedEvents(trace['traceEvents'])
+            live_refs.extend([weakref.ref(trace), weakref.ref(trace['traceEvents'])])
+            load_count.append(True)
+            return trace
+        with patch('titan_sim.native_runner.json.loads', side_effect=tracked_loads):
+            record = measure(self.workload, self.config)[self.key]
+        self.assertEqual(len(load_count), 2)
+        self.assertTrue(all(reference() is None for reference in live_refs))
+        self.assertEqual(sorted(record['samples_seconds']), [12e-6, 12e-6, 18e-6])
+        self.assertEqual(len(record['sources']), 3)
+        self.assertEqual({item['artifact_sha256'] for item in record['sources']}, {self.sha, second_sha})
+
+    def test_occurrence_only_context_cannot_claim_a_different_rank_or_index(self):
+        self.context.update(occurrence_only=True, artifact_sha256=self.sha, event_index=2,
+                            rank=0, step=None)
+        self.workload.nodes[0].attrs['cost_key'] = native_cost_key(self.implementation, self.context)
+        with self.assertRaisesRegex(ValueError, 'occurrence context.*event_index'):
+            measure(self.workload, self.config)
+
+    def test_large_source_provenance_is_hash_referenced_not_repeated_in_catalog(self):
+        source = dict(torch_version='test-runtime', cuda_version='test-cuda',
+                      recipe_config={'large_native_setting': 'distinct-source-value-'*10000})
+        self.workload.manifest['provenance'] = source
+        second = copy.deepcopy(self.workload.nodes[0])
+        second.id = 1
+        second.attrs['native_measurement']['event_index'] = 2
+        second.attrs['native_measurement']['context']['operator_cost_key'] = 'different-exact-case'
+        binding = second.attrs['native_measurement']
+        second.attrs['cost_key'] = native_cost_key(binding['implementation'], binding['context'])
+        self.workload.nodes.append(second)
+        expected_hash = hashlib.sha256(json.dumps(source, sort_keys=True, separators=(',', ':'),
+                                                  allow_nan=False).encode()).hexdigest()
+        catalog = measure(self.workload, self.config)
+        self.assertEqual(len(catalog), 2)
+        for record in catalog.values():
+            reference = record['provenance']
+            self.assertEqual(reference['source_provenance_sha256'], expected_hash)
+            self.assertEqual(reference['source_provenance_location'], 'input workload /manifest/provenance')
+            self.assertEqual(reference['torch_version'], 'test-runtime')
+            self.assertNotIn('recipe_config', reference)
+        serialized = json.dumps(catalog)
+        self.assertNotIn('distinct-source-value-', serialized)
+        self.assertLess(len(serialized), len(json.dumps(source)))
+        self.assertIs(self.workload.manifest['provenance'], source)
+        source['recipe_config']['large_native_setting'] += 'changed'
+        changed = measure(self.workload, self.config)[self.key]['provenance']['source_provenance_sha256']
+        self.assertNotEqual(changed, expected_hash)
+
+    def test_device_properties_are_auditable_hash_references_not_repeated_raw_objects(self):
+        properties = [{'name': 'synthetic GPU', 'large_fixture_field': 'device-evidence-'*10000}]
+        self.path.write_text(json.dumps({'traceEvents': self.events, 'deviceProperties': properties}))
+        sha = hashlib.sha256(self.path.read_bytes()).hexdigest()
+        self.binding['artifact_sha256'] = sha
+        self.workload.manifest['native_trace_artifacts'][0]['sha256'] = sha
+        record = measure(self.workload, self.config)[self.key]
+        source = record['sources'][0]
+        expected_hash = hashlib.sha256(json.dumps(properties, sort_keys=True, separators=(',', ':'),
+                                                  allow_nan=False).encode()).hexdigest()
+        self.assertEqual(source['artifact_sha256'], sha)
+        self.assertEqual(source['device_properties_location'], '/deviceProperties')
+        self.assertEqual(source['device_properties_sha256'], expected_hash)
+        self.assertNotIn('device_properties', source)
+        self.assertNotIn('device-evidence-', json.dumps(record))
 
     def provider(self, run=lambda: None):
         return dict(provenance={'source_revision': 'pinned-original'}, regions=[
