@@ -89,3 +89,21 @@ path. Its physical memory remains inconclusive because fake graph metadata does
 not establish complete physical allocations. See the
 [native planning guide](../native-planning.md) for supported inputs and remaining
 integration work.
+
+## Dispatch case and memory-observer implementation checks
+
+The expanded suite runs 220 tests: 219 pass and one optional native-source test
+skips with installed CPU PyTorch. With site packages disabled, 180 pass and 40
+framework-dependent tests skip. New regressions cover native boxed reductions,
+all-rank alias evidence, scalar collectives, lazy case allocation, exact selection
+and interruption-safe restoration of memory-observer hooks.
+
+Component calibration, repeatability checks and independent native-memory
+observations produce local artifacts. Keep raw samples, allocation/source
+identities and numerical experiment results with the caller's evidence bundle.
+These are separate from the generic skill and implementation checks recorded here.
+No central calibration storage service was introduced.
+
+Testing different feature interactions checks the simulator implementation's
+handling of submitted settings. It does not alter the configuration being
+screened or require a recipe search on each invocation.

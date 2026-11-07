@@ -40,7 +40,7 @@ Your recipe module + configuration function
                      |
              Prepared workload -------------------+
                      |                            |
-       Your GPU measurement runner                |
+       Bundled runner + native case provider      |
                      |                            |
              Measured cost catalog --------> CPU simulation
                                                   |
@@ -53,7 +53,9 @@ Your recipe module + configuration function
 | Capture adapter | Load the recipe, bound observed steps, retain source/config identity | Bundled `titan_sim.torchtitan:capture` |
 | Observer | Record operations and tensor evidence during selected steps | Bundled `ProfilerCapture`; fake/eager dispatch alternative available |
 | Workload preparation | Resolve compiled regions, all-rank dependencies and backing-storage lifetimes | Bundled `prepare`; direct GPU correlations and explicit evidence assertions |
-| Measurement runner | Benchmark the matched original implementations on target GPUs | Bundled trace importer and GPU timer; provide native callables for executable regions |
+| Case selection | Identify operations that can be faithfully reconstructed for measurement | `calibration-cases` selects supported dense matmuls and collectives from dispatch captures, with explicit skips |
+| Measurement runner | Benchmark the matched original implementations on target GPUs | Bundled trace importer and GPU timer; bundled providers for supported dispatch cases, custom providers for other native regions |
+| Memory observer | Check actual allocator peaks and visible state in the unchanged runtime | Optional `MemoryObserver`; observations are separate from predictions |
 | Simulator | Apply measured costs to declared execution and storage semantics | Bundled CPU simulator |
 
 `ProfilerCapture` wraps PyTorch's profiler and `ExecutionTraceObserver`. It records
@@ -62,6 +64,16 @@ It does not replace operators, disable compilation or install a Python dispatch
 mode. Its traces help identify what must be measured; it does not generate a
 calibrated cost catalog. Actual timing collection occurs in the measurement runner. It can import matched
 GPU observations from the traces or execute supplied native regions repeatedly.
+
+For an eager dispatch capture, [compute case selection](operator-cases.md) can
+generate supported matrix-multiplication measurements for one GPU.
+[Communication case selection](communication-cases.md) uses the identified group
+size and peer captures to verify shared-buffer layouts before replay on multiple
+GPUs. These are component measurements with local result files; no calibration
+storage service is needed. Unsupported operations remain in the inventory.
+Use a separate [memory observation](memory-observation.md) run to check native
+peaks: tracing can change allocation lifetimes and its peak must not be treated
+as the uninstrumented recipe's requirement.
 
 ## Before you start
 

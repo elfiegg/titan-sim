@@ -15,6 +15,13 @@ full training prediction. Trace costs come from the captured execution itself;
 executable-region costs still need a separate, unfitted full-recipe comparison.
 The runner records `independent_validation: false` in both cases.
 
+For supported native dispatch operations, bundled providers can construct the
+cases: [dense-matmul calibration on one GPU](operator-cases.md) and
+[identified collectives on a same-size group](communication-cases.md). Select
+them with `calibration-cases` before using execute mode. Custom/compiled regions
+still need a compatible provider; unsupported operations remain explicit skips.
+These workflows save local artifacts and require no central storage service.
+
 ## Import retained GPU activity
 
 First [prepare the rank-local captures](native-preparation.md). Preparation binds

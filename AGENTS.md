@@ -3,7 +3,8 @@
 Pin and record this repository's commit SHA. Read README.md and run
 `python -m titan_sim --help`. The public operations are **runtime-check, capture,
 prepare, validate, calibrate, simulate**, plus **export-plan, lower-plan** for native
-host-plan artifacts. There is no `--case` or built-in model selection.
+host-plan artifacts, and **calibration-cases** for native dispatch measurement.
+There is no `--case` or built-in model selection.
 
 - CPU simulation and structural validation require Python 3.10+ only. Do not
   install or replace PyTorch for these operations.
@@ -50,6 +51,14 @@ host-plan artifacts. There is no `--case` or built-in model selection.
   retains the simpler storage-only assessment. Report `memory_unresolved` too.
   `--require-memory-fit` checks capacity independently of timing `--strict`.
   Do not mark all coverage flags true without supporting evidence.
+- `calibration-cases` selects actual supported dispatch operations and reports
+  skips. Compute replay uses one GPU and finite synthetic operands; communication
+  uses the identified group size and explicit measured topology. Do not relabel
+  these isolated native overload costs as full-training or larger-group timings.
+- `MemoryObserver` samples the original runtime. Its peak-reset hook is opt-in,
+  preserves native resets, and is restored after observation. Measured allocator
+  reservations are lower bounds for that run, not complete physical upper bounds
+  or predictions for unseen configurations. Keep samples and calibration separate.
 
 Use a compatible pinned training environment for native capture/calibration and
 preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires

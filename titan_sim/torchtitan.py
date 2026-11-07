@@ -248,6 +248,12 @@ def capture(config):
         # Leave stdout for the CLI's JSON result. Native logging stays visible.
         with redirect_stdout(sys.stderr), context, (_fake_groups_only() if execution == 'fake' else nullcontext()):
             trainer = _build_trainer(argv, provenance)
+            # Trainer setup may select math policy. Bind calibration to the
+            # effective policy, not the process defaults before recipe loading.
+            from .operator_cases import execution_context
+            provenance.update(allow_tf32=torch.backends.cuda.matmul.allow_tf32,
+                              float32_matmul_precision=torch.get_float32_matmul_precision(),
+                              operator_execution_context=execution_context(torch))
             workload = capture_trainer(trainer, hardware=config['hardware'],
                 steps=config.get('steps', 1), warmup_steps=config.get('warmup_steps', 0),
                 provenance=provenance, observer=observer, trace_dir=config.get('trace_dir'), execution_trace=execution_trace)

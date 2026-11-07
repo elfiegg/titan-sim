@@ -48,6 +48,16 @@ def main(argv=None):
     lower.add_argument('--hardware', type=Path, required=True)
     lower.add_argument('--config', type=Path, help='explicit placement and cost/communication bindings')
     lower.add_argument('--output', type=Path, required=True)
+    cases = commands.add_parser('calibration-cases', help='select supported native dispatch cases for real GPU measurement')
+    cases.add_argument('workload', type=Path)
+    cases.add_argument('--kind', choices=('compute', 'communication'), required=True)
+    cases.add_argument('--case-id', action='append', help='restrict to identified case IDs; never change their settings')
+    cases.add_argument('--world-size', type=int, help='select identified communication groups of exactly this size')
+    cases.add_argument('--peer-workload', type=Path, action='append', default=[],
+                       help='other rank captures from the same run; required to verify in-place communication layouts')
+    cases.add_argument('--topology', type=Path, help='actual intended measurement placement; required for communication')
+    cases.add_argument('--report', type=Path, help='case inventory and explicit per-operation skips')
+    cases.add_argument('--output', type=Path, required=True, help='isolated measurement workload')
     calibrate = commands.add_parser('calibrate', help='invoke a trusted measurement runner for a workload')
     calibrate.add_argument('workload', type=Path)
     calibrate.add_argument('--runner', default='titan_sim.native_runner:measure', help='importable.module:function; defaults to bundled native runner')
@@ -127,6 +137,40 @@ def main(argv=None):
                               **validate(workload.nodes, workload.storage, workload.manifest),
                               unresolved=workload.manifest.get('unresolved', []),
                               scope='DAG and storage references only; not execution, calibration or memory-fit validation')
+            elif args.command == 'calibration-cases':
+                if args.kind == 'compute':
+                    from .operator_cases import prepare_operator_cases, operator_case_workload
+                    if args.world_size is not None or args.topology or args.peer_workload:
+                        raise ValueError('compute cases use one GPU; world-size/topology/peer-workload apply to communication')
+                    inventory = prepare_operator_cases(workload)
+                    selected = operator_case_workload(workload, args.case_id)
+                else:
+                    from .communication_cases import prepare_communication_cases, communication_case_workload
+                    if args.topology is None:
+                        raise ValueError('communication cases require --topology')
+                    if args.world_size is not None and args.world_size < 1:
+                        raise ValueError('world-size must be positive')
+                    peers = [read_workload(path) for path in args.peer_workload]
+                    inventory = prepare_communication_cases(workload, peer_workloads=peers)
+                    wanted = args.case_id
+                    if args.world_size is not None:
+                        matching = {case['case_id'] for case in inventory['cases']
+                                    if case['group_size'] == args.world_size}
+                        if wanted is not None and not set(wanted) <= matching:
+                            raise ValueError('requested case does not match the identified group size')
+                        if wanted is None:
+                            wanted = sorted(matching)
+                    selected = communication_case_workload(workload, wanted, topology=read_json(args.topology),
+                                                           peer_workloads=peers)
+                write_workload(args.output, selected)
+                if args.report:
+                    emit(inventory, args.report)
+                result = dict(command=args.command, kind=args.kind, output=str(args.output),
+                              eligible_cases=len(inventory['cases']), skipped_operations=len(inventory['skipped']),
+                              selected_cases=len({n.attrs['cost_key'] for n in selected.nodes}),
+                              measurement_world_size=selected.manifest['world_size'],
+                              source_capture_status=workload.manifest.get('capture_status', 'unspecified'),
+                              scope=selected.manifest['scope'])
             elif args.command == 'calibrate':
                 from .adapters import calibrate as invoke
                 config = read_json(args.config)

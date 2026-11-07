@@ -96,7 +96,9 @@ and allocator behavior. Calibrated timing alone cannot establish memory fit.
 | Native TorchTitan capture | Original training-step observation; ET+Kineto by default, explicit Kineto-only mode for ET-incompatible runtimes; raw evidence retained |
 | Native trace-to-GPU matching and rank preparation | Bundled `prepare`: checksum-verified direct correlations, rank merging and evidence-backed region/dependency/rendezvous assertions; ambiguous correlations and unknown waits remain gaps |
 | Native GPU measurement runner | Bundled trace-cost importer and callable-region timer; providers retain native implementations; existing all-rank process groups supported, distributed graph/subgroup-only rounds unsupported |
+| Identified compute/communication calibration | Bundled native dense-matmul and collective providers select supported dispatch cases; one GPU for compute, an existing same-size group for communication; explicit skip inventory and local cost artifacts |
 | Per-device physical-memory bounds | Placement-aware lifetime envelopes, heterogeneous capacities, aliases, external allocations and lifecycle peaks; complete coverage requires explicit evidence |
+| Real native memory observation | Allocator peaks, boundary snapshots and visible state inventories, including optional native peak-reset tracking; observations do not establish unseen-configuration fit |
 | Full-model GPU/distributed accuracy across recipes | Requires held-out validation for each claimed scope; universal configuration support is not established |
 
 The repository-owned [simulation skill](skills/simulate-torchtitan/SKILL.md) consumes
@@ -161,6 +163,7 @@ The CLI exposes these operations:
 | `prepare` | Rank workloads and optional preparation evidence | Combined workload with explicit semantics/gaps | CPU |
 | `export-plan` | Prepared native objects through a trusted adapter, or native recipe export configuration | Versioned schedule/graph plan | Original framework environment; observation may execute native steps |
 | `lower-plan` | Native pipeline-group plans, hardware and explicit bindings | Workload with schedule and logical storage lifetimes | CPU |
+| `calibration-cases` | Native dispatch workload; actual placement for communication | Isolated measurement workload and optional eligible/skipped inventory | CPU |
 | `capture` | Adapter reference and adapter-owned configuration | Workload JSON | Adapter's framework environment |
 | `validate` | Workload JSON | Structural counts and declared gaps | CPU |
 | `calibrate` | Workload, measurement runner and runner-owned configuration | Cost catalog and unmatched-key report | Runner's measurement environment, usually GPUs |
@@ -182,6 +185,11 @@ titan-sim simulate workload.json --calibration results/costs.json \
 The bundled runner supports trace import and executable-region timing; see
 [calibration](docs/native-calibration.md). A provider owns native region construction
 and compilation; the runner performs warmup, GPU timing and supported distributed coordination.
+For supported captured cases, use the bundled [dense-matmul provider](docs/operator-cases.md)
+on one GPU or the [communication provider](docs/communication-cases.md) on the
+identified group size. [Memory observation](docs/memory-observation.md) is a separate
+instrumented run. Central calibration storage is optional; retained local
+workloads, inventories and sample catalogs are sufficient for these operations.
 The CLI invokes it and checks its returned records. A coordinating process should
 write the aggregate catalog; distributed ranks must not compete for one output
 path. GPU execution needs an authorized allocation and an explicit scheduler
@@ -302,6 +310,8 @@ the comparison as independent validation.
 | [`native_plan.py`](titan_sim/native_plan.py), [`plan_capture.py`](titan_sim/plan_capture.py) | Native plan inspection, artifact validation and bounded preparation observation |
 | [`plan_lowering.py`](titan_sim/plan_lowering.py), [`plan_memory.py`](titan_sim/plan_memory.py) | Native action dependencies and graph-backed logical storage lifetimes |
 | [`native_runner.py`](titan_sim/native_runner.py) | Trace observations and repeated native GPU measurements |
+| [`operator_cases.py`](titan_sim/operator_cases.py), [`communication_cases.py`](titan_sim/communication_cases.py) | Eligible native overload cases and replay providers with exact metadata/runtime context |
+| [`memory_observer.py`](titan_sim/memory_observer.py) | Native process allocator peaks, sampled device use and state inventories |
 | [`memory.py`](titan_sim/memory.py) | Physical placement, allocation/lifecycle envelopes and fit verdicts |
 | [`hardware.py`](titan_sim/hardware.py) | Explicit capacity/rate validation; specification assumptions |
 | [`torchtitan.py`](titan_sim/torchtitan.py) | Native recipe loading and bounded trainer observation |
