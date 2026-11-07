@@ -1,8 +1,10 @@
 # Agent entry points
 
 Pin and record this repository's commit SHA. Read README.md and run
-`python -m titan_sim --help`. The public operations are **capture, validate,
-calibrate, simulate**. There is no `--case` or built-in model selection.
+`python -m titan_sim --help`. The public operations are **runtime-check, capture,
+prepare, validate, calibrate, simulate**, plus **export-plan, lower-plan** for native
+host-plan artifacts, and **calibration-cases** for native dispatch measurement.
+There is no `--case` or built-in model selection.
 
 - CPU simulation and structural validation require Python 3.10+ only. Do not
   install or replace PyTorch for these operations.
@@ -26,6 +28,37 @@ calibrate, simulate**. There is no `--case` or built-in model selection.
   Require explicit execution mode, use a fresh trace directory, preserve original
   model code, and write one output per rank with `{rank}` in the output path.
 - Model-specific prototypes remain in `examples/recipe_prescreen/README.md`.
+- `export-plan` reads prepared native schedules/graphs or observes lazy graph
+  preparation through an explicit native recipe adapter; `observe_steps` executes
+  original training with its configured side effects. Missing eager/compiled
+  APIs remain unsupported. Never switch the submitted trainer or settings.
+- `lower-plan` expands supported native actions and logical storage lifetimes
+  from one complete pipeline group. It does not infer a global DP/TP/EP mesh,
+  select compiled kernels, or establish physical allocation coverage. Read
+  `docs/native-planning.md`; unknown physical memory remains inconclusive.
+- The repository-owned `skills/simulate-torchtitan/SKILL.md` consumes the upstream
+  prepare-runtime handoff and caller-owned execution context. Runtime artifact
+  readiness is not a live container probe or full-scale recipe qualification.
+- `prepare` reconciles rank artifacts, direct GPU correlations and explicit
+  execution/storage assertions. Missing ranks, failed capture and unsupported
+  semantics remain blockers. Evidence-backed gap resolutions are labeled
+  integration assertions, not automatic empirical verification.
+- The bundled runner `titan_sim.native_runner:measure` imports matched profiler
+  GPU observations or times trusted native callable regions. Preserve that
+  distinction and exact context identities. Existing all-rank process groups are
+  supported; distributed graph/subgroup-only measurements are not.
+- `memory_verdict` now reports physical-device envelopes; `logical_memory_verdict`
+  retains the simpler storage-only assessment. Report `memory_unresolved` too.
+  `--require-memory-fit` checks capacity independently of timing `--strict`.
+  Do not mark all coverage flags true without supporting evidence.
+- `calibration-cases` selects actual supported dispatch operations and reports
+  skips. Compute replay uses one GPU and finite synthetic operands; communication
+  uses the identified group size and explicit measured topology. Do not relabel
+  these isolated native overload costs as full-training or larger-group timings.
+- `MemoryObserver` samples the original runtime. Its peak-reset hook is opt-in,
+  preserves native resets, and is restored after observation. Measured allocator
+  reservations are lower bounds for that run, not complete physical upper bounds
+  or predictions for unseen configurations. Keep samples and calibration separate.
 
 Use a compatible pinned training environment for native capture/calibration and
 preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires

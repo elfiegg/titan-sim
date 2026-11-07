@@ -116,6 +116,45 @@ class GenericCLITests(unittest.TestCase):
                     self.assertEqual(code, 0, stderr)
                     self.assertTrue((root/'workload.rank2.json').is_file())
 
+    def test_memory_fit_requirement_keeps_diagnostic_prediction(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            workload=Workload([Node(1,'known',0,attrs={'zero_cost_semantic':True})],[],
+                              {'ranks':[0],'unresolved':[]},{'id':'test','capacity_bytes':1024})
+            write_workload(root/'workload.json',workload)
+            code,stdout,stderr=self.invoke('simulate',root/'workload.json','--strict',
+                                          '--require-memory-fit','--output',root/'result.json')
+            self.assertEqual(code,2,stderr)
+            self.assertEqual(json.loads(stdout)['memory_verdict'],'inconclusive')
+            self.assertTrue(json.loads((root/'result.json').read_text())['memory_unresolved'])
+
+    def test_prepare_combines_rank_artifacts_with_explicit_placement(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            for rank in (0,1):
+                write_workload(root/f'rank{rank}.json',Workload([Node(1,'event',rank,
+                    attrs={'zero_cost_semantic':True})],[],
+                    {'ranks':[rank],'world_size':2,'unresolved':[]},
+                    {'id':'test','capacity_bytes':1024}))
+            (root/'prepare.json').write_text(json.dumps({'rank_placement':{'0':'a','1':'b'},'useful_tokens':512}))
+            code,stdout,stderr=self.invoke('prepare',root/'rank0.json',root/'rank1.json',
+                '--config',root/'prepare.json','--output',root/'prepared.json')
+            self.assertEqual(code,0,stderr)
+            self.assertEqual(json.loads(stdout)['ranks'],2)
+            result=json.loads((root/'prepared.json').read_text())
+            self.assertEqual(result['manifest']['useful_tokens'],512)
+            self.assertEqual(result['manifest']['rank_placement'],{'0':'a','1':'b'})
+
+    def test_runtime_check_blocked_retains_report(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            (root/'manifest.json').write_text(json.dumps({'schema_version':1,'status':'partial',
+                'codebase':{},'recipe':{},'target':{},'validation':{}}))
+            code,stdout,stderr=self.invoke('runtime-check',root/'manifest.json','--output',root/'check.json')
+            self.assertEqual(code,2,stderr)
+            self.assertEqual(json.loads(stdout)['status'],'blocked')
+            self.assertTrue((root/'check.json').is_file())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,9 +10,17 @@ parallelization. titan-sim observes training and translates evidence into its
 framework-independent workload format. You do not write another model forward
 pass for the simulator.
 
+There are two evidence paths. This guide covers observing executed training steps.
+The [native planning guide](native-planning.md) covers extracting already-built
+host schedules and stage graphs, then deriving supported dependencies and logical
+storage lifetimes. Plan export can also observe lazy graph preparation during
+bounded native steps. Neither path changes the submitted recipe's settings.
+
 The native capture adapter is experimental. It can retain original training
 traces, but turning those traces into a complete distributed prediction still
-requires implementation matching, workload preparation and a measurement runner.
+requires evidence for unsupported implementation matching, synchronization and
+allocation semantics. Bundled preparation and calibration tools handle the
+explicitly supported cases.
 This guide identifies those boundaries before showing the commands.
 
 ## How the integration fits together
@@ -32,7 +40,7 @@ Your recipe module + configuration function
                      |
              Prepared workload -------------------+
                      |                            |
-       Your GPU measurement runner                |
+       Bundled runner + native case provider      |
                      |                            |
              Measured cost catalog --------> CPU simulation
                                                   |
@@ -44,17 +52,62 @@ Your recipe module + configuration function
 | Recipe and trainer | Define and execute training | Your original TorchTitan environment |
 | Capture adapter | Load the recipe, bound observed steps, retain source/config identity | Bundled `titan_sim.torchtitan:capture` |
 | Observer | Record operations and tensor evidence during selected steps | Bundled `ProfilerCapture`; fake/eager dispatch alternative available |
-| Workload preparation | Resolve compiled regions, all-rank dependencies and backing-storage lifetimes | Integration work; no automatic native preparation command |
-| Measurement runner | Benchmark the matched original implementations on target GPUs | You provide it; no general native TorchTitan runner is bundled |
+| Workload preparation | Resolve compiled regions, all-rank dependencies and backing-storage lifetimes | Bundled `prepare`; direct GPU correlations and explicit evidence assertions |
+| Case selection | Identify operations that can be faithfully reconstructed for measurement | `calibration-cases` selects supported dense matmuls and collectives from dispatch captures, with explicit skips |
+| Measurement runner | Benchmark the matched original implementations on target GPUs | Bundled trace importer and GPU timer; bundled providers for supported dispatch cases, custom providers for other native regions |
+| Memory observer | Check actual allocator peaks and visible state in the unchanged runtime | Optional `MemoryObserver`; observations are separate from predictions |
 | Simulator | Apply measured costs to declared execution and storage semantics | Bundled CPU simulator |
 
 `ProfilerCapture` wraps PyTorch's profiler and `ExecutionTraceObserver`. It records
 CPU activity and, on CUDA, GPU activity, with shape and memory profiling enabled.
 It does not replace operators, disable compilation or install a Python dispatch
 mode. Its traces help identify what must be measured; it does not generate a
-calibrated cost catalog. Actual calibration occurs in the measurement runner.
+calibrated cost catalog. Actual timing collection occurs in the measurement runner. It can import matched
+GPU observations from the traces or execute supplied native regions repeatedly.
+
+For an eager dispatch capture, [compute case selection](operator-cases.md) can
+generate supported matrix-multiplication measurements for one GPU.
+[Communication case selection](communication-cases.md) uses the identified group
+size and peer captures to verify shared-buffer layouts before replay on multiple
+GPUs. These are component measurements with local result files; no calibration
+storage service is needed. Unsupported operations remain in the inventory.
+Use a separate [memory observation](memory-observation.md) run to check native
+peaks: tracing can change allocation lifetimes and its peak must not be treated
+as the uninstrumented recipe's requirement.
 
 ## Before you start
+
+This workflow runs after [prepare-runtime](https://gitlab-master.nvidia.com/elfieg/torchtitan-gpu-agent-suite/-/tree/main/skills/prepare-runtime).
+The [simulation subagent skill](../skills/simulate-torchtitan/SKILL.md) consumes its
+artifact handoff and the caller's execution context. It does not build an image,
+choose a cluster or allocate GPUs. Stage the runtime manifest, dependency plan,
+capability report and raw evidence where the chosen command environment can read them.
+
+```sh
+titan-sim runtime-check runtime-manifest.json --expected expected-runtime.json \
+  --output results/runtime-check.json
+```
+
+`expected-runtime.json` is an explicit request binding, for example:
+
+```json
+{
+  "codebase_commit": "replace-with-full-pinned-TorchTitan-commit",
+  "image_identity": "sha256:replace-with-final-image-hash",
+  "required_checks": ["recipe-training"]
+}
+```
+
+Replace the example check ID with required IDs in your capability contract. You
+can also bind the complete `recipe` object or selected `target` fields. New
+features or changed precision/communication paths need relevant capability
+qualification; a successful debug case alone does not qualify every recipe.
+`runtime-check` checks schema, image/source/request consistency, required check
+results and readable evidence, retaining hashes. Its `ready` status describes the
+handoff artifacts, not the currently running process or full-scale readiness.
+Verify the actual image, interpreter, code and hardware through the supplied
+execution context. Passing `runtime_manifest`, `capability_report` and optional
+`expected_runtime` in capture configuration repeats this check before recipe loading.
 
 Use the existing pinned training environment. Install titan-sim there without
 replacing PyTorch, and make the TorchTitan checkout, recipe module, tokenizer,
@@ -67,6 +120,7 @@ Choose how to collect evidence:
 | Mode | Configuration | What it provides |
 |---|---|---|
 | Native profiler capture | `execution: "native"`, `observer: "profiler"` | Evidence from real training on the recipe's devices; default native path |
+| Kineto-only profiler capture | Same, plus `execution_trace: false` | Retained Chrome GPU activities when ET is incompatible; occurrence-specific costs, no ET tensor/storage reconstruction |
 | Fake dispatch capture | `execution: "fake"`, `observer: "dispatch"`, native fake backend arguments | Logical operations and storage metadata for supported fake execution; no GPU timings |
 | Native eager dispatch capture | `execution: "native"`, `observer: "dispatch"` | Dispatch and alias debugging; can conflict with compiled execution |
 
@@ -77,6 +131,16 @@ limit; the initial GPU test policy is five minutes. The adapter bounds completed
 steps, not wall time, and does not allocate resources. Disable any second profiler
 in the recipe explicitly and record the change: nested profiler sessions are not
 supported.
+
+Execution-trace support must be qualified separately from ordinary training.
+Some native rematerialization paths use metadata placeholders that reject data
+pointer access; an incompatible `ExecutionTraceObserver` can crash in native
+code. An explicit `execution_trace: false` disables that observer while retaining
+Kineto CPU/CUDA profiling and the original recipe. This is never an automatic
+fallback. It preserves fewer semantics: GPU costs are bound to individual trace
+occurrences and cannot be reused as shape/implementation matches across cases.
+Projected storage remains unverified. Read the
+[calibration limitations](native-calibration.md) before using those observations.
 
 ## 1. Capture your native recipe
 
@@ -139,6 +203,9 @@ For rank 0 and the first captured step, the output contains:
 | `native-traces/rank0/step0.et.json` | PyTorch execution-trace hierarchy and native input/output descriptors |
 | `native-traces/rank0/step0.chrome.json` | Profiling timeline, including CUDA kernels/runtime events when available |
 
+With `execution_trace: false`, only the Chrome trace is produced. The preliminary
+workload contains GPU occurrences, without execution-trace tensor metadata.
+
 Retain the raw traces alongside the workload. The JSON projection does not replace
 them. `capture_status=complete` means the requested steps returned and operator
 events were recorded, not that simulation semantics are complete. `blocked` or
@@ -155,29 +222,38 @@ validate the real execution or establish that the model fits.
 
 ## 2. Prepare the prediction workload
 
-This is the first integration boundary: native capture does not automatically
-produce a prediction-ready distributed workload. Use the retained evidence to
-resolve three things:
+Combine all captured ranks on CPU. `prepare` discovers checksum-recorded Chrome
+traces and lowers unambiguous GPU correlations. An optional evidence file supplies
+rank placement, the unique global token count, and execution/storage assertions:
 
-| Required semantics | Why the raw projection is insufficient |
-|---|---|
-| Executable regions and cost keys | A trace leaf is not necessarily a GPU kernel. Match original operators or compiled regions using hierarchy and Chrome correlations; charge a fused region once. |
-| Distributed execution | Host issue order does not establish stream/event dependencies, pipeline waits or collective rendezvous. Reconcile every rank and its communication participants. |
-| Storage lifetimes | Observed tensor extents are not complete backing allocations or free times. Resolve aliases, strided spans, saved activations, workspaces and retained graph storage. |
+```sh
+titan-sim prepare results/capture-001/workload.rank*.json \
+  --config preparation.json --output results/prepared/workload.json
+```
 
-The projection retains observed extents to step end and records model state
-separately without adding overlapping descriptions. It does not reconstruct
-allocator reservation, native buffers or device-wide usage. Record unknowns in
-`unresolved`; remove a gap only when evidence resolves it. Initialization and
-checkpoint operations outside selected steps require separate coverage.
+Start `preparation.json` with facts from the actual recipe and target. For a
+**two-rank example only**, where a completed update processes 4096 unique tokens:
 
-The remaining commands use `results/prepared/workload.json` to mean the artifact
-you produce through this preparation. **There is no bundled command for this
-step.** A partial workload can be used to collect costs, but it remains unsuitable
-for strict prediction while its gaps are unresolved.
+```json
+{
+  "useful_tokens": 4096,
+  "rank_placement": {"0": "gpu0", "1": "gpu1"}
+}
+```
 
-Set the actual target hardware before calibration. Given a hardware description
-you supply in `target-hardware.json`:
+Match placement IDs to your hardware description. Do not sum model-parallel
+copies as unique tokens. The [preparation guide](native-preparation.md) explains
+multi-launch matching, compiled-region assertions, communication rendezvous,
+backing-storage reconciliation and audited gap resolutions.
+
+Preparation does not infer CUDA event waits from host timestamps. An unsupported
+correlation, missing rank, unknown allocation or failed capture stays visible.
+Explicit integration assertions retain their evidence and do not become empirical
+proof. Full physical-memory coverage needs the [memory contract](native-memory.md),
+including graph pools, allocator slack, external buffers and lifecycle peaks.
+
+Set the actual target identity and capacities before collecting costs. If capture
+used the `capture-only` sentinel, replace the metadata explicitly:
 
 ```python
 import json
@@ -189,52 +265,52 @@ workload.hardware = json.loads(Path("target-hardware.json").read_text())
 write_workload("results/prepared/workload.target.json", workload)
 ```
 
-This edits metadata only. The description needs a meaningful hardware `id`, actual
-per-device `capacity_bytes`, and any rate/resource assumptions used by your model.
-`calibrate` checks against the workload's hardware ID and has no `--hardware`
-option. The runner must verify that the real devices and topology match the target.
+This metadata change cannot transfer recorded GPU timings to another architecture.
+For trace-cost collection, prepare with the actual captured target identity from
+the outset: exact trace keys include that identity. New hardware requires matching
+measurements or an explicitly analytical model. See [hardware inputs](hardware.md).
 
 ## 3. Measure component costs on GPUs
 
-Calibration answers how long each matched implementation takes on the target.
-It requires a measurement runner you provide, with this contract:
+The bundled `titan_sim.native_runner:measure` supports two paths:
 
-```python
-def measure_workload(workload, config) -> dict:
-    ...  # Measure original executable implementations and return a cost catalog.
+| Path | What happens | Appropriate evidence claim |
+|---|---|---|
+| `mode: "trace"` | Read retained GPU events matched during preparation; no new GPU work | Instrumented observations of the captured run |
+| `mode: "execute"` | Warm up and repeatedly time original native callables from a trusted provider | Measured component costs on the recorded devices/runtime |
+
+For trace collection, create `measurement.json` with the exact captured hardware
+ID and explicit acknowledgement of profiling overhead:
+
+```json
+{
+  "mode": "trace",
+  "hardware_id": "your-captured-target",
+  "accept_profiler_overhead": true
+}
 ```
 
-The runner owns representative input construction, compilation, warmup, repeated
-GPU timing and distributed coordination. Preserve precision, layout, scalar
-settings, compilation and graph-replay mode. Time completion on all relevant
-streams, not just host dispatch. Communication measurements must use the intended
-groups, message sizes, reduction semantics and placement. Isolated timings alone
-do not establish training overlap or contention.
-
-With your runner in the importable module `my_project.measure`, invoke:
+Run the coordinator:
 
 ```sh
 titan-sim calibrate results/prepared/workload.target.json \
-  --runner my_project.measure:measure_workload \
+  --runner titan_sim.native_runner:measure \
   --config measurement.json --output results/calibration-001/costs.json
 ```
 
-This is a template, not a bundled native benchmark. `measurement.json` follows
-your runner's schema. The call path is `cli.main` -> `adapters.calibrate` ->
-**your runner's measurements** -> catalog validation and writing. Neither the
-CLI nor `ProfilerCapture` performs those measurements on the runner's behalf.
+For independent component timing, supply an executable-region provider in the
+original training environment. The runner owns repeated CUDA timing; the provider
+owns original implementation selection, representative inputs and compilation.
+It supports existing all-rank process groups and single-rank graph replay.
+Distributed graph replay and subgroup-only measurement rounds are currently
+unsupported. See the [calibration guide](native-calibration.md) for runnable
+provider and launcher examples.
 
-The returned catalog contains measured durations in seconds, keyed by workload
-`cost_key`, with hardware identity, raw samples and sample checksums. Follow the
-[calibration record contract](../README.md#calibration-record) and retain the
-timing method, source/runtime identity, warmup, sample count and chosen statistic.
-Profiler durations require implementation matching and assessment of profiling
-overhead before they can be used as costs.
-
-Run inside an authorized GPU allocation. For a distributed runner, one coordinating
-process writes the aggregate catalog. Inspect `missing_cost_keys` and
-`unkeyed_nonsemantic_nodes`: successful command completion can still leave a
-partial catalog. A checksum validates consistency, not measurement quality.
+The CLI calls `adapters.calibrate` → the selected runner → catalog validation and
+writing. Inspect `missing_cost_keys` and `unkeyed_nonsemantic_nodes`: collection
+can succeed with a partial catalog. A complete catalog does not resolve missing
+execution or memory semantics. Trace costs remain instrumentation-dependent and
+cannot be reused as held-out validation of the same run.
 
 ## 4. Simulate and check the prediction
 
@@ -260,7 +336,9 @@ or explicit allowances and preserve uncertainty. Allocated memory is contained i
 reserved memory, so do not add them.
 
 Read `status`, `cost_coverage`, `unresolved`, `memory_verdict` and worst-rank storage
-alongside predicted step time. See [result interpretation](../README.md#read-the-result).
+and `memory_unresolved` alongside predicted step time. Add
+`--require-memory-fit` to return a nonzero exit status unless physical memory is
+`estimated_fit`. Timing `--strict` alone does not establish memory completeness. See [result interpretation](../README.md#read-the-result).
 Freeze the workload, costs, assumptions and prediction, then compare with a
 separate held-out training run. Measure throughput without intrusive memory
 profiling, and compare memory over the relevant lifecycle. Do not fit costs to
