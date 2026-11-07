@@ -20,9 +20,11 @@ parallelism and other settings. The simulator needs a different description:
 which operations run on which ranks (participating processes), what they depend
 on, which resources they use, and when their backing storage must stay alive.
 
-A **capture adapter** connects these descriptions. It observes the framework or
-constructs a workload explicitly. Framework-specific preparation then resolves
-the execution and storage details needed by the model. A **measurement runner**
+Two native paths connect these descriptions. A **plan exporter** reads schedules
+and stage graphs that the selected runtime has already constructed; plan lowering
+derives supported dependencies and logical storage lifetimes. A **capture adapter**
+observes actual execution; trace preparation resolves its supported evidence.
+Both preserve unsupported semantics as explicit gaps. A **measurement runner**
 benchmarks the corresponding implementations on the target hardware. The
 **simulator** uses the resulting costs and workload to calculate event times and
 per-rank storage peaks.
@@ -30,11 +32,9 @@ per-rank storage peaks.
 ```text
 prepare-runtime handoff + native TorchTitan recipe
                    |
-             Capture adapter
+       Native plans or observed execution
                    |
-        Captured workload + evidence
-                   |
-      Resolve execution/storage semantics
+       Export/lower or capture/prepare
                    |
              Prepared workload ----------------------+
                    |                                 |
@@ -53,6 +53,7 @@ Capture, calibration and simulation have different responsibilities:
 
 | Component | Question it answers | Produces |
 |---|---|---|
+| Plan export and lowering | What native schedule, stage graphs and logical storage lifetimes are already available? | A workload derived from supported native artifacts, with remaining gaps |
 | Capture adapter | What does this recipe execute, and what evidence can we observe? | Workload records and framework-specific evidence |
 | Workload preparation | How do those observations map to executable regions, distributed dependencies and storage lifetimes? | A workload with explicit semantics and remaining gaps |
 | Measurement runner | How long do these implementations take on the target hardware? | A catalog of measured durations |
@@ -91,6 +92,7 @@ and allocator behavior. Calibrated timing alone cannot establish memory fit.
 |---|---|
 | Workload JSON, structural checks, adapter/runner invocation | Implemented |
 | Exact-key measured cost lookup and CPU event/storage simulation | Implemented |
+| Native host-plan extraction and lowering | Supported native action tables, FX graphs, alias/state metadata and microbatch lifetimes; one pipeline-group merge; no universal offline graph construction or complete physical-memory claim |
 | Native TorchTitan capture | Original training-step observation; ET+Kineto by default, explicit Kineto-only mode for ET-incompatible runtimes; raw evidence retained |
 | Native trace-to-GPU matching and rank preparation | Bundled `prepare`: checksum-verified direct correlations, rank merging and evidence-backed region/dependency/rendezvous assertions; ambiguous correlations and unknown waits remain gaps |
 | Native GPU measurement runner | Bundled trace-cost importer and callable-region timer; providers retain native implementations; existing all-rank process groups supported, distributed graph/subgroup-only rounds unsupported |
@@ -104,6 +106,9 @@ workload, or develop a capture/calibration integration. For TorchTitan, start wi
 the [native integration guide](docs/native-torchtitan.md). The bundled pipeline preserves
 unsupported semantics as gaps; it does not automatically recover every compiled
 region, stream dependency or allocation from a trace.
+For already-constructed native schedules and graph metadata, use the
+[native planning workflow](docs/native-planning.md). Its observation mode preserves
+the original recipe; it does not convert eager training to GraphTrainer.
 
 ## Get started
 
@@ -154,6 +159,8 @@ The CLI exposes these operations:
 |---|---|---|---|
 | `runtime-check` | Runtime manifest, capability evidence and expected identities | Readiness/gaps and artifact hashes | CPU |
 | `prepare` | Rank workloads and optional preparation evidence | Combined workload with explicit semantics/gaps | CPU |
+| `export-plan` | Prepared native objects through a trusted adapter, or native recipe export configuration | Versioned schedule/graph plan | Original framework environment; observation may execute native steps |
+| `lower-plan` | Native pipeline-group plans, hardware and explicit bindings | Workload with schedule and logical storage lifetimes | CPU |
 | `capture` | Adapter reference and adapter-owned configuration | Workload JSON | Adapter's framework environment |
 | `validate` | Workload JSON | Structural counts and declared gaps | CPU |
 | `calibrate` | Workload, measurement runner and runner-owned configuration | Cost catalog and unmatched-key report | Runner's measurement environment, usually GPUs |
@@ -292,6 +299,8 @@ the comparison as independent validation.
 | [`workload.py`](titan_sim/workload.py) | Workload contract and JSON persistence |
 | [`runtime.py`](titan_sim/runtime.py) | Prepare-runtime artifact consistency and request identity checks |
 | [`prepare.py`](titan_sim/prepare.py) | Native evidence matching, rank merging and explicit semantics |
+| [`native_plan.py`](titan_sim/native_plan.py), [`plan_capture.py`](titan_sim/plan_capture.py) | Native plan inspection, artifact validation and bounded preparation observation |
+| [`plan_lowering.py`](titan_sim/plan_lowering.py), [`plan_memory.py`](titan_sim/plan_memory.py) | Native action dependencies and graph-backed logical storage lifetimes |
 | [`native_runner.py`](titan_sim/native_runner.py) | Trace observations and repeated native GPU measurements |
 | [`memory.py`](titan_sim/memory.py) | Physical placement, allocation/lifecycle envelopes and fit verdicts |
 | [`hardware.py`](titan_sim/hardware.py) | Explicit capacity/rate validation; specification assumptions |

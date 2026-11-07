@@ -68,3 +68,24 @@ external allocations and separate initialization/checkpoint peaks.
 Use bounded, held-out validation for each additional scope. Do not convert this
 one successful capture into a model whitelist or a claim that all recipes are
 fully modeled.
+
+## Native host-plan implementation checks
+
+The subsequent host-plan integration adds `export-plan` and `lower-plan` without
+changing the earlier GPU evidence. Its full suite runs 161 tests: 160 pass and
+one optional TorchTitan source test skips in the installed CPU PyTorch 2.15
+environment. Without PyTorch, 135 pass and 26 framework-dependent tests skip.
+
+New checks exercise actual PyTorch schedule generation and communication action
+lowering, actual FX/FakeTensor metadata, aliases, saved-value overlap across
+microbatches, state and asynchronous completion lifetimes, joint action bindings,
+nonfinite scalar serialization, artifact checksums and the CLI path. Native
+preparation observation is checked for bounded steps, restored methods, preserved
+updates and deferred observer errors. GraphTrainer-shaped object contracts in
+these tests are not a full native GraphTrainer execution.
+
+No additional GPU run or held-out prediction accuracy result is claimed for this
+path. Its physical memory remains inconclusive because fake graph metadata does
+not establish complete physical allocations. See the
+[native planning guide](../native-planning.md) for supported inputs and remaining
+integration work.

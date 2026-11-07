@@ -38,6 +38,16 @@ def main(argv=None):
     prepare.add_argument('workloads', type=Path, nargs='+')
     prepare.add_argument('--config', type=Path, help='preparation evidence JSON')
     prepare.add_argument('--output', type=Path, required=True)
+    export = commands.add_parser('export-plan', help='export prepared native schedules and graphs through a trusted adapter')
+    export.add_argument('--adapter', default='titan_sim.plan_capture:export_recipe',
+                        help='importable.module:function; defaults to native TorchTitan exporter')
+    export.add_argument('--config', type=Path, required=True)
+    export.add_argument('--output', type=Path, required=True)
+    lower = commands.add_parser('lower-plan', help='lower native plan actions and graph storage into a CPU workload')
+    lower.add_argument('plans', type=Path, nargs='+', help='rank-local exports from one native pipeline group')
+    lower.add_argument('--hardware', type=Path, required=True)
+    lower.add_argument('--config', type=Path, help='explicit placement and cost/communication bindings')
+    lower.add_argument('--output', type=Path, required=True)
     calibrate = commands.add_parser('calibrate', help='invoke a trusted measurement runner for a workload')
     calibrate.add_argument('workload', type=Path)
     calibrate.add_argument('--runner', default='titan_sim.native_runner:measure', help='importable.module:function; defaults to bundled native runner')
@@ -59,6 +69,36 @@ def main(argv=None):
             result['command'] = args.command
             if args.output:
                 emit(result, args.output)
+        elif args.command == 'export-plan':
+            from .adapters import resolve
+            from .native_plan import validate_plan, write_plan
+            output = str(args.output)
+            if int(os.environ.get('WORLD_SIZE', 1)) > 1 and '{rank}' not in output:
+                raise ValueError('distributed plan export requires {rank} in --output to prevent rank file collisions')
+            plan = resolve(args.adapter)(read_json(args.config))
+            validate_plan(plan)
+            rank = plan.get('extraction', {}).get('rank', int(os.environ.get('RANK', 0)))
+            output = Path(output.replace('{rank}', str(rank)))
+            output.parent.mkdir(parents=True, exist_ok=True)
+            write_plan(output, plan)
+            result = dict(command=args.command, output=str(output),
+                          status=plan.get('status', 'unspecified'),
+                          capture_status=plan.get('capture_status', 'complete'),
+                          graphs=len(plan['graphs']), stages=len(plan['stages']),
+                          unresolved=plan['unresolved'])
+        elif args.command == 'lower-plan':
+            from .native_plan import read_plan, merge_plans
+            from .plan_lowering import lower_plan
+            from .plan_memory import lower_graph_memory
+            plans = [read_plan(path) for path in args.plans]
+            plan = merge_plans(plans) if len(plans) > 1 else plans[0]
+            workload = lower_plan(plan, read_json(args.hardware),
+                                  read_json(args.config) if args.config else None)
+            workload = lower_graph_memory(workload, plan)
+            write_workload(args.output, workload)
+            result = dict(command=args.command, output=str(args.output),
+                          **validate(workload.nodes, workload.storage, workload.manifest),
+                          unresolved=workload.manifest.get('unresolved', []))
         elif args.command == 'prepare':
             from .prepare import prepare as prepare_workload
             workload = prepare_workload(args.workloads, read_json(args.config) if args.config else None)
@@ -115,7 +155,7 @@ def main(argv=None):
                     emit(result, args.output)
                 result = {k:v for k,v in result.items() if k != 'timing'}
         print(emit(result), end='')
-        if args.command == 'capture' and result['capture_status'] in ('blocked', 'incomplete'):
+        if args.command in ('capture', 'export-plan') and result['capture_status'] in ('blocked', 'incomplete'):
             return 2
         if args.command == 'runtime-check' and result['status'] != 'ready':
             return 2

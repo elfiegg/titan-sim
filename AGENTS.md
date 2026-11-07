@@ -2,7 +2,8 @@
 
 Pin and record this repository's commit SHA. Read README.md and run
 `python -m titan_sim --help`. The public operations are **runtime-check, capture,
-prepare, validate, calibrate, simulate**. There is no `--case` or built-in model selection.
+prepare, validate, calibrate, simulate**, plus **export-plan, lower-plan** for native
+host-plan artifacts. There is no `--case` or built-in model selection.
 
 - CPU simulation and structural validation require Python 3.10+ only. Do not
   install or replace PyTorch for these operations.
@@ -26,6 +27,14 @@ prepare, validate, calibrate, simulate**. There is no `--case` or built-in model
   Require explicit execution mode, use a fresh trace directory, preserve original
   model code, and write one output per rank with `{rank}` in the output path.
 - Model-specific prototypes remain in `examples/recipe_prescreen/README.md`.
+- `export-plan` reads prepared native schedules/graphs or observes lazy graph
+  preparation through an explicit native recipe adapter; `observe_steps` executes
+  original training with its configured side effects. Missing eager/compiled
+  APIs remain unsupported. Never switch the submitted trainer or settings.
+- `lower-plan` expands supported native actions and logical storage lifetimes
+  from one complete pipeline group. It does not infer a global DP/TP/EP mesh,
+  select compiled kernels, or establish physical allocation coverage. Read
+  `docs/native-planning.md`; unknown physical memory remains inconclusive.
 - The repository-owned `skills/simulate-torchtitan/SKILL.md` consumes the upstream
   prepare-runtime handoff and caller-owned execution context. Runtime artifact
   readiness is not a live container probe or full-scale recipe qualification.

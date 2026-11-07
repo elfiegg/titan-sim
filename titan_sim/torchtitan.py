@@ -142,6 +142,30 @@ def _package_digest(loader_module):
     return digest.hexdigest()
 
 
+def _build_trainer(argv, provenance):
+    """Load the unchanged native recipe and retain its resolved identity."""
+    loader_module = importlib.import_module('torchtitan.config.loader')
+    provenance['loader'] = _source_manifest(loader_module)
+    provenance['torchtitan_python_source_sha256'] = _package_digest(loader_module)
+    native_config = loader_module.ConfigLoader().load(argv)
+    if getattr(native_config, 'create_seed_checkpoint', False):
+        raise ValueError('seed-checkpoint recipes do not run training steps')
+    from torchtitan.observability.logging import init_logger
+    from torchtitan.observability import structured_logger as sl
+    init_logger()
+    sl.init_structured_logger(source='training', output_dir=native_config.dump_folder,
+                              enable=native_config.debug.enable_structured_logging)
+    trainer = native_config.build()
+    if hasattr(native_config, 'to_dict'):
+        from .torch_capture import digest
+        provenance['recipe_config'] = native_config.to_dict()
+        provenance['resolved_config_sha256'] = digest(provenance['recipe_config'])
+    else:
+        provenance['recipe_config'] = None
+    provenance['trainer'] = _source_manifest(importlib.import_module(type(trainer).__module__))
+    return trainer
+
+
 @contextmanager
 def _fake_groups_only():
     """Reject an accidental real backend, including recipe override changes."""
@@ -223,24 +247,7 @@ def capture(config):
     try:
         # Leave stdout for the CLI's JSON result. Native logging stays visible.
         with redirect_stdout(sys.stderr), context, (_fake_groups_only() if execution == 'fake' else nullcontext()):
-            loader_module = importlib.import_module('torchtitan.config.loader')
-            provenance['loader'] = _source_manifest(loader_module)
-            provenance['torchtitan_python_source_sha256'] = _package_digest(loader_module)
-            native_config = loader_module.ConfigLoader().load(argv)
-            if getattr(native_config, 'create_seed_checkpoint', False):
-                raise ValueError('seed-checkpoint recipes do not run training steps')
-            from torchtitan.observability.logging import init_logger
-            from torchtitan.observability import structured_logger as sl
-            init_logger()
-            sl.init_structured_logger(source='training', output_dir=native_config.dump_folder,
-                                      enable=native_config.debug.enable_structured_logging)
-            trainer = native_config.build()
-            if hasattr(native_config, 'to_dict'):
-                from .torch_capture import digest
-                # A hash is supplementary; users should also retain their native config dump.
-                provenance['resolved_config_sha256'] = digest(native_config.to_dict())
-            provenance['recipe_config'] = native_config.to_dict() if hasattr(native_config, 'to_dict') else None
-            provenance['trainer'] = _source_manifest(importlib.import_module(type(trainer).__module__))
+            trainer = _build_trainer(argv, provenance)
             workload = capture_trainer(trainer, hardware=config['hardware'],
                 steps=config.get('steps', 1), warmup_steps=config.get('warmup_steps', 0),
                 provenance=provenance, observer=observer, trace_dir=config.get('trace_dir'), execution_trace=execution_trace)

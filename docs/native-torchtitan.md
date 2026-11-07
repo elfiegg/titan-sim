@@ -10,6 +10,12 @@ parallelization. titan-sim observes training and translates evidence into its
 framework-independent workload format. You do not write another model forward
 pass for the simulator.
 
+There are two evidence paths. This guide covers observing executed training steps.
+The [native planning guide](native-planning.md) covers extracting already-built
+host schedules and stage graphs, then deriving supported dependencies and logical
+storage lifetimes. Plan export can also observe lazy graph preparation during
+bounded native steps. Neither path changes the submitted recipe's settings.
+
 The native capture adapter is experimental. It can retain original training
 traces, but turning those traces into a complete distributed prediction still
 requires evidence for unsupported implementation matching, synchronization and
