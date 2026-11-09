@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "product": "DGX Vera Rubin NVL72",
+  "architecture": "Rubin",
+  "source_url": "https://resources.nvidia.com/en-us-dgx-systems/dgx-vera-rubin-nvl72-datasheet",
+  "source_document": "DGX Vera Rubin NVL72 Datasheet, Oct 2026, page 3",
+  "source_pdf": "https://dam-cdn.nvd.orangelogic.com/AssetLink/05p8225000qc1l606krfd80k80kis0om.pdf",
+  "retrieved_on": "2026-11-05",
+  "scope": "Published rack-level specifications, not calibrated rates or allocatable per-device capacity",
+  "gpu_count": 72,
+  "cpu_count": 36,
+  "published": {
+    "hbm_capacity_tb": 20.7,
+    "hbm_bandwidth_tb_per_second": 1400,
+    "nvlink_bandwidth_tb_per_second": 216,
+    "nvfp4_training_dense_pflops": 2520,
+    "fp8_fp6_training_dense_pflops": 1260,
+    "nvfp4_inference_sparse_pflops": 3600,
+    "bf16_dense_pflops": null
+  },
+  "unknowns": ["BF16 rate is not specified in this datasheet; do not derive it from NVFP4 inference"],
+  "required_target_inputs": ["usable capacity per physical GPU", "rank placement", "NVLink domains and scale-out topology", "precision-specific effective rates or matching measured catalog", "latency and contention assumptions"]
+}

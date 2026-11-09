@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "product": "GB200 NVL72",
+  "architecture": "Blackwell",
+  "source_url": "https://resources.nvidia.com/en-us-blackwell-architecture",
+  "source_document": "Blackwell Architecture Technical Brief V2.1, Table 2, page 13",
+  "source_pdf": "https://dam-cdn.nvd.orangelogic.com/AssetLink/gl2l4l4812s5fw0p614s6i8bv6mi3vx5.pdf",
+  "retrieved_on": "2026-11-05",
+  "scope": "Published rack-level specifications, not calibrated rates or allocatable per-device capacity",
+  "gpu_count": 72,
+  "cpu_count": 36,
+  "published": {
+    "hbm_capacity_tb": 13.5,
+    "hbm_bandwidth_tb_per_second_up_to": 576,
+    "nvlink_bidirectional_tb_per_second": 130,
+    "bf16_fp16_dense_pflops": 180,
+    "bf16_fp16_sparse_pflops": 360
+  },
+  "required_target_inputs": ["usable capacity per physical GPU", "rank placement", "NVLink domains and scale-out topology", "precision-specific effective rates or matching measured catalog", "latency and contention assumptions"]
+}

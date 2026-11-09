@@ -115,7 +115,11 @@ class TorchCapture(TorchDispatchMode):
         if tensor.layout != torch.strided:
             self.gaps.add('Storage accounting unsupported for layout '+str(tensor.layout))
             return None
-        backing = tensor.untyped_storage()
+        try:
+            backing = tensor.untyped_storage()
+        except (RuntimeError, NotImplementedError) as error:
+            self.gaps.add('Native tensor storage is unavailable ('+type(error).__name__+'); its allocation is unverified.')
+            return None
         key = backing._cdata
         if key in self._live:
             record, ref = self._live[key]
@@ -210,6 +214,16 @@ class TorchCapture(TorchDispatchMode):
         if 'c10d' in name or 'collective' in name:
             node.attrs['semantics'] = 'unresolved_communication'
             self.gaps.add('Communication dispatch observed, but transport/group/wait semantics are not lowered.')
+            try:
+                from .communication_cases import describe_communication
+                communication = describe_communication(func, args, kwargs, self.describe)
+                if communication is not None:
+                    node.attrs['communication'] = communication
+            except Exception as error:
+                # Observation failure must not replace the native collective or
+                # prevent this rank from entering it while peers are waiting.
+                node.attrs['communication_error'] = type(error).__name__+': '+str(error)
+                self.gaps.add('Native communication metadata could not be resolved for '+name)
         elif not name.startswith(('aten.', 'prims.')):
             self.gaps.add('Custom/higher-order operator needs implementation matching: '+name)
         try:

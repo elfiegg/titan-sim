@@ -38,7 +38,7 @@ def _register_state(recorder, engine):
 
 
 def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=None,
-                    observer='profiler', trace_dir=None):
+                    observer='profiler', trace_dir=None, execution_trace=True, recorder_callback=None):
     """Run a bounded native train loop and return a rank-local Workload.
 
     The caller owns trainer/process-group creation and cleanup. This function
@@ -54,6 +54,10 @@ def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=No
     for name in ('train', 'train_step', 'should_continue_training'):
         if not callable(getattr(trainer, name, None)):
             raise ValueError('unsupported TorchTitan trainer contract: missing '+name)
+    if type(execution_trace) is not bool:
+        raise ValueError('execution_trace must be a boolean')
+    if observer != 'profiler' and not execution_trace:
+        raise ValueError('execution_trace=false applies only to profiler observation')
     engine = trainer.engine
     dist = torch.distributed
     rank = dist.get_rank() if dist.is_initialized() else int(os.environ.get('RANK', 0))
@@ -63,17 +67,24 @@ def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=No
             raise ValueError('native profiler capture requires trace_dir (a fresh output directory)')
         from .profiler_capture import ProfilerCapture
         recorder = ProfilerCapture(trace_dir=trace_dir, rank=rank, world_size=world,
-                                   device=engine.device, provenance=provenance)
+                                   device=engine.device, provenance=provenance, execution_trace=execution_trace)
     elif observer == 'dispatch':
         recorder = TorchCapture(rank=rank, world_size=world, device=engine.device, provenance=provenance)
     else:
         raise ValueError('observer must be profiler or dispatch')
+    if recorder_callback is not None:
+        if not callable(recorder_callback):
+            raise ValueError('recorder_callback must be callable')
+        recorder_callback(recorder)
     original_step, original_continue = trainer.train_step, trainer.should_continue_training
     completed, captured = 0, 0
     manifest = dict(scope='native TorchTitan rank-local train_step operators', observer=observer,
                     capture_status='complete', requested_steps=steps, warmup_steps=warmup_steps,
                     adaptations=['bounded native training loop', observer+' instrumentation'],
-                    calibration_scope='operator signatures are candidates; native kernel matching still required')
+                    execution_trace=execution_trace if observer == 'profiler' else None,
+                    calibration_scope=('GPU occurrence costs only; reusable implementation matching unavailable'
+                                       if observer == 'profiler' and not execution_trace else
+                                       'operator signatures are candidates; native kernel matching still required'))
 
     def observed_step(*args, **kwargs):
         nonlocal completed, captured
@@ -135,6 +146,30 @@ def _package_digest(loader_module):
     return digest.hexdigest()
 
 
+def _build_trainer(argv, provenance):
+    """Load the unchanged native recipe and retain its resolved identity."""
+    loader_module = importlib.import_module('torchtitan.config.loader')
+    provenance['loader'] = _source_manifest(loader_module)
+    provenance['torchtitan_python_source_sha256'] = _package_digest(loader_module)
+    native_config = loader_module.ConfigLoader().load(argv)
+    if getattr(native_config, 'create_seed_checkpoint', False):
+        raise ValueError('seed-checkpoint recipes do not run training steps')
+    from torchtitan.observability.logging import init_logger
+    from torchtitan.observability import structured_logger as sl
+    init_logger()
+    sl.init_structured_logger(source='training', output_dir=native_config.dump_folder,
+                              enable=native_config.debug.enable_structured_logging)
+    trainer = native_config.build()
+    if hasattr(native_config, 'to_dict'):
+        from .torch_capture import digest
+        provenance['recipe_config'] = native_config.to_dict()
+        provenance['resolved_config_sha256'] = digest(provenance['recipe_config'])
+    else:
+        provenance['recipe_config'] = None
+    provenance['trainer'] = _source_manifest(importlib.import_module(type(trainer).__module__))
+    return trainer
+
+
 @contextmanager
 def _fake_groups_only():
     """Reject an accidental real backend, including recipe override changes."""
@@ -165,6 +200,9 @@ def capture(config):
     Use a dedicated process in the original training environment for either.
     """
     execution = config.get('execution')
+    if execution == 'local_cuda':
+        from .local_execution import capture as capture_local
+        return capture_local(config)
     if execution not in ('native', 'fake'):
         raise ValueError('execution must explicitly be native or fake')
     argv = config.get('recipe_args')
@@ -185,44 +223,47 @@ def capture(config):
     observer = config.get('observer', 'profiler' if execution == 'native' else 'dispatch')
     if observer not in ('profiler', 'dispatch'):
         raise ValueError('observer must be profiler or dispatch')
+    execution_trace = config.get('execution_trace', True)
+    if type(execution_trace) is not bool:
+        raise ValueError('execution_trace must be a boolean')
+    if observer != 'profiler' and not execution_trace:
+        raise ValueError('execution_trace=false applies only to profiler observation')
     if observer == 'profiler' and not isinstance(config.get('trace_dir'), str):
         raise ValueError('profiler observer requires trace_dir')
+    handoff = None
+    if config.get('runtime_manifest'):
+        from .runtime import check_runtime
+        handoff = check_runtime(config['runtime_manifest'], config.get('capability_report'),
+                                config.get('expected_runtime'))
+        if handoff['status'] != 'ready':
+            raise ValueError('prepare-runtime handoff is blocked: '+'; '.join(handoff['unresolved']))
     import torch
     from .torch_capture import TorchCapture
     from torch._subclasses.fake_tensor import FakeTensorMode
 
     provenance = dict(torch_version=str(torch.__version__), cuda_version=torch.version.cuda,
-                      execution=execution, observer=observer, recipe_args=argv,
+                      execution=execution, observer=observer, execution_trace=execution_trace, recipe_args=argv,
                       runtime=config.get('runtime_provenance', {}),
                       allow_tf32=torch.backends.cuda.matmul.allow_tf32,
                       float32_matmul_precision=torch.get_float32_matmul_precision())
+    if handoff is not None:
+        provenance['runtime_handoff'] = handoff
     trainer, workload = None, None
     owns_group = not torch.distributed.is_initialized()
     context = FakeTensorMode(allow_non_fake_inputs=True) if execution == 'fake' else nullcontext()
     try:
         # Leave stdout for the CLI's JSON result. Native logging stays visible.
         with redirect_stdout(sys.stderr), context, (_fake_groups_only() if execution == 'fake' else nullcontext()):
-            loader_module = importlib.import_module('torchtitan.config.loader')
-            provenance['loader'] = _source_manifest(loader_module)
-            provenance['torchtitan_python_source_sha256'] = _package_digest(loader_module)
-            native_config = loader_module.ConfigLoader().load(argv)
-            if getattr(native_config, 'create_seed_checkpoint', False):
-                raise ValueError('seed-checkpoint recipes do not run training steps')
-            from torchtitan.observability.logging import init_logger
-            from torchtitan.observability import structured_logger as sl
-            init_logger()
-            sl.init_structured_logger(source='training', output_dir=native_config.dump_folder,
-                                      enable=native_config.debug.enable_structured_logging)
-            trainer = native_config.build()
-            if hasattr(native_config, 'to_dict'):
-                from .torch_capture import digest
-                # A hash is supplementary; users should also retain their native config dump.
-                provenance['resolved_config_sha256'] = digest(native_config.to_dict())
-            provenance['recipe_config'] = native_config.to_dict() if hasattr(native_config, 'to_dict') else None
-            provenance['trainer'] = _source_manifest(importlib.import_module(type(trainer).__module__))
+            trainer = _build_trainer(argv, provenance)
+            # Trainer setup may select math policy. Bind calibration to the
+            # effective policy, not the process defaults before recipe loading.
+            from .operator_cases import execution_context
+            provenance.update(allow_tf32=torch.backends.cuda.matmul.allow_tf32,
+                              float32_matmul_precision=torch.get_float32_matmul_precision(),
+                              operator_execution_context=execution_context(torch))
             workload = capture_trainer(trainer, hardware=config['hardware'],
                 steps=config.get('steps', 1), warmup_steps=config.get('warmup_steps', 0),
-                provenance=provenance, observer=observer, trace_dir=config.get('trace_dir'))
+                provenance=provenance, observer=observer, trace_dir=config.get('trace_dir'), execution_trace=execution_trace)
     except Exception as error:
         recorder = TorchCapture(rank=int(os.environ.get('RANK', 0)),
                                 world_size=int(os.environ.get('WORLD_SIZE', 1)), provenance=provenance)
