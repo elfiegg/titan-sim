@@ -1,85 +1,27 @@
-# Using titan-sim with TorchTitan
+# Native TorchTitan capture reference
 
-This guide explains how an existing TorchTitan training recipe can supply evidence
-for a titan-sim memory and throughput prediction. Start with the
-[program overview](../README.md#how-the-program-works) for the simulator's design.
+Use this reference when the [prescreening workflow](gpu-assisted.md) needs evidence
+from the original native trainer. It covers recipe configuration, profiler capture,
+rank preparation and the associated calibration commands. For component relationships,
+read the [system design](architecture.md).
 
-The integration preserves the original recipe and trainer. TorchTitan still owns
-the model, input data, loss, optimizer, precision, activation checkpointing and
-parallelization. titan-sim observes training and translates evidence into its
-framework-independent workload format. You do not write another model forward
-pass for the simulator.
+TorchTitan owns the model, data, loss, optimizer, precision, checkpointing and
+parallelization. The adapter `titan_sim.torchtitan:capture` loads that native recipe
+and observes bounded original training steps. It returns per-rank workload records,
+source/runtime identities and retained raw traces. You do not implement another
+model forward pass for the simulator.
 
-There are two evidence paths. This guide covers observing executed training steps.
-The [native planning guide](native-planning.md) covers extracting already-built
-host schedules and stage graphs, then deriving supported dependencies and logical
-storage lifetimes. Plan export can also observe lazy graph preparation during
-bounded native steps. Neither path changes the submitted recipe's settings.
+`ProfilerCapture` wraps PyTorch's profiler and `ExecutionTraceObserver`, recording
+CPU and CUDA activity with shapes and memory evidence. It preserves compilation
+and operator execution. It does not produce a calibrated cost catalog: the
+measurement runner imports matched GPU observations or benchmarks supplied native
+regions. Likewise, projected trace storage needs separate physical-memory evidence.
 
-The native capture adapter is experimental. It can retain original training
-traces, but turning those traces into a complete distributed prediction still
-requires evidence for unsupported implementation matching, synchronization and
-allocation semantics. Bundled preparation and calibration tools handle the
-explicitly supported cases.
-This guide identifies those boundaries before showing the commands.
-
-## How the integration fits together
-
-This guide describes full native profiler observation. To discover real local
-compute with target fake groups, measure communication separately and replay
-short concurrent windows, use [GPU-assisted prescreening](gpu-assisted.md).
-That workflow also explains exact occurrence binding and physical-memory
-evidence. Neither workflow automatically recovers every native execution path.
-
-```text
-Your recipe module + configuration function
-                     |
-       TorchTitan ConfigLoader -> native trainer
-                     |
-        titan-sim observes original train_step
-                     |
-          ProfilerCapture on each rank
-                     |
-     Execution trace + Chrome trace + workload
-                     |
-   Match executable regions, dependencies and storage
-                     |
-             Prepared workload -------------------+
-                     |                            |
-       Bundled runner + native case provider      |
-                     |                            |
-             Measured cost catalog --------> CPU simulation
-                                                  |
-                                   Prediction + coverage/gaps
-```
-
-| Part | Responsibility | Current implementation |
-|---|---|---|
-| Recipe and trainer | Define and execute training | Your original TorchTitan environment |
-| Capture adapter | Load the recipe, bound observed steps, retain source/config identity | Bundled `titan_sim.torchtitan:capture` |
-| Observer | Record operations and tensor evidence during selected steps | Bundled `ProfilerCapture`; fake/eager dispatch alternative available |
-| Workload preparation | Resolve compiled regions, all-rank dependencies and backing-storage lifetimes | Bundled `prepare`; direct GPU correlations and explicit evidence assertions |
-| Case selection | Identify operations that can be faithfully reconstructed for measurement | `calibration-cases` selects supported dense matmuls and collectives from dispatch captures, with explicit skips |
-| Measurement runner | Benchmark the matched original implementations on target GPUs | Bundled trace importer and GPU timer; bundled providers for supported dispatch cases, custom providers for other native regions |
-| Memory observer | Check actual allocator peaks and visible state in the unchanged runtime | Optional `MemoryObserver`; observations are separate from predictions |
-| Simulator | Apply measured costs to declared execution and storage semantics | Bundled CPU simulator |
-
-`ProfilerCapture` wraps PyTorch's profiler and `ExecutionTraceObserver`. It records
-CPU activity and, on CUDA, GPU activity, with shape and memory profiling enabled.
-It does not replace operators, disable compilation or install a Python dispatch
-mode. Its traces help identify what must be measured; it does not generate a
-calibrated cost catalog. Actual timing collection occurs in the measurement runner. It can import matched
-GPU observations from the traces or execute supplied native regions repeatedly.
-
-For an eager dispatch capture, [compute case selection](operator-cases.md) can
-generate supported matrix-multiplication measurements for one GPU.
-[Communication case selection](communication-cases.md) uses the identified group
-size and peer captures to verify shared-buffer layouts before replay on multiple
-GPUs. These are component measurements with local result files; no calibration
-storage service is needed. Unsupported operations remain in the inventory.
-Use a separate [memory observation](memory-observation.md) run to check native
-peaks: tracing can change allocation lifetimes and its peak must not be treated
-as the uninstrumented recipe's requirement.
+This capture route is experimental. Missing implementation correspondence,
+distributed ordering and allocation semantics remain gaps after capture. The
+sections below show how preparation and measurement consume its outputs. For
+local compute with target fake groups use [local CUDA discovery](local-execution.md);
+for already-built schedules use [native plan export](native-planning.md).
 
 ## Before you start
 

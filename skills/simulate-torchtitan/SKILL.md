@@ -1,175 +1,141 @@
 ---
 name: simulate-torchtitan
-description: Prescreen native TorchTitan training recipes after runtime preparation for per-device memory sufficiency and projected throughput. Use fake or native capture, explicit execution and memory models, and reusable GPU calibration; report unsupported configurations and uncertainty.
+description: Prescreen native TorchTitan training recipes after runtime preparation for per-device memory sufficiency and projected throughput. Use native execution evidence, real GPU calibration and explicit memory models; report unsupported configurations and uncertainty.
 ---
 
 # Simulate a TorchTitan recipe
 
-Act as the simulation subagent after `prepare-runtime`. Return a reproducible
-configuration assessment, per-physical-device memory verdict, timing estimate and
-coverage report. Native recipe modules and overrides are inputs; no particular
-model, cluster, GPU count or validated fixture is a default.
+Act as the simulation subagent after `prepare-runtime`. Assess the caller's native
+recipe on the target hardware without assuming that the complete target cluster
+is available. Return projected timing and per-physical-device memory bounds with
+evidence and unresolved scope. No model, GPU architecture or validated fixture is
+a default. Keep experiment results outside this skill and the generic implementation.
 
-## Consume the handoff
+Read the pinned checkout's [system design](../../docs/architecture.md), then follow
+the [GPU-assisted workflow](../../docs/gpu-assisted.md). That workflow defines the
+ordered artifact handoffs; use its linked references for schemas and commands.
+This skill defines the agent's decisions and completion criteria.
 
-Read the caller's pinned titan-sim checkout and instructions. Consume
-`runtime-manifest.json`, `dependency-plan.json`, `capability-report.json`, their
-evidence, the native recipe and overrides, the target hardware/topology, and the
-supplied execution context. Preserve image/source identities, runtime differences,
-tested scope and exclusions. The caller supplies command entry, visible paths,
-allocation budget, status/log/stop operations and evidence access. This skill
-does not choose a cluster, rebuild the runtime or implicitly submit GPU jobs.
+## 1. Accept the runtime and define the case
 
-Run `titan-sim runtime-check runtime-manifest.json --expected expected.json
---output runtime-check.json`. The expected file can bind the source commit,
-image, exact recipe, target fields and required capability IDs. Inspect the
-reported scope: artifact consistency is not a probe of the running container.
-Verify the actual interpreter/image/source through the supplied context before
-GPU work. Keep the qualified reduced case and the requested full prediction case
-separate. A checker result for the reduced case does not qualify the full case;
-binding the full recipe can correctly report a scope mismatch. Preserve that
-mismatch while continuing read-only or CPU analysis where possible, with explicit
-gaps. Do not relabel the handoff or silently weaken expected identities. A reduced
-recipe qualification does not establish full-model fit.
-Changed features or missing probes go back to runtime preparation with the exact
-dependency/capability requirement and reproducer; continue independent cases.
-Do not disable the requested feature to make simulation succeed. Stage remote evidence through
-the caller's mechanism if the handoff checker cannot read it.
+Consume the prepared runtime manifest, dependency plan, capability report and
+underlying evidence, native recipe/overrides, hardware/topology and execution
+context. Read repository instructions and record the simulator revision. The
+caller provides command entry, visible paths, resource authorization/budget,
+scheduler limits and status/log/stop operations.
 
-## Resolve the simulation case
+Run `runtime-check` with the intended identity expectations. Verify the actual
+runtime through the supplied execution context before GPU work: artifact
+consistency does not prove a running container's capabilities. Preserve differences
+between the qualified runtime case and the requested prediction case. A reduced
+qualification does not establish full-model support or fit. Do not weaken expected
+identities or relabel a scope mismatch to pass the check.
 
-Record the native module/config/overrides, input geometry, unique tokens per
-optimizer update, precision of parameters/compute/gradients/optimizer state,
-optimizer, checkpointing, compile/graph mode, communication implementation,
-parallel dimensions and physical rank placement. Derive overlapping mesh axes
-from the native recipe; never multiply printed DP/EP axes blindly.
+Resolve input geometry, useful tokens per update, all precision settings,
+optimizer, checkpointing, compilation/graphs, communication implementation,
+parallel groups and physical placement. Derive overlapping mesh dimensions from
+native construction. Define timing scope and whether memory must cover the full
+recipe lifecycle. Use per-device usable capacity and headroom, not aggregate
+cluster memory. Hardware specifications supply limits, not measured performance.
 
-Use the actual per-device usable capacity and topology. Published Blackwell or
-Rubin specifications supply hardware facts and theoretical limits, not measured
-kernel costs. Rack memory totals cannot establish per-GPU fit. Keep dense/sparse,
-training/inference and precision rates distinct. Missing rates remain unknown;
-specification-only scenarios must be labeled analytical and include explicit
-efficiency, latency and contention assumptions. An analytical run also requires
-explicit per-operation work/traffic quantities or separately justified costs;
-setting hardware rates cannot price opaque captured operations. Without matching
-Rubin measurements, do not relabel another architecture's catalog or report
-specification-derived throughput as calibrated.
+## 2. Acquire native execution evidence
 
-## Capture, prepare, calibrate, simulate
+Choose native host plans, original profiler/dispatch capture, local CUDA discovery
+or supported fake capture according to the runtime and available resources. Keep
+the submitted trainer and settings. Capture can execute original training side
+effects; use the supplied allocation, fresh trace directories and distinct rank
+output paths. Fake mode may still require CUDA during native construction.
 
-Read the pinned checkout's [GPU-assisted workflow](../../docs/gpu-assisted.md)
-for local discovery and component/window measurement, or the
-[native guide](../../docs/native-torchtitan.md) for full profiler observation.
-Keep original model and optimizer execution.
+Enumerate distinct rank roles. Local CUDA discovery retains target logical group
+membership with explicit transport substitutions; its selected rank state must
+fit on the available GPU. Fake transport and instrumented wall time do not prove
+native peer completion, numerical training or target throughput. Native handles
+and retained arguments must remain in their owning process and may change memory
+lifetimes.
 
-When custom-library execution is missing from the prediction, follow the
-[custom-library agent workflow](../../docs/custom-library-workflow.md). Build a
-case packet from the actual invocation and prepared runtime; inspect native code,
-choose a faithful local/distributed boundary, implement and qualify its provider,
-then bind timing, scheduling and memory evidence. Unknown custom operations are
-integration tasks, not terminal labels. Opaque state may require a larger native
-region; hidden communication requires actual group execution. Never set replay
-safety, no-communication or memory-coverage flags solely to pass validation.
-Delegate independent cases with explicit file ownership and one GPU scheduler;
-retain dependent inspection/provider/qualification steps within the same case.
+Prepare the source workload from exact snapshots. Resolve supported dependencies,
+rendezvous, regions and storage using native evidence; use schedule recovery only
+where its peer/run-identity and wait-lineage contracts apply. Record unresolved
+semantics. Missing ranks and failed captures cannot be asserted away.
 
-- Choose fake capture for logical tensor configuration exploration when supported;
-  enumerate distinct rank roles. Fake tensor mode does not guarantee a GPU-free
-  process: native construction, CUDA initialization, data loading and other side
-  effects still need a compatible, authorized execution context. Fake wall time
-  is never GPU time. Native capture
-  executes real training and its configured side effects; use it only inside the
-  authorized allocation. Investigate unsupported custom operations through the
-  custom-library workflow and retain their simulation gaps until qualified.
-- Capture using `titan_sim.torchtitan:capture`, fresh trace directories and
-  `workload.rank{rank}.json` paths. Keep raw traces and source/runtime identities.
-- When authorized real GPUs are available, `execution: "local_cuda"` observes
-  real local compute with the original target rank/world and explicit fake
-  transport substitutions. Enumerate distinct roles; retain unsupported calls.
-  Instrumented discovery time and memory do not establish training performance
-  or fit. Retained native handles need original argument/runtime context and a
-  replay state contract; see [local execution](../../docs/local-execution.md).
-- Run `titan-sim prepare` across rank artifacts. Review direct GPU correlations,
-  compiled-region boundaries, stream dependencies, rendezvous and storage
-  lifetimes. Supply explicit evidence for semantics the traces cannot establish.
-  A gap resolution records a checksum-bound integration assertion, not proof.
-  Missing ranks and failed captures cannot be asserted away. See
-  [preparation](../../docs/native-preparation.md).
-- For complete native peer captures, [schedule recovery](../../docs/schedule-recovery.md)
-  derives supported collective completion and wait dependencies from common run
-  identity and exact storage lineage. Fake waits and unobserved native Work waits
-  remain gaps. Cost binding can request this pass with `recover_schedule: true`.
-- Calibrate with the bundled `titan_sim.native_runner:measure`. Trace mode imports
-  instrumented GPU observations; execute mode times original callable regions
-  supplied by a trusted provider. Match implementation, shapes, scalars, precision,
-  graph mode, runtime and communication context. Reuse catalogs only for matching
-  keys and hardware. Use a coordinator for aggregate output. See
-  [calibration](../../docs/native-calibration.md). The scheduler enforces the
-  authorized hard limit; initial GPU checks use five minutes unless overridden.
-- Measure concurrent behavior through [native windows](../../docs/execution-windows.md)
-  when isolated costs are insufficient. Preserve native shared buffers, streams
-  and waits. Controlled windows are experiments; training binding needs checked
-  source ordering/boundary evidence. Do not derive a universal overlap multiplier.
-- Use `bind-cases` or `bind-window` to connect measurement workloads to exact
-  source occurrences before attaching memory evidence. Inspect skipped/unbound
-  entries. Host collective issue is not device completion, and later compiled
-  calls are not automatically the same specialization. Keep local workloads and
-  catalogs; centralized calibration storage is optional.
-- Simulate on CPU with the prepared workload and matching costs. Strict mode
-  checks timing/workload completeness. Also require `--require-memory-fit` when
-  choosing a recipe to run, and require `physical_memory.memory_scope="recipe"`
-  for a full-recipe decision. The flag alone also accepts a schedule-only fit;
-  timing calibration alone cannot establish capacity.
+## 3. Integrate missing cases and measure them
 
-## Decide capacity and timing separately
+Inspect the case inventory and follow the
+[custom-library workflow](../../docs/custom-library-workflow.md) for unsupported
+native implementations. Build a case packet from available runtime/source evidence,
+inspect the selected path, choose a faithful boundary and qualify a provider.
+Opaque state can require a larger lifecycle region; hidden communication requires
+its real group. Invoke native code rather than copying its algorithm into the
+simulator. Never set replay-safety, no-communication or coverage flags merely to
+pass validation.
 
-Follow the [memory contract](../../docs/native-memory.md). Combine simultaneously
-live backing allocations on each physical GPU, including colocated ranks.
-Cover persistent states, gathered weights, activation stashes, recomputation,
-optimizer initialization/update, workspaces, communication buffers, graph pools,
-allocator slack, external allocations and lifecycle peaks. Count aliases once;
-allocator reserved memory already contains allocated memory. State whether the
-assessment covers only the scheduled interval or the complete recipe lifecycle.
-Use [memory evidence binding](../../docs/memory-evidence.md) for target-applicable
-allocation generations, completion events and scoped coverage. Bind against the
-final workload after region/window contraction. Native state/allocator samples
-remain observations; conditional forecasts cannot pass unconditional fit.
-Native allocator history can derive recorded generations and completed releases.
-Use `allocation-evidence` for conditional envelopes only with matching source
-applicability; coarse host intervals do not prove unavoidable live overlap.
+Delegate independent cases with explicit ownership and one GPU scheduling owner.
+Keep inspection, provider construction, qualification and binding connected within
+each case. Return exact missing dependencies/capabilities and a reproducer to
+runtime preparation while continuing independent work; do not switch libraries
+or disable requested features to bypass a blocker.
 
-Publish lower/upper peaks, capacity/budget, margin and limiting device. A credible
-lower bound above a device budget means `estimated_not_fit`; a covered upper bound
-at or below every device budget means `estimated_fit`; missing coverage or straddling bounds
-means `inconclusive`. Distinguish exceeding a headroom-reduced budget from
-exceeding the device's physical capacity. Producer-attested bounds remain conditional on their evidence
-and assumptions. Never promote a logical tensor peak to physical device usage.
+Measure local compute on one target GPU and communication on the identified real
+group/topology. Preserve build, shape/layout/scalars, precision, state/reset,
+compiler/graph and routing context. Qualify outputs/gradients and completion before
+claiming faithful replay. Measure native concurrent windows where separate costs
+cannot establish overlap or interference. Controlled windows remain experiments
+unless source-backed ordering and boundaries are established.
 
-For timing, report the workload scope and useful-token normalization, measured
-key coverage, unmodeled work, scheduling/contention assumptions and uncertainty.
-Keep empirical sample spread distinct from scenario ranges and statistical
-confidence. Unknown operation costs are blockers, not zero-cost operations.
-If timing evidence is absent, do not invent durations merely to obtain a memory
-verdict. Persistent-state and lifecycle lower bounds can still inform screening;
-any schedule-dependent bounds need an explicit, justified scheduling envelope.
-If required evidence is absent, return an actionable inconclusive assessment with
-the exact missing operation, dependency, allocation or calibration case.
+The caller's scheduler enforces the execution budget; initial GPU checks use a
+five-minute hard limit unless overridden. Use one coordinator for aggregate output.
+Keep local measurement workloads, samples and catalogs. Centralized storage is
+optional. Distinguish execute-mode timing from imported profiler observations.
+Analytical scenarios require justified work/traffic quantities and explicit rates,
+latency and contention assumptions. Never treat CPU/fake time or another GPU's
+catalog as target calibration.
 
-## Validate and return
+## 4. Bind timing and establish memory coverage
 
-Freeze workload, costs, assumptions and predictions before a held-out run. Compare
-completed step time and all-device memory over the same lifecycle; separate
-intrusive profiling from throughput measurement. A replay of the calibration
-trace is not independent validation. Use multiple recipe families and layouts
-over time; one validated model does not imply universal TorchTitan support.
-Use [prediction validation](../../docs/prediction-validation.md) to freeze an exact
-producer-recorded context before a trusted fresh control. Full-update comparison
-requires complete timing coverage and target ranks; a component comparison cannot
-qualify full-model accuracy. Keep wall/device timing and memory lifecycle scopes
-consistent between prediction and control.
+Bind measured cases or closed windows to exact source occurrences before attaching
+memory evidence. Inspect skipped/unbound entries. Host issue is not device
+completion; a later compiled call is not automatically the same specialization.
+Avoid double charging contracted regions and preserve external dependencies.
 
-Return artifact locations/hashes, pinned identities, recipe/placement, capacity
-and timing assessments, assumptions, unsupported features, evidence level,
-validation errors and next required evidence. Preserve raw evidence and job IDs
-in the caller's output directory. Keep case results out of this skill and the
-generic implementation; validation fixtures belong in separate test evidence.
+Follow the [memory contract](../../docs/native-memory.md) and
+[evidence binding](../../docs/memory-evidence.md) for the final workload. Account
+for concurrent backing allocations on every physical GPU, including colocated
+ranks, persistent states, activations, gathered weights, workspaces, communication
+buffers, graph pools, allocator slack and external allocations. Count aliases
+once; allocated bytes are contained in reserved bytes. Full-recipe coverage also
+needs initialization and loading peaks.
+
+Separate empirical observations, conditional replay envelopes and supported
+predictive bounds. A free request is not necessarily a completed release, virtual
+reservation is not physical mapping, and coarse host intervals do not prove
+unavoidable simultaneous usage. Incomplete coverage must remain inconclusive.
+If timing is missing, do not invent durations to get a memory verdict; use only
+independently justified persistent/lifecycle bounds or explicit schedule envelopes.
+
+## 5. Assess, validate and return
+
+Simulate with exact matching costs. Report timing and memory independently:
+`--strict` checks declared timing coverage; `--require-memory-fit` requires an
+unconditional fit. For a full-recipe decision, additionally require
+`physical_memory.memory_scope="recipe"`. A schedule-only fit is insufficient.
+
+Report lower/upper peaks, device budgets/capacities, margins and the limiting
+device. Supported upper bounds fitting every budget establish `estimated_fit`;
+a credible lower bound exceeding a budget establishes `estimated_not_fit`;
+missing or straddling bounds leave `inconclusive`. Distinguish budget overflow
+from exceeding physical capacity. State timing scope, token normalization,
+cost coverage, contention assumptions and unmodeled work. Sample spread, scenario
+ranges and statistical confidence are different quantities.
+
+When independent execution is available, [freeze the prediction](../../docs/prediction-validation.md)
+before invoking a fresh native control. Match runtime/recipe/placement, timing
+metric and memory lifecycle scope. Component validation cannot qualify full-model
+accuracy. Keep profiling separate from throughput controls and fitted costs
+separate from held-out validation.
+
+Return pinned identities, recipe/placement, artifact paths/hashes, timing and
+capacity assessments, assumptions, unsupported features and validation scope.
+For each remaining gap, name the required operation, dependency, allocation or
+measurement and its next action. Preserve private raw evidence and job identifiers
+in the caller's output directory. Prescreening does not establish successful
+execution or measured performance at scale.

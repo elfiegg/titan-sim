@@ -1,16 +1,21 @@
-# Agent workflow for native custom libraries
+# Integrate a custom native implementation
 
-The simulation agent must be able to investigate and integrate the implementation
-selected by a native recipe. A new library is an integration task: discover what
-the recipe invokes, choose a faithful executable boundary, implement a provider,
-qualify it, and connect its evidence to the prediction. Adding a library name to
-an allowlist does not complete that work.
+Use this procedure when case selection in the [prescreening workflow](gpu-assisted.md)
+finds an operation or region that the bundled providers cannot measure faithfully.
+It applies to custom operators, Python/C++ extensions, compiler-generated code,
+communication libraries and opaque native state.
 
-Use this workflow for custom operators, Python/C++ extensions, external kernels,
-compiler-generated regions, communication libraries and opaque native state.
-Keep library-specific providers and case results in the caller's run directory
-until they are qualified for broader reuse. The generic skill describes the
-method; it does not acquire model branches or experiment results.
+The integration connects the existing source workload to the existing measurement,
+scheduling and memory interfaces described in the [system design](architecture.md).
+The agent inspects what the unchanged recipe actually invokes, chooses an executable
+boundary, qualifies a native provider and binds its evidence back to that source.
+The deliverable is usable provider code and evidence, or a precise missing runtime
+capability or simulator interface with a next action.
+
+The coordinator supplies the prepared runtime, source occurrences and execution
+budget. Keep providers and case results in the caller's run directory until
+qualified for broader reuse. The generic skill records this method; it does not
+accumulate library/model branches or experiment results.
 
 ## What the coordinator gives an integration agent
 

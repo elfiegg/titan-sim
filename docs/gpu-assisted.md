@@ -1,149 +1,164 @@
-# GPU-assisted recipe prescreening
+# Run a GPU-assisted recipe prescreen
 
-Use this workflow after `prepare-runtime` to investigate a submitted native
-TorchTitan recipe without allocating its complete training cluster. The target
-recipe still determines sharding, pipeline roles, microbatches, precision,
-checkpointing, compilation and communication. Real GPUs provide local compute
-and communication measurements; the CPU simulator composes those costs using
-explicit execution dependencies and allocation lifetimes.
+Use this guide to assess a submitted TorchTitan recipe after `prepare-runtime`.
+The result is a projected step time, useful-token throughput, per-device memory
+verdict and a list of unsupported or uncertain behavior. The
+[system design](architecture.md) explains the components; this guide follows the
+work from the runtime handoff to the assessment.
 
-The implementation provides the stages below. It is not yet an automatic
-recipe-to-accurate-prediction pipeline: native window providers, some ordering
-interpretation and complete allocation contracts still require integration.
-Unsupported behavior is recorded rather than replaced with another trainer or
-configuration. No central database or remote calibration API is required.
+The workflow uses real GPUs for native compute and communication measurements,
+then CPU simulation for the target configuration. You need enough GPU capacity
+for each selected measurement, though not necessarily the complete training
+cluster. The tools do not allocate GPUs or automatically supply every provider,
+distributed dependency or physical-memory contract.
 
-```text
-Prepared runtime + unchanged recipe + target placement
-                         |
-           Native host plan / local CUDA discovery
-                         |
-          Source operations, boundaries, storage, gaps
-                         |
-             Select and retain native cases
-                 /                   \
-       One-GPU compute          Actual communication group
-                 \                   /
-                   Native window replay
-                         |
-          Exact source/cost binding + memory evidence
-                         |
-               CPU target-timeline simulation
-                         |
-          Throughput, per-device bounds, unresolved scope
+## Before you start: establish the prediction case
+
+Collect these inputs from the caller and prepared runtime:
+
+| Input | What it establishes |
+|---|---|
+| Runtime manifest, dependency plan, capability report and evidence | Pinned image, source, framework/extensions and what was actually qualified |
+| Native recipe and resolved overrides | Input geometry, optimizer, parameter/compute/gradient/state precision, checkpointing, compile/graph settings and communication implementation |
+| Target parallelism and physical placement | Rank roles, group membership, device capacities and topology |
+| Prediction scope | Scheduled interval or complete update, unique tokens per update, and schedule-only or full-recipe memory |
+| Execution context | Command entry, accessible paths, GPU authorization/budget, scheduler limit and status/log/stop operations |
+
+Check the staged handoff against the intended identities:
+
+```sh
+python -m titan_sim runtime-check runtime-manifest.json \
+  --expected expected-runtime.json --output results/runtime-check.json
 ```
 
-## 1. Discover the target rank's local execution
+The [handoff reference](native-torchtitan.md#before-you-start) explains its files.
+This checks artifact consistency; verify the actual running image/interpreter/source
+through the supplied execution context before GPU work. Qualification of a reduced
+case does not qualify a larger prediction case. Preserve any scope mismatch and
+continue independent analysis; send exact missing capabilities to runtime preparation.
 
-The [local CUDA adapter](local-execution.md) constructs the original native
-trainer with fake process groups carrying the target logical membership.
-Supported communication calls produce explicit representative local inputs;
-compute executes on a real GPU. This is a local execution experiment, not
-numerically correct distributed training. Captured wall time includes discovery
-instrumentation and is never used as predicted training time.
+Use the original recipe throughout. In particular, do not disable compilation,
+change precision or substitute a trainer to make capture succeed. Derive overlapping
+parallel axes from native mesh construction rather than multiplying their labels.
+Hardware specifications supply capacity and theoretical limits; calibrated timing
+requires applicable GPU measurements. See [hardware inputs](hardware.md).
 
-Set `execution: "local_cuda"`, `target_rank`, `target_world_size`, original
-`recipe_args` and target `hardware` in the capture configuration. Run:
+All filenames below are artifact templates. The native recipe, provider and
+measurement configurations must be supplied using the linked references. The
+[CPU example](../README.md#try-the-cpu-simulator) is the self-contained runnable demo.
+
+## 1. Obtain the target execution structure
+
+Choose evidence according to what the unchanged runtime exposes:
+
+| Available evidence | Use | Output and next step |
+|---|---|---|
+| Native host schedules or stage graphs | [Export and lower plans](native-planning.md) | Schedule-derived workload with remaining gaps; obtain native implementation evidence for calibration |
+| A target rank can execute locally with supported communication substitutions | [Local CUDA discovery](local-execution.md) | Rank-local source workload and native case inventory |
+| Native execution is available on the required ranks | [Profiler or dispatch capture](native-torchtitan.md) | Per-rank workloads and raw traces for preparation |
+| Only fake execution is feasible | [Fake dispatch capture](native-torchtitan.md#fake-and-eager-dispatch-capture) | Logical configuration evidence; GPU costs and physical-memory evidence still needed |
+
+For local CUDA discovery, configure `execution: "local_cuda"`, `observer:
+"dispatch"`, `target_rank`, `target_world_size`, original `recipe_args` and target
+`hardware`, then launch in the authorized single-GPU environment:
 
 ```sh
 python -m titan_sim capture --adapter titan_sim.torchtitan:capture \
   --config local-capture.json --output results/source.rank0.json
 ```
 
-Repeat for required distinct target roles. One observed rank does not establish
-the behavior of other pipeline stages, uneven shards or expert assignments.
-Sequential reuse of one GPU is possible only where the selected local state or
-region fits. Whole-rank discovery currently constructs that rank's original
-trainer and state; it does not automatically stream an oversized rank in pieces.
+This runs actual local compute with fake target process groups and explicit
+representative communication outputs. Repeat for distinct pipeline stages,
+uneven shards and expert roles as needed. The selected rank's original trainer
+and state must fit: discovery does not automatically stream an oversized rank.
+Retained native callable handles must be measured in their owning process.
 
-Use [native plan export](native-planning.md) when the runtime already exposes
-schedule tables or graphs. Host schedules establish ordering constraints, not
-kernel durations or contention. Local dispatch order alone cannot recover all
-cross-rank completion dependencies, data-dependent routing or compiler overlap.
+Preserve source snapshots, runtime identities and raw evidence. Instrumented
+capture time and memory describe discovery, not the target training result.
+Fake transport cannot demonstrate peer completion or numerical distributed training.
 
-For complete original native dispatch captures, [schedule recovery](schedule-recovery.md)
-can reconcile supported peer collectives and their exact functional wait lineage:
+## 2. Prepare dependencies and select measurement cases
+
+Use [workload preparation](native-preparation.md) to combine rank artifacts and
+resolve supported correlations, regions, storage and ordering. For complete native
+peer dispatch captures with a common run identity,
+[schedule recovery](schedule-recovery.md) can derive supported functional collective
+completion and wait dependencies:
 
 ```sh
 python -m titan_sim recover-schedule results/native.rank*.json \
   --output results/recovered-workload.json
 ```
 
-Every peer must share an explicit capture-run identity. Fake local waits remain
-configuration evidence; they cannot prove transport completion. Native c10d Work
-waits, global CUDA stream ordering and unsupported group layouts remain gaps.
+A local dispatch sequence is insufficient to infer every distributed wait or CUDA
+stream dependency. Preserve unknown behavior as gaps and supply explicit evidence
+where the bundled preparation cannot derive it. Missing ranks and failed captures
+cannot be resolved by assertions.
 
-## 2. Measure identified native implementations
-
-For implementations outside the existing case providers, use the
-[custom-library agent workflow](custom-library-workflow.md). It describes how an
-agent discovers the actual native path, constructs and qualifies a provider,
-and returns source binding and memory evidence. A particular library's missing
-dependency stays in its runtime handoff; it does not define the generic workflow.
-
-There are two local compute paths:
-
-- [Dispatch cases](operator-cases.md) reconstruct supported native matrix
-  operations from exact shape, stride, dtype and scalar contracts using finite
-  synthetic inputs. They are isolated operator measurements.
-- [Live native regions](local-execution.md#native-compiledcustom-callables)
-  retain the actual callable returned by the original runtime and its observed
-  arguments. Replay requires an explicit read-only or reset contract, matching
-  execution context, and the same process. Opaque compiled boundaries do not
-  automatically reveal their internal allocations or communication.
-
-Supported custom-dispatch boundaries retain their native schema and below-autograd
-dispatcher context. Bounded name/occurrence retention avoids keeping every
-training tensor alive. Each selected call must have complete input/output
-contracts, unchanged state or a reset, and an explicit no-communication contract.
-
-For dispatch cases, select the measurement workload, then time it on one GPU:
+The commands below follow the dispatch-case route; plan and profiler integrations
+use their linked preparation and provider interfaces. Select cases from the exact
+source snapshots you intend to bind later. Supported
+[compute cases](operator-cases.md) are isolated native dense matmuls:
 
 ```sh
 python -m titan_sim calibration-cases results/source.rank0.json \
   --kind compute --report results/compute-inventory.json \
   --output results/compute-workload.json
+```
+
+The output is a **measurement workload**, not a cost catalog. Inspect its skipped
+inventory. For compiled or custom implementations, use retained native callables
+or a qualified provider through the [custom-library workflow](custom-library-workflow.md).
+Choose an enclosing native region when opaque state or fused behavior makes a
+smaller case unsafe to replay. This integration step supplies the missing provider;
+case selection does not invent one.
+
+## 3. Calibrate on real GPUs
+
+This is where durations are measured. Run `calibrate` inside the prepared runtime
+on allocated target GPUs. Its execute-mode runner performs warmup and repeated
+GPU timing of the provider's native implementation, then writes samples and
+context into a **cost catalog**.
+
+| Case | GPU execution | Configuration reference |
+|---|---|---|
+| Supported local operator | One target GPU, exact overload and metadata, representative finite inputs | [Operator measurement](operator-cases.md) |
+| Compiled/custom local region | One target GPU, original callable and verified reset/context contract | [Live regions](local-execution.md), [native provider](native-calibration.md#execute-an-exact-native-region) |
+| Communication | Identified real group and topology, actual buffers/protocol/implementation | [Communication cases](communication-cases.md) |
+| Concurrent window | Actual native callables, shared state, streams, waits and completion joins | [Window measurement](execution-windows.md) |
+
+For the selected compute workload, create `compute-measurement.json` using the
+operator reference's execute-mode provider configuration and expected GPU identity:
+
+```sh
 python -m titan_sim calibrate results/compute-workload.json \
   --config compute-measurement.json --output results/compute-costs.json
 ```
 
-`compute-measurement.json` selects execute mode and the documented native provider;
-it also verifies the expected target GPU. These commands do not allocate GPUs.
-Use the authorized launcher and an initial five-minute scheduler limit.
+The command uses the bundled native runner by default. The caller's launcher
+provides GPUs and enforces the scheduler limit; use five minutes for initial
+benchmarks unless another limit is authorized. One coordinator writes aggregate
+output. Trace-import mode is a separate option that imports matched profiler GPU
+observations and labels their instrumented origin.
 
-[Communication cases](communication-cases.md) retain the identified group size,
-native overload, buffers, reduction, peer roles and measured topology. Select
-them from the necessary peer captures and execute on that many GPUs. Local
-discovery records a **fake execution backend** and requested target backend;
-only the later native communication benchmark produces transport timings.
-HybridEP requires its actual dispatch/combine implementation and remains
-unsupported by the bundled generic communication case provider.
+Communication measurement must preserve group size, rank placement, dtype,
+reduction, layout and relevant traffic distribution. A generic all-to-all does
+not qualify a custom dispatch/combine implementation. If overlap matters, measure
+a short native window: separate compute and communication timings cannot establish
+interference. Controlled windows are experiments; training binding requires
+source-backed ordering and boundary evidence. Automatic window reconstruction,
+distributed CUDA graphs and subgroup-only window execution remain unsupported.
 
-## 3. Measure a short concurrent window when needed
-
-An isolated compute duration plus an isolated communication duration does not
-establish overlap. [Native windows](execution-windows.md) run selected actual
-callables with declared shared state, streams, waits and completion joins.
-A trusted native provider supplies these callables and their buffers. The runner
-coordinates preparation failures and records per-rank timing samples.
-
-Use `window-cases` to build the measurement workload and `calibrate` with
-`titan_sim.execution_windows:region_provider` to measure it in an existing group.
-Compare separate isolated, serial and concurrent manifests when investigating
-interference. Their costs remain specific to those windows and contexts.
-
-A controlled window tests caller-selected ordering and inputs. A source-backed
-window additionally requires checked source artifacts and an explicit producer
-assertion about actual stream dependencies and boundary semantics. Automatic
-trace-to-window reconstruction is not implemented. Distributed CUDA graphs and
-subgroup-only execution inside a larger measurement world remain unsupported.
+Keep measurement workloads, inventories and sample catalogs with the run. No
+central storage service is required. Reuse a cost only when implementation and
+execution context match; do not extrapolate a small communication group or a
+GPU architecture silently.
 
 ## 4. Bind measurements to the original workload
 
-A measurement workload describes what was benchmarked; its **cost catalog**
-contains the resulting seconds and samples. `bind-cases` consumes the former,
-checks its complete source fingerprint and native descriptors, and assigns its
-exact cost keys to verified source occurrences:
+The source workload identifies training occurrences. The measurement workload
+identifies what was benchmarked. The catalog supplies the resulting durations.
+`bind-cases` connects the first two so the simulator can look up the third:
 
 ```sh
 python -m titan_sim bind-cases results/source.rank0.json \
@@ -151,46 +166,29 @@ python -m titan_sim bind-cases results/source.rank0.json \
   --report results/binding-audit.json --output results/bound-workload.json
 ```
 
-Supply all relevant rank sources and repeat `--measurement` as needed. The audit
-lists bound, skipped and unbound occurrences. It preserves source gaps and
-rejects stale snapshots or duplicate ownership. A collective's blocking cost
-requires a reconciled **device-completion endpoint**, not just its host issue
-call. Topology must be explicitly bound to the measured placement.
+Supply all required rank sources and repeat `--measurement` for additional cases.
+Inspect bound, skipped and unbound occurrences. The binder checks full source
+fingerprints and native descriptors; kernel-name matching alone is insufficient.
+Communication costs require reconciled device-completion endpoints and measured
+placement. A binding configuration can request supported native schedule recovery
+with `recover_schedule: true` before assigning costs.
 
-Observed local callable boundaries can be contracted into one measured event
-only when their membership and the selected occurrence's argument, runtime and
-dispatch contracts match. Externally visible intermediate dependencies are
-rejected. Later invocations require their own indexed observation. Set
-`recover_schedule: true` in the binding configuration to derive supported native
-functional completion endpoints from original peer captures before cost binding.
+Use `bind-window` for closed source-backed windows. It replaces their operations
+with one atomic measured event, avoiding double charging. Controlled windows
+cannot replace training costs. Check external consumers and resource assumptions;
+contraction does not prove internal physical-memory bounds.
 
-`bind-window source.json --measurement window-workload.json --output bound.json`
-accepts closed source-backed windows. It charges the whole window once as one
-atomic event using all participant resources. Controlled windows cannot replace
-training costs. This conservative representation loses internal scheduling
-freedom and retains unresolved external contention and readiness assumptions.
-After any contraction, projected physical storage is unverified until applicable
-memory contracts establish its bounds.
+Each binding produces a new workload snapshot. Complete timing bindings before
+attaching memory evidence, so applicability refers to the final structure.
 
-Bind measurement cases/windows before memory evidence. Each binding derives a
-new workload; downstream artifacts must use that exact snapshot. This identity
-discipline prevents a measurement from silently attaching to a changed recipe.
+## 5. Establish physical-memory bounds
 
-## 5. Establish per-device memory coverage
-
-[Memory evidence](memory-evidence.md) attaches allocation sizes, aliases,
-generations, creation and completion events, placement and lifecycle bounds to
-the final prediction workload. Native optimizer/state inspection and allocator
-observations provide useful checks, but an observed maximum is not a proven
-upper bound. Single-region peaks must not be summed as a training peak.
-
-`NativeAllocationCapture` records raw allocator snapshots and state inventories.
-In an explicitly dedicated process it can own bounded allocation history.
-`allocation-evidence` reconstructs generations, aliases, free requests and
-completed releases, and produces conditional replay envelopes where correspondence
-is known. It does not infer future physical coverage from an observed trace;
-coarse host intervals provide upper envelopes, not proof of simultaneous lower
-usage. See [allocation evidence production](memory-evidence.md).
+Follow [memory evidence production and binding](memory-evidence.md) to attach
+allocation sizes, aliases, ownership, creation/release events and lifecycle bounds
+to the final workload. Native state inspection, [memory observation](memory-observation.md)
+and allocator histories can support this work. `allocation-evidence` derives
+recorded generations and conditional replay envelopes from a native allocation
+capture; it does not automatically establish predictive upper bounds.
 
 ```sh
 python -m titan_sim bind-memory results/bound-workload.json \
@@ -198,16 +196,21 @@ python -m titan_sim bind-memory results/bound-workload.json \
   --output results/prediction-workload.json
 ```
 
-Coverage is per device, category and phase, including initialization and loading
-for recipe-level fit. Missing workspaces, communication buffers, graph pools or
-allocator coverage leave upper bounds unknown. Conditional forecasts are reported
-separately and cannot satisfy an unconditional memory-fit requirement. Budget
-overflow is distinguished from a lower bound exceeding physical GPU capacity.
+Account for simultaneously live allocations on each physical GPU, including
+colocated ranks, workspaces, communication buffers, graph pools, external memory
+and allocator slack. Count aliases once; reserved bytes already contain allocated
+bytes. Separate region peaks cannot simply be summed as a training peak.
 
-## 6. Simulate, then independently validate
+For full-recipe fit, cover initialization and loading as well as training.
+Observed maxima and conditional forecasts remain distinct from unconditional
+bounds. Missing physical coverage leaves capacity inconclusive even when every
+operation has a measured cost. See the [memory contract](native-memory.md).
 
-Pass the exact-key catalog to the CPU simulator. When combining catalogs, reject
-conflicting entries for the same key; keep the original sample artifacts.
+## 6. Simulate and report the assessment
+
+Supply the final workload and matching catalog. When combining catalogs from
+multiple measurement runs, reject conflicting records for the same key and retain
+original sample artifacts.
 
 ```sh
 python -m titan_sim simulate results/prediction-workload.json \
@@ -215,16 +218,24 @@ python -m titan_sim simulate results/prediction-workload.json \
   --output results/prediction.json
 ```
 
-Strict mode intentionally rejects remaining execution gaps. Exploratory output
-is available without `--strict`, with its unresolved limitations retained.
-`--require-memory-fit` separately rejects inconclusive capacity. Useful-token
-counts must count unique training tokens, not copies on model-parallel ranks.
+`results/costs.json` is that combined catalog, or a single applicable catalog when
+one run covered the cases. `--strict` rejects unresolved timing/coverage gaps;
+`--require-memory-fit` independently requires an unconditional physical fit.
+For a full-recipe decision, also check `physical_memory.memory_scope="recipe"`.
+For investigation, omit those flags and report the retained limitations explicitly.
 
-Use [prediction validation](prediction-validation.md) to freeze prediction inputs
-before invoking a separate trusted native control. Full-update freezing rejects
-missing ranks, incomplete captures, unknown costs and declared execution gaps.
-Compare
-step time, per-device memory and fit decisions. Component replay, a successful
-local discovery step or a controlled overlap window is narrower evidence than
-full-model prediction accuracy. Validation models exercise shared runtime
-features; they do not select model-specific simulator implementations.
+Return timing scope and unique-token normalization, per-device bounds and budgets,
+limiting devices, measurement coverage, assumptions, unresolved operations and
+artifact identities. Explain which next observation or integration would resolve
+an inconclusive result. Use [result interpretation](../README.md#read-the-result).
+
+## 7. Validate accuracy when independent execution is available
+
+[Freeze the prediction](prediction-validation.md) before a separate trusted control
+run. Compare matching recipe/runtime/placement, completed-step timing and memory
+lifecycle scope. Keep intrusive profiling separate from throughput measurement.
+Full-update validation requires complete timing coverage and ranks; a local region
+check cannot establish full-model prediction accuracy.
+
+Validation fixtures test shared runtime behavior. Their results belong with run
+evidence, while the generic skill and simulator remain independent of model names.

@@ -1,5 +1,16 @@
 # Agent entry points
 
+## Documentation design
+
+Write for a reader arriving without prior context: explain the problem, system
+design, component relationships and usage in that order. README is the entrance;
+`docs/architecture.md` owns the design, `docs/gpu-assisted.md` owns the end-to-end
+workflow, and technical references own detailed contracts. When behavior changes,
+revise those explanations coherently rather than appending a feature recap or
+another competing overview. Keep the skill focused on agent decisions and handoffs.
+
+## Execution rules
+
 Pin and record this repository's commit SHA. Read README.md and run
 `python -m titan_sim --help`. The public operations are **runtime-check, capture,
 prepare, validate, calibrate, simulate**, plus **export-plan, lower-plan** for native
