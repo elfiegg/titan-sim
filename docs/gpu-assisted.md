@@ -75,6 +75,12 @@ waits, global CUDA stream ordering and unsupported group layouts remain gaps.
 
 ## 2. Measure identified native implementations
 
+For implementations outside the existing case providers, use the
+[custom-library agent workflow](custom-library-workflow.md). It describes how an
+agent discovers the actual native path, constructs and qualifies a provider,
+and returns source binding and memory evidence. A particular library's missing
+dependency stays in its runtime handoff; it does not define the generic workflow.
+
 There are two local compute paths:
 
 - [Dispatch cases](operator-cases.md) reconstruct supported native matrix

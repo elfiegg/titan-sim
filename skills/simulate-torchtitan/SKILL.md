@@ -31,8 +31,9 @@ binding the full recipe can correctly report a scope mismatch. Preserve that
 mismatch while continuing read-only or CPU analysis where possible, with explicit
 gaps. Do not relabel the handoff or silently weaken expected identities. A reduced
 recipe qualification does not establish full-model fit.
-Changed features or missing probes go back to runtime preparation; do not disable
-the requested feature to make simulation succeed. Stage remote evidence through
+Changed features or missing probes go back to runtime preparation with the exact
+dependency/capability requirement and reproducer; continue independent cases.
+Do not disable the requested feature to make simulation succeed. Stage remote evidence through
 the caller's mechanism if the handoff checker cannot read it.
 
 ## Resolve the simulation case
@@ -61,13 +62,25 @@ for local discovery and component/window measurement, or the
 [native guide](../../docs/native-torchtitan.md) for full profiler observation.
 Keep original model and optimizer execution.
 
+When custom-library execution is missing from the prediction, follow the
+[custom-library agent workflow](../../docs/custom-library-workflow.md). Build a
+case packet from the actual invocation and prepared runtime; inspect native code,
+choose a faithful local/distributed boundary, implement and qualify its provider,
+then bind timing, scheduling and memory evidence. Unknown custom operations are
+integration tasks, not terminal labels. Opaque state may require a larger native
+region; hidden communication requires actual group execution. Never set replay
+safety, no-communication or memory-coverage flags solely to pass validation.
+Delegate independent cases with explicit file ownership and one GPU scheduler;
+retain dependent inspection/provider/qualification steps within the same case.
+
 - Choose fake capture for logical tensor configuration exploration when supported;
   enumerate distinct rank roles. Fake tensor mode does not guarantee a GPU-free
   process: native construction, CUDA initialization, data loading and other side
   effects still need a compatible, authorized execution context. Fake wall time
   is never GPU time. Native capture
   executes real training and its configured side effects; use it only inside the
-  authorized allocation. Preserve unsupported custom ops as blockers.
+  authorized allocation. Investigate unsupported custom operations through the
+  custom-library workflow and retain their simulation gaps until qualified.
 - Capture using `titan_sim.torchtitan:capture`, fresh trace directories and
   `workload.rank{rank}.json` paths. Keep raw traces and source/runtime identities.
 - When authorized real GPUs are available, `execution: "local_cuda"` observes

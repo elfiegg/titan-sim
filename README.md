@@ -112,8 +112,10 @@ the [prepare-runtime handoff](docs/native-torchtitan.md#before-you-start).
 You can run the framework-free example below, simulate an existing compatible
 workload, or develop a capture/calibration integration. For the workflow using
 one GPU for local discovery and compute, then actual groups for communication,
-start with [GPU-assisted prescreening](docs/gpu-assisted.md). For full native
-profiler observation, use the [native integration guide](docs/native-torchtitan.md). The bundled pipeline preserves
+start with [GPU-assisted prescreening](docs/gpu-assisted.md). For custom-library
+integration tasks, follow the [agent workflow](docs/custom-library-workflow.md).
+For full native profiler observation, use the
+[native integration guide](docs/native-torchtitan.md). The bundled pipeline preserves
 unsupported semantics as gaps; it does not automatically recover every compiled
 region, stream dependency or allocation from a trace.
 For already-constructed native schedules and graph metadata, use the
