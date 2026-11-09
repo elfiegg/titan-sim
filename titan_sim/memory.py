@@ -163,6 +163,9 @@ def assess_memory(nodes, storage, timing, hardware, manifest):
     memory = manifest.get('memory', {})
     if not isinstance(memory, dict):
         raise ValueError('manifest.memory must be an object')
+    if memory.get('evidence_binding') is not None:
+        from .memory_evidence import assess_evidence_memory
+        return assess_evidence_memory(nodes, storage, timing, hardware, manifest)
     ranks = manifest.get('ranks', [])
     if any(isinstance(rank, bool) or not isinstance(rank, int) or rank < 0 for rank in ranks) or len(set(ranks)) != len(ranks):
         raise ValueError('ranks must be distinct nonnegative integers')
@@ -320,6 +323,8 @@ def assess_memory(nodes, storage, timing, hardware, manifest):
                 _bytes(upper, 'allocation.upper_bytes')
                 if upper < lower:
                     raise ValueError('allocation upper bound is below lower bound')
+        if type(allocation.get('end_inclusive', False)) is not bool:
+            raise ValueError('allocation.end_inclusive must be boolean')
         start = _seconds(allocation.get('start_seconds', 0), 'allocation.start_seconds')
         end = _seconds(allocation.get('end_seconds', finish), 'allocation.end_seconds')
         if end < start:
@@ -339,12 +344,12 @@ def assess_memory(nodes, storage, timing, hardware, manifest):
                     device=device, lower=lower, upper=0, category=category,
                     intervals=[], closed_ends=set()))
                 proof['intervals'].append((start, end))
-            if 'end_seconds' not in allocation:
+            if 'end_seconds' not in allocation or allocation.get('end_inclusive', False):
                 record['closed_ends'].add(end)
         else:
             records[aid] = dict(device=device, lower=lower, upper=upper,
                                 category=category, intervals=[(start, end)],
-                                closed_ends={end} if 'end_seconds' not in allocation else set())
+                                closed_ends={end} if 'end_seconds' not in allocation or allocation.get('end_inclusive', False) else set())
 
     lifecycle = defaultdict(list)
     lifecycle_peaks = memory.get('lifecycle_peaks', [])
@@ -418,6 +423,13 @@ def assess_memory(nodes, storage, timing, hardware, manifest):
     if global_issues:
         for item in per_device.values():
             item['peak_upper_bytes'] = None
+    for item in per_device.values():
+        lower, upper = item['peak_lower_bytes'], item['peak_upper_bytes']
+        budget, capacity = item['budget_bytes'], item['capacity_bytes']
+        item['budget_outcome'] = ('unknown' if not placement_known or budget is None else
+            'overflow' if lower > budget else 'within_budget' if upper is not None and upper <= budget else 'unknown')
+        item['physical_capacity_outcome'] = ('unknown' if not placement_known or capacity is None else
+            'oom_lower_bound' if lower > capacity else 'within_capacity' if upper is not None and upper <= capacity else 'unknown')
     not_fit = placement_known and any(item['peak_lower_bytes'] > item['budget_bytes'] for item in per_device.values())
     fits = bool(per_device) and all(item['peak_upper_bytes'] is not None and item['peak_upper_bytes'] <= item['budget_bytes'] for item in per_device.values())
     return dict(memory_verdict='estimated_not_fit' if not_fit else 'estimated_fit' if fits else 'inconclusive',

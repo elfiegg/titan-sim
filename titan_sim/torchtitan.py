@@ -38,7 +38,7 @@ def _register_state(recorder, engine):
 
 
 def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=None,
-                    observer='profiler', trace_dir=None, execution_trace=True):
+                    observer='profiler', trace_dir=None, execution_trace=True, recorder_callback=None):
     """Run a bounded native train loop and return a rank-local Workload.
 
     The caller owns trainer/process-group creation and cleanup. This function
@@ -72,6 +72,10 @@ def capture_trainer(trainer, *, hardware, steps=1, warmup_steps=0, provenance=No
         recorder = TorchCapture(rank=rank, world_size=world, device=engine.device, provenance=provenance)
     else:
         raise ValueError('observer must be profiler or dispatch')
+    if recorder_callback is not None:
+        if not callable(recorder_callback):
+            raise ValueError('recorder_callback must be callable')
+        recorder_callback(recorder)
     original_step, original_continue = trainer.train_step, trainer.should_continue_training
     completed, captured = 0, 0
     manifest = dict(scope='native TorchTitan rank-local train_step operators', observer=observer,
@@ -196,6 +200,9 @@ def capture(config):
     Use a dedicated process in the original training environment for either.
     """
     execution = config.get('execution')
+    if execution == 'local_cuda':
+        from .local_execution import capture as capture_local
+        return capture_local(config)
     if execution not in ('native', 'fake'):
         raise ValueError('execution must explicitly be native or fake')
     argv = config.get('recipe_args')

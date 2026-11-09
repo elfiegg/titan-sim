@@ -7,7 +7,11 @@ configuration, infer collective groups from kernel names, or extrapolate one
 group size to another.
 
 Supported overloads are native c10d base all-gather, base reduce-scatter and
-single-tensor all-reduce, plus their `_c10d_functional` equivalents. Group and
+single-tensor all-reduce, plus their `_c10d_functional` equivalents; native
+single-buffer all-to-all with uniform splits; and native c10d send/recv when
+the original source group has exactly two ranks. P2P peers and tags must match.
+Nonuniform splits, larger-source-group P2P and custom HybridEP dispatch/combine
+remain unsupported by this provider. Group and
 reduction ScriptObjects are unboxed for observation and correctly boxed for
 native replay. Unsupported operations remain in the skipped-case report.
 
@@ -16,6 +20,12 @@ native replay. Unsupported operations remain in the skipped-case report.
 Start with a native dispatch workload (`observer: "dispatch"`). The observer
 records communication metadata without waiting or creating process groups.
 Failure to inspect a collective records a gap and lets the original call run.
+
+The [local CUDA discovery](local-execution.md) path can also identify cases with
+explicit fake-execution and requested-NCCL target metadata. These records are
+not transport observations. Selection accepts this separate evidence category
+only with its target group and tensor contracts; the later benchmark still
+executes the native NCCL implementation on the actual measurement group.
 
 ```sh
 python -m titan_sim calibration-cases results/native.rank0.json \
@@ -113,3 +123,9 @@ can test repeatability; it is not a held-out full-training accuracy result.
 Central storage is unnecessary: the workload, inventory, samples, topology and
 provenance are ordinary local artifacts. Do not relabel them as costs for a
 different group size, precision, runtime or placement.
+
+Use [execution windows](execution-windows.md) to measure supported concurrent
+compute and communication with shared state and explicit completion. Use
+[case binding](gpu-assisted.md#4-bind-measurements-to-the-original-workload) to
+attach isolated costs to verified source occurrences; a host issue call alone
+cannot accept a blocking device-completion cost.

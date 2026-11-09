@@ -95,17 +95,22 @@ and allocator behavior. Calibrated timing alone cannot establish memory fit.
 | Native host-plan extraction and lowering | Supported native action tables, FX graphs, alias/state metadata and microbatch lifetimes; one pipeline-group merge; no universal offline graph construction or complete physical-memory claim |
 | Native TorchTitan capture | Original training-step observation; ET+Kineto by default, explicit Kineto-only mode for ET-incompatible runtimes; raw evidence retained |
 | Native trace-to-GPU matching and rank preparation | Bundled `prepare`: checksum-verified direct correlations, rank merging and evidence-backed region/dependency/rendezvous assertions; ambiguous correlations and unknown waits remain gaps |
-| Native GPU measurement runner | Bundled trace-cost importer and callable-region timer; providers retain native implementations; existing all-rank process groups supported, distributed graph/subgroup-only rounds unsupported |
-| Identified compute/communication calibration | Bundled native dense-matmul and collective providers select supported dispatch cases; one GPU for compute, an existing same-size group for communication; explicit skip inventory and local cost artifacts |
+| Local CUDA discovery | Original trainer with target logical fake groups and explicit communication substitutions; actual local compute; unsupported boundaries fail closed |
+| Native GPU measurement runner | Bundled trace-cost importer and callable-region timer; live native handles with explicit state/context contracts; existing all-rank process groups supported, distributed graph/subgroup-only rounds unsupported |
+| Identified compute/communication calibration | Native dense matmuls, supported collectives, uniform all-to-all and two-rank-source-group P2P; exact source/cost binding; explicit skips and local artifacts |
+| Concurrent native windows | Provider-owned state, CUDA streams/events and all-rank preflight; closed source-backed windows bind atomically; automatic trace-to-window recovery remains unimplemented |
 | Per-device physical-memory bounds | Placement-aware lifetime envelopes, heterogeneous capacities, aliases, external allocations and lifecycle peaks; complete coverage requires explicit evidence |
 | Real native memory observation | Allocator peaks, boundary snapshots and visible state inventories, including optional native peak-reset tracking; observations do not establish unseen-configuration fit |
+| Target-applicable memory evidence | Source/placement/phase-bound allocation contracts, aliases and coverage; conditional forecasts separated from unconditional fit; complete contract production still needs integration |
 | Full-model GPU/distributed accuracy across recipes | Requires held-out validation for each claimed scope; universal configuration support is not established |
 
 The repository-owned [simulation skill](skills/simulate-torchtitan/SKILL.md) consumes
 the [prepare-runtime handoff](docs/native-torchtitan.md#before-you-start).
 You can run the framework-free example below, simulate an existing compatible
-workload, or develop a capture/calibration integration. For TorchTitan, start with
-the [native integration guide](docs/native-torchtitan.md). The bundled pipeline preserves
+workload, or develop a capture/calibration integration. For the workflow using
+one GPU for local discovery and compute, then actual groups for communication,
+start with [GPU-assisted prescreening](docs/gpu-assisted.md). For full native
+profiler observation, use the [native integration guide](docs/native-torchtitan.md). The bundled pipeline preserves
 unsupported semantics as gaps; it does not automatically recover every compiled
 region, stream dependency or allocation from a trace.
 For already-constructed native schedules and graph metadata, use the
@@ -164,6 +169,10 @@ The CLI exposes these operations:
 | `export-plan` | Prepared native objects through a trusted adapter, or native recipe export configuration | Versioned schedule/graph plan | Original framework environment; observation may execute native steps |
 | `lower-plan` | Native pipeline-group plans, hardware and explicit bindings | Workload with schedule and logical storage lifetimes | CPU |
 | `calibration-cases` | Native dispatch workload; actual placement for communication | Isolated measurement workload and optional eligible/skipped inventory | CPU |
+| `window-cases` | Source workload, native provider and stream/dependency manifest | Exact-context native window measurement workload | CPU; measurement uses the existing GPU group |
+| `bind-cases` | Exact source snapshots and native measurement workloads | Derived workload and occurrence-binding audit | CPU |
+| `bind-window` | Exact source and a closed source-backed window workload | One measured atomic event with all participant resources | CPU |
+| `bind-memory` | Final workload, allocation evidence bundle and exact applicability | Workload with audited observations and predictive contracts | CPU |
 | `capture` | Adapter reference and adapter-owned configuration | Workload JSON | Adapter's framework environment |
 | `validate` | Workload JSON | Structural counts and declared gaps | CPU |
 | `calibrate` | Workload, measurement runner and runner-owned configuration | Cost catalog and unmatched-key report | Runner's measurement environment, usually GPUs |
@@ -311,7 +320,11 @@ the comparison as independent validation.
 | [`plan_lowering.py`](titan_sim/plan_lowering.py), [`plan_memory.py`](titan_sim/plan_memory.py) | Native action dependencies and graph-backed logical storage lifetimes |
 | [`native_runner.py`](titan_sim/native_runner.py) | Trace observations and repeated native GPU measurements |
 | [`operator_cases.py`](titan_sim/operator_cases.py), [`communication_cases.py`](titan_sim/communication_cases.py) | Eligible native overload cases and replay providers with exact metadata/runtime context |
+| [`local_execution.py`](titan_sim/local_execution.py), [`executable_regions.py`](titan_sim/executable_regions.py) | Target-rank CUDA discovery, explicit communication substitution and live native callable retention |
+| [`case_binding.py`](titan_sim/case_binding.py), [`identity.py`](titan_sim/identity.py) | Exact source snapshots, native measurement correspondence and occurrence audits |
+| [`execution_windows.py`](titan_sim/execution_windows.py) | Native concurrent measurement and conservative closed-window binding |
 | [`memory_observer.py`](titan_sim/memory_observer.py) | Native process allocator peaks, sampled device use and state inventories |
+| [`memory_evidence.py`](titan_sim/memory_evidence.py) | Target-applicable allocation contracts, scoped coverage and separate empirical observations |
 | [`memory.py`](titan_sim/memory.py) | Physical placement, allocation/lifecycle envelopes and fit verdicts |
 | [`hardware.py`](titan_sim/hardware.py) | Explicit capacity/rate validation; specification assumptions |
 | [`torchtitan.py`](titan_sim/torchtitan.py) | Native recipe loading and bounded trainer observation |

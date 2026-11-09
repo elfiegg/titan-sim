@@ -25,6 +25,12 @@ This guide identifies those boundaries before showing the commands.
 
 ## How the integration fits together
 
+This guide describes full native profiler observation. To discover real local
+compute with target fake groups, measure communication separately and replay
+short concurrent windows, use [GPU-assisted prescreening](gpu-assisted.md).
+That workflow also explains exact occurrence binding and physical-memory
+evidence. Neither workflow automatically recovers every native execution path.
+
 ```text
 Your recipe module + configuration function
                      |
@@ -123,6 +129,7 @@ Choose how to collect evidence:
 | Kineto-only profiler capture | Same, plus `execution_trace: false` | Retained Chrome GPU activities when ET is incompatible; occurrence-specific costs, no ET tensor/storage reconstruction |
 | Fake dispatch capture | `execution: "fake"`, `observer: "dispatch"`, native fake backend arguments | Logical operations and storage metadata for supported fake execution; no GPU timings |
 | Native eager dispatch capture | `execution: "native"`, `observer: "dispatch"` | Dispatch and alias debugging; can conflict with compiled execution |
+| Local CUDA discovery | `execution: "local_cuda"`, target rank/world and original recipe | Actual local CUDA compute with explicit target-group communication substitutions; see the [local guide](local-execution.md) |
 
 The walkthrough uses native profiler capture. **It executes training**, including
 warmup and optimizer updates. It preserves configured data loading, validation

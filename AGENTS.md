@@ -3,7 +3,8 @@
 Pin and record this repository's commit SHA. Read README.md and run
 `python -m titan_sim --help`. The public operations are **runtime-check, capture,
 prepare, validate, calibrate, simulate**, plus **export-plan, lower-plan** for native
-host-plan artifacts, and **calibration-cases** for native dispatch measurement.
+host-plan artifacts, **calibration-cases/window-cases** for native measurement,
+and **bind-cases/bind-window/bind-memory** for exact target evidence binding.
 There is no `--case` or built-in model selection.
 
 - CPU simulation and structural validation require Python 3.10+ only. Do not
@@ -59,6 +60,14 @@ There is no `--case` or built-in model selection.
   preserves native resets, and is restored after observation. Measured allocator
   reservations are lower bounds for that run, not complete physical upper bounds
   or predictions for unseen configurations. Keep samples and calibration separate.
+- Read `docs/gpu-assisted.md` for local CUDA discovery, retained native callable
+  measurement and concurrent windows. Fake transport remains explicit. Original
+  compiler/trainer settings must be preserved; unsupported paths fail closed.
+  Live handles require the same process and verified input/state/context contracts.
+- Bind costs to exact source snapshots before attaching memory evidence. Window
+  binding requires checked producer ordering/boundary assertions; controlled
+  synthetic windows cannot replace training costs. Contracted storage remains
+  unverified. Conditional memory forecasts cannot satisfy unconditional fit.
 
 Use a compatible pinned training environment for native capture/calibration and
 preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires

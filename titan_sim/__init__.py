@@ -1,2 +1,2 @@
 """Workload-neutral event simulation; package import does not load a framework."""
-__version__ = "0.7.0"
+__version__ = "0.8.0"

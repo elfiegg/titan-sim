@@ -367,7 +367,9 @@ def _execute(workload, config):
                                 provider_provenance=bundle['provenance'], provider_source_sha256=source_sha,
                                 torch_version=str(torch.__version__), cuda_version=torch.version.cuda),
                 limitations=['Trusted provider owns exact native implementation and input fidelity.',
-                             'Isolated region timing does not establish overlap or contention in training.'])
+                             ('Window timing qualifies only the supplied occurrences, streams and inputs; external training contention remains unqualified.'
+                              if region['context'].get('measurement_scope') == 'execution_window' else
+                              'Isolated region timing does not establish overlap or contention in training.')])
         shards = gather(catalog)
         if rank != coordinator:
             return {}

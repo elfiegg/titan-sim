@@ -15,6 +15,7 @@ from pathlib import Path
 from .core import Node
 from .native_runner import native_cost_key
 from .workload import Workload
+from .identity import workload_fingerprint
 
 
 # Explicit semantic allowlist: adding arbitrary schema-compatible operators is
@@ -146,7 +147,14 @@ def prepare_operator_cases(workload):
                                       occurrences=[occurrence])
         except (ValueError, KeyError, TypeError) as exc:
             skipped.append(dict(rank=node.rank, node_id=node.id, operator=operator, reason=str(exc)))
+    try:
+        source_fingerprint = workload_fingerprint(workload)
+        source_identity_error = None
+    except (ValueError, TypeError) as error:
+        source_fingerprint = None
+        source_identity_error = 'Source cannot be canonically serialized: '+str(error)
     return dict(schema='native-operator-cases', version=1, cases=list(cases.values()), skipped=skipped,
+                source_workload_sha256=source_fingerprint, source_identity_error=source_identity_error,
                 source_provenance_sha256=provenance_sha, source_provenance=provenance,
                 limitations=['Finite synthetic tensor values; original numerical outputs are not reproduced.',
                              'Native ATen overload replay; compiled/custom kernels and full training coverage are not inferred.'])

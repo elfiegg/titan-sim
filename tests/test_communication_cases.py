@@ -203,9 +203,13 @@ class CommunicationCasesTests(unittest.TestCase):
         first = prepare_communication_cases(source)['cases'][0]['case_id']
         record['reduction_factor'] = .25
         self.assertNotEqual(prepare_communication_cases(source)['cases'][0]['case_id'], first)
-        for factor in (None, {'opaque_type': 'Tensor'}, float('inf')):
+        for factor in (None, {'opaque_type': 'Tensor'}):
             record['reduction_factor'] = factor
             self.assertEqual(prepare_communication_cases(source)['cases'], [])
+
+        record['reduction_factor'] = float('inf')
+        with self.assertRaises(ValueError):
+            prepare_communication_cases(source)
 
     def test_scalar_allreduce_is_one_element_while_zero_length_is_skipped(self):
         source = fixture()
@@ -329,6 +333,115 @@ class CommunicationCasesTests(unittest.TestCase):
         resolve.assert_called_once_with('subgroup')
         self.assertEqual(result['reduce_op'], 'sum')
         self.assertEqual(result['participants'], [1, 3])
+
+    def alltoall_peers(self):
+        source = fixture()
+        record = source.nodes[0].attrs['communication']
+        record.update(operator='c10d.alltoall_base_.default', operation='all_to_all_single',
+                      split_sizes={'input_split_sizes':[2,2], 'output_split_sizes':[2,2]},
+                      tensors={'input':tensor([4,2],'input'), 'output':tensor([4,2],'output')})
+        peer = copy.deepcopy(source)
+        peer.nodes[0].rank = 5
+        peer.manifest['ranks'] = [5]
+        return source, peer
+
+    def p2p_peers(self):
+        source = fixture()
+        record = source.nodes[0].attrs['communication']
+        record.update(operator='c10d.send.default', operation='send', async_op=None,
+                      p2p={'dst':1, 'tag':0}, tensors={'tensors':[tensor([4], 'input')]})
+        peer = copy.deepcopy(source)
+        peer.nodes[0].rank = 5
+        peer.manifest['ranks'] = [5]
+        peer.nodes[0].attrs['communication'].update(operator='c10d.recv_.default',operation='recv',p2p={'src':0,'tag':0})
+        return source, peer
+
+    def test_uniform_alltoall_requires_peers_and_preserves_splits(self):
+        source, peer = self.alltoall_peers()
+        self.assertEqual(prepare_communication_cases(source)['cases'], [])
+        case = prepare_communication_cases(source,[peer])['cases'][0]
+        self.assertEqual(case['split_sizes']['input_split_sizes'], [2,2])
+        self.assertEqual(case['logical_payload'], {'input_bytes':16,'output_bytes':16})
+        source.nodes[0].attrs['communication']['split_sizes']['input_split_sizes'] = [1,3]
+        result = prepare_communication_cases(source,[peer])
+        self.assertFalse(result['cases'])
+        self.assertTrue(any('nonuniform' in item['reason'] for item in result['skipped']))
+
+    def test_p2p_exact_two_rank_pair_and_unmatched_failure(self):
+        source, peer = self.p2p_peers()
+        result = prepare_communication_cases(source,[peer])
+        self.assertEqual(result['skipped'], [])
+        case = result['cases'][0]
+        self.assertEqual(case['operation'], 'p2p')
+        self.assertEqual(case['rank_operations']['5']['p2p'], {'src':0,'tag':0})
+        self.assertEqual(len(case['source_nodes']), 2)
+        peer.nodes[0].attrs['communication']['p2p']['tag'] = 1
+        result = prepare_communication_cases(source,[peer])
+        self.assertFalse(result['cases'])
+        self.assertEqual(len(result['skipped']), 2)
+
+    def test_source_fingerprints_and_hybrid_backend_gaps(self):
+        from titan_sim.identity import workload_fingerprint
+        source = fixture()
+        result = prepare_communication_cases(source)
+        self.assertEqual(result['source_workload_sha256_by_rank'], {'2':workload_fingerprint(source)})
+        other = copy.deepcopy(source)
+        other.nodes[0].name = 'other'
+        with self.assertRaisesRegex(ValueError,'duplicate source rank'):
+            prepare_communication_cases(source,[other])
+        source.nodes[0].name = 'hybrid_ep::dispatch'
+        source.nodes[0].attrs.pop('communication')
+        self.assertIn('generic NCCL is not a substitute',prepare_communication_cases(source)['skipped'][0]['reason'])
+
+    def test_local_substitution_keeps_fake_discovery_distinct_from_nccl_target(self):
+        source = fixture()
+        record = source.nodes[0].attrs['communication']
+        record.update(backend='fake',execution_backend='fake',target_backend='nccl',
+                      evidence='local_cuda_substitution_and_target_group')
+        case = prepare_communication_cases(source)['cases'][0]
+        self.assertEqual(case['backend'],'nccl')
+        self.assertEqual(case['discovery']['execution_backend'],'fake')
+        self.assertIn('not native distributed',case['discovery']['limitation'])
+        del record['target_backend']
+        self.assertFalse(prepare_communication_cases(source)['cases'])
+
+    @unittest.skipUnless(importlib.util.find_spec('torch'), 'requires actual native boxed communication schemas')
+    def test_actual_native_alltoall_send_recv_abis_and_provider(self):
+        import torch
+        dist = torch.distributed
+        import torch.testing._internal.distributed.fake_pg
+        if dist.is_initialized():
+            self.skipTest('test owns fake process group')
+        dist.init_process_group('fake',store=dist.HashStore(),rank=0,world_size=2)
+        self.addCleanup(dist.destroy_process_group)
+        for operation in ('alltoall','send','recv'):
+            source, peer = self.alltoall_peers() if operation == 'alltoall' else self.p2p_peers()
+            if operation == 'recv':
+                for item in (source,peer):
+                    record = item.nodes[0].attrs['communication']
+                    sending = item.nodes[0].rank == 5
+                    record.update(operator='c10d.send.default' if sending else 'c10d.recv_.default',
+                                  operation='send' if sending else 'recv',
+                                  p2p={'dst':0,'tag':0} if sending else {'src':1,'tag':0})
+            for item in (source,peer):
+                record = item.nodes[0].attrs['communication']
+                namespace,name,overload = record['operator'].split('.')
+                function = getattr(getattr(getattr(torch.ops,namespace),name),overload)
+                record['operator_schema'] = str(function._schema)
+                record['extra_arguments'] = {}
+                record['runtime_context'] = execution_context(torch)
+                item.manifest['provenance'] = dict(torch_version=str(torch.__version__),cuda_version=torch.version.cuda)
+            topology = {'fixture':'native-boxed-fake'}
+            workload = communication_case_workload(source,topology=topology,peer_workloads=[peer])
+            def share(values,value): values[:] = [value,value]
+            def allocate(torch,case,rank,device): return _allocate_tensors(torch,case,rank,'cpu')
+            with patch.object(dist,'get_backend',return_value='nccl'), \
+                 patch.object(dist,'all_gather_object',side_effect=share), \
+                 patch.object(torch.cuda,'current_device',return_value=0), \
+                 patch('titan_sim.communication_cases._allocate_tensors',side_effect=allocate):
+                region = region_provider(workload,{'topology':topology})['regions'][0]
+                region['before_sample']()
+                region['run']()  # Actual C++ overload/Work.wait; fake transport, no timing claim.
 
     @unittest.skipUnless(importlib.util.find_spec('torch'), 'requires native boxed schemas')
     def test_actual_boxed_process_group_reduction_and_native_replay(self):

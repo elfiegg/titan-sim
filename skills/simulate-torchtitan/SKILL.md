@@ -56,8 +56,10 @@ specification-derived throughput as calibrated.
 
 ## Capture, prepare, calibrate, simulate
 
-Read the pinned checkout's [native guide](../../docs/native-torchtitan.md) and only
-the relevant detailed references. Keep original model and optimizer execution.
+Read the pinned checkout's [GPU-assisted workflow](../../docs/gpu-assisted.md)
+for local discovery and component/window measurement, or the
+[native guide](../../docs/native-torchtitan.md) for full profiler observation.
+Keep original model and optimizer execution.
 
 - Choose fake capture for logical tensor configuration exploration when supported;
   enumerate distinct rank roles. Fake tensor mode does not guarantee a GPU-free
@@ -68,6 +70,12 @@ the relevant detailed references. Keep original model and optimizer execution.
   authorized allocation. Preserve unsupported custom ops as blockers.
 - Capture using `titan_sim.torchtitan:capture`, fresh trace directories and
   `workload.rank{rank}.json` paths. Keep raw traces and source/runtime identities.
+- When authorized real GPUs are available, `execution: "local_cuda"` observes
+  real local compute with the original target rank/world and explicit fake
+  transport substitutions. Enumerate distinct roles; retain unsupported calls.
+  Instrumented discovery time and memory do not establish training performance
+  or fit. Retained native handles need original argument/runtime context and a
+  replay state contract; see [local execution](../../docs/local-execution.md).
 - Run `titan-sim prepare` across rank artifacts. Review direct GPU correlations,
   compiled-region boundaries, stream dependencies, rendezvous and storage
   lifetimes. Supply explicit evidence for semantics the traces cannot establish.
@@ -81,6 +89,15 @@ the relevant detailed references. Keep original model and optimizer execution.
   keys and hardware. Use a coordinator for aggregate output. See
   [calibration](../../docs/native-calibration.md). The scheduler enforces the
   authorized hard limit; initial GPU checks use five minutes unless overridden.
+- Measure concurrent behavior through [native windows](../../docs/execution-windows.md)
+  when isolated costs are insufficient. Preserve native shared buffers, streams
+  and waits. Controlled windows are experiments; training binding needs checked
+  source ordering/boundary evidence. Do not derive a universal overlap multiplier.
+- Use `bind-cases` or `bind-window` to connect measurement workloads to exact
+  source occurrences before attaching memory evidence. Inspect skipped/unbound
+  entries. Host collective issue is not device completion, and later compiled
+  calls are not automatically the same specialization. Keep local workloads and
+  catalogs; centralized calibration storage is optional.
 - Simulate on CPU with the prepared workload and matching costs. Strict mode
   checks timing/workload completeness. Also require `--require-memory-fit` when
   choosing a recipe to run, and require `physical_memory.memory_scope="recipe"`
@@ -96,6 +113,10 @@ optimizer initialization/update, workspaces, communication buffers, graph pools,
 allocator slack, external allocations and lifecycle peaks. Count aliases once;
 allocator reserved memory already contains allocated memory. State whether the
 assessment covers only the scheduled interval or the complete recipe lifecycle.
+Use [memory evidence binding](../../docs/memory-evidence.md) for target-applicable
+allocation generations, completion events and scoped coverage. Bind against the
+final workload after region/window contraction. Native state/allocator samples
+remain observations; conditional forecasts cannot pass unconditional fit.
 
 Publish lower/upper peaks, capacity/budget, margin and limiting device. A credible
 lower bound above a device budget means `estimated_not_fit`; a covered upper bound

@@ -12,6 +12,7 @@ import ast
 import math
 
 from .core import Node
+from .identity import workload_fingerprint
 from .native_runner import native_cost_key
 from .workload import Workload
 
@@ -20,6 +21,10 @@ _OPERATIONS = {
     'c10d._allgather_base_.default': 'all_gather_into_tensor',
     'c10d._reduce_scatter_base_.default': 'reduce_scatter_tensor',
     'c10d.allreduce_.default': 'all_reduce',
+    'c10d.alltoall_base_.default': 'all_to_all_single',
+    'c10d.send.default': 'send',
+    'c10d.recv_.default': 'recv',
+    '_c10d_functional.all_to_all_single.default': 'all_to_all_single',
     '_c10d_functional.all_gather_into_tensor.default': 'all_gather_into_tensor',
     '_c10d_functional.reduce_scatter_tensor.default': 'reduce_scatter_tensor',
     '_c10d_functional.all_reduce.default': 'all_reduce',
@@ -76,7 +81,8 @@ def describe_communication(func, args, kwargs, describe):
         raise ValueError('sparse-index collective replay is unsupported')
     extras = {}
     known = {'input', 'input_tensor', 'output_tensor', 'tensors', 'process_group',
-             'group_name', 'group_size', 'reduce_op', 'sparse_indices', 'async_op', 'timeout'}
+             'group_name', 'group_size', 'reduce_op', 'sparse_indices', 'async_op', 'timeout',
+             'output', 'input_split_sizes', 'output_split_sizes', 'dst', 'src', 'tag'}
     for argument in func._schema.arguments:
         if argument.name not in known:
             value = values[argument.name]
@@ -99,13 +105,15 @@ def describe_communication(func, args, kwargs, describe):
         if reduction is None:
             raise ValueError('unsupported native reduction operator')
     tensors = {key: describe(values[key]) for key in
-               ('input', 'input_tensor', 'output_tensor', 'tensors') if key in values}
+               ('input', 'output', 'input_tensor', 'output_tensor', 'tensors') if key in values}
     return dict(operator=name, operator_schema=str(func._schema), operation=_OPERATIONS[name],
                 participants=participants, group_size=len(participants),
                 backend=str(dist.get_backend(group)),
                 group_name=str(dist.distributed_c10d._get_process_group_name(group)),
                 reduce_op=reduction, reduction_factor=reduction_factor,
                 async_op=values.get('async_op'), tensors=tensors,
+                split_sizes={key: list(values[key]) for key in ('input_split_sizes', 'output_split_sizes') if key in values},
+                p2p={key: values[key] for key in ('src', 'dst', 'tag') if key in values},
                 timeout=values.get('timeout', -1), extra_arguments=extras,
                 runtime_context=execution_context(torch),
                 evidence='native_dispatch_and_resolved_process_group')
@@ -136,7 +144,8 @@ def _tensor_signature(value):
 def _validate_tensors(record, tensors):
     functional = record['operator'].startswith('_c10d_functional.')
     operation = record['operation']
-    expected = {'input'} if functional else {'tensors'} if operation == 'all_reduce' else {'input_tensor', 'output_tensor'}
+    expected = ({'input'} if functional else {'tensors'} if operation in ('all_reduce', 'send', 'recv')
+                else {'input', 'output'} if operation == 'all_to_all_single' else {'input_tensor', 'output_tensor'})
     if set(tensors) != expected:
         raise ValueError('collective tensor argument keys differ from native schema')
     def count(value):
@@ -144,7 +153,21 @@ def _validate_tensors(record, tensors):
         for dim in value['shape']:
             total *= dim
         return total
-    source = tensors['input'] if functional else tensors['tensors'][0] if operation == 'all_reduce' else tensors['input_tensor']
+    source = (tensors['input'] if functional or operation == 'all_to_all_single' else
+              tensors['tensors'][0] if operation in ('all_reduce', 'send', 'recv') else tensors['input_tensor'])
+    if operation == 'all_to_all_single':
+        if not source['shape'] or source['shape'][0] % record['group_size']:
+            raise ValueError('all-to-all requires divisible non-scalar input')
+        splits = record.get('split_sizes', {})
+        if set(splits) != {'input_split_sizes', 'output_split_sizes'}:
+            raise ValueError('all-to-all split sizes missing')
+        if any(not isinstance(value, list) or any(type(size) is not int or size < 0 for size in value) for value in splits.values()):
+            raise ValueError('all-to-all split sizes require nonnegative native integers')
+        uniform = [source['shape'][0] // record['group_size']] * record['group_size']
+        if any(value not in ([], uniform) for value in splits.values()):
+            raise ValueError('nonuniform all-to-all splits require a dedicated peer-matrix replay contract')
+        if not functional and (tensors['output']['shape'] != source['shape'] or tensors['output']['dtype'] != source['dtype']):
+            raise ValueError('all-to-all output must match uniform input shape/dtype')
     if functional and operation != 'all_reduce' and not source['shape']:
         raise ValueError('functional gather/scatter requires a non-scalar input')
     group_size = record['group_size']
@@ -182,7 +205,8 @@ def _extra_arguments(record, node):
             begin = index+1
     fields.append(body[begin:].strip())
     known = {'input', 'input_tensor', 'output_tensor', 'tensors', 'process_group',
-             'group_name', 'group_size', 'reduce_op', 'sparse_indices', 'async_op', 'timeout'}
+             'group_name', 'group_size', 'reduce_op', 'sparse_indices', 'async_op', 'timeout',
+             'output', 'input_split_sizes', 'output_split_sizes', 'dst', 'src', 'tag'}
     captured = node.attrs.get('arguments', {})
     args, kwargs = captured.get('args', []), captured.get('kwargs', {})
     extras = {}
@@ -211,6 +235,9 @@ def _extra_arguments(record, node):
 
 def _alias_contract(record, tensors, rank):
     raw = record['tensors']
+    if record['operation'] == 'all_to_all_single' and 'output' in raw:
+        if not raw['input'].get('storage_id') or not raw['output'].get('storage_id') or raw['input']['storage_id'] == raw['output']['storage_id']:
+            raise ValueError('all-to-all requires proven separate input/output storage')
     if not {'input_tensor', 'output_tensor'} <= raw.keys():
         if any(item.get('storage_offset', 0) for value in tensors.values()
                for item in (value if isinstance(value, list) else [value])):
@@ -272,8 +299,15 @@ def _peer_evidence(sources):
 def prepare_communication_cases(workload, peer_workloads=()):
     """Extract cases; rank-slice aliases require matching evidence from all peers."""
     sources = [workload, *peer_workloads]
+    source_hashes = {}
+    for source in sources:
+        fingerprint = workload_fingerprint(source)
+        for rank in source.manifest['ranks']:
+            if str(rank) in source_hashes and source_hashes[str(rank)] != fingerprint:
+                raise ValueError('duplicate source rank has mismatched workload fingerprints')
+            source_hashes[str(rank)] = fingerprint
     peer_evidence = _peer_evidence(sources)
-    cases, skipped = {}, []
+    cases, skipped, p2p_records = {}, [], []
     for source in sources:
         if source.hardware != workload.hardware:
             raise ValueError('peer source hardware differs from primary capture')
@@ -282,14 +316,24 @@ def prepare_communication_cases(workload, peer_workloads=()):
                 continue
             record = node.attrs.get('communication')
             if record is None:
-                if 'c10d' in node.name or 'collective' in node.name:
+                if any(word in node.name.lower() for word in ('hybrid_ep', 'hybridep', 'deep_ep', 'deepep')):
+                    skipped.append(dict(rank=node.rank, node_id=node.id, operator=node.name,
+                        reason='HybridEP native backend replay unsupported; generic NCCL is not a substitute'))
+                elif 'c10d' in node.name or 'collective' in node.name:
                     skipped.append(dict(rank=node.rank, node_id=node.id, operator=node.name,
                         reason=node.attrs.get('communication_error', 'no supported resolved process-group evidence')))
                 continue
             try:
                 if node.attrs.get('status') != 'returned':
                     raise ValueError('native collective did not return successfully')
-                if record.get('operator') not in _OPERATIONS or record.get('evidence') != 'native_dispatch_and_resolved_process_group':
+                discovery = None
+                if record.get('evidence') == 'local_cuda_substitution_and_target_group':
+                    if (record.get('backend') != 'fake' or record.get('execution_backend') != 'fake' or record.get('target_backend') != 'nccl'):
+                        raise ValueError('local discovery requires explicit fake execution and NCCL target backend')
+                    discovery = dict(evidence=record['evidence'], execution_backend='fake', target_backend='nccl',
+                        limitation='Local substituted dispatch identifies a target call; it is not native distributed execution evidence.')
+                    record = dict(record, backend='nccl')
+                if record.get('operator') not in _OPERATIONS or record.get('evidence') not in ('native_dispatch_and_resolved_process_group', 'local_cuda_substitution_and_target_group'):
                     raise ValueError('unsupported collective implementation evidence')
                 if record.get('operation') != _OPERATIONS[record['operator']]:
                     raise ValueError('native collective operation does not match its overload')
@@ -310,6 +354,11 @@ def prepare_communication_cases(workload, peer_workloads=()):
                         raise ValueError('PREMUL_SUM requires exact finite native host scalar factor')
                 elif factor is not None:
                     raise ValueError('unexpected factor for native reduction')
+                if record['operation'] in ('send', 'recv'):
+                    if discovery is not None:
+                        raise ValueError('P2P replay requires actual matched native send/receive capture; local substituted P2P unsupported')
+                    p2p_records.append((source, node, record))
+                    continue
                 tensors = {key: _tensor_signature(value) for key, value in record['tensors'].items()}
                 if 'tensors' in tensors and len(tensors['tensors']) != 1:
                     raise ValueError('tensor-list/coalesced collective replay requires a dedicated contract')
@@ -318,6 +367,10 @@ def prepare_communication_cases(workload, peer_workloads=()):
                 case = {key: deepcopy(record[key]) for key in
                         ('operator', 'operator_schema', 'operation', 'participants', 'group_size',
                          'backend', 'group_name', 'reduce_op', 'async_op', 'timeout', 'runtime_context')}
+                if discovery is not None:
+                    case['discovery'] = discovery
+                if record['operation'] == 'all_to_all_single':
+                    case['split_sizes'] = deepcopy(record['split_sizes'])
                 case.update(tensors=tensors, logical_payload=volumes, alias=alias, reduction_factor=factor,
                             peer_evidence=peer_evidence,
                             extra_arguments=_extra_arguments(record, node))
@@ -340,18 +393,80 @@ def prepare_communication_cases(workload, peer_workloads=()):
     eligible = []
     for candidate in cases.values():
         peers = candidate['source_provenance_by_rank']
-        if (candidate['alias']['kind'] == 'own_group_rank_slice' and
+        if ((candidate['alias']['kind'] == 'own_group_rank_slice' or candidate['operation'] == 'all_to_all_single') and
                 {int(rank) for rank in peers} != set(candidate['participants'])):
             for occurrence in candidate['source_nodes']:
                 skipped.append(dict(rank=occurrence['rank'], node_id=occurrence['node_id'],
-                    operator=candidate['operator'], reason='rank-slice collective alias requires matching evidence from every participant'))
+                    operator=candidate['operator'], reason='rank-slice collective alias or all-to-all requires matching evidence from every participant'))
             continue
         candidate['source_provenance'] = deepcopy(peers[str(min(map(int, peers)))])
         candidate['case_id'] = _digest({key: value for key, value in candidate.items() if key != 'source_nodes'})
         eligible.append(candidate)
+    eligible.extend(_prepare_p2p(p2p_records, skipped, peer_evidence))
     return dict(schema='native-communication-cases', version=1,
-                cases=eligible, skipped=skipped,
+                source_workload_sha256_by_rank=source_hashes, cases=eligible, skipped=skipped,
                 scope='isolated same-size group completion; no training overlap or larger-group extrapolation')
+
+
+def _prepare_p2p(records, skipped, peer_evidence):
+    """Pair exact two-rank native send/recv calls; larger schedules stay gaps."""
+    buckets, result = {}, []
+    for source, node, record in records:
+        try:
+            if record['group_size'] != 2:
+                raise ValueError('P2P isolated replay requires an exact two-rank source group')
+            if record.get('reduce_op') is not None:
+                raise ValueError('P2P cannot have a reduction')
+            tensors = {key: _tensor_signature(value) for key, value in record['tensors'].items()}
+            if set(tensors) != {'tensors'} or len(tensors['tensors']) != 1:
+                raise ValueError('P2P replay requires exactly one native tensor')
+            _validate_tensors(record, tensors)
+            if _extra_arguments(record, node):
+                raise ValueError('P2P schema extension requires a dedicated replay contract')
+            _alias_contract(record, tensors, node.rank)
+            p2p = record.get('p2p', {})
+            peer_key = 'dst' if record['operation'] == 'send' else 'src'
+            if (set(p2p) != {peer_key, 'tag'} or type(p2p[peer_key]) is not int or
+                    p2p[peer_key] != 1-record['participants'].index(node.rank) or
+                    type(p2p['tag']) is not int or p2p['tag'] < 0):
+                raise ValueError('P2P requires explicit matching group-relative peer and tag')
+            sender = node.rank if peer_key == 'dst' else record['participants'][p2p['src']]
+            identity = dict(participants=record['participants'], group_name=record['group_name'],
+                            tag=p2p['tag'], sender=sender, tensors=tensors,
+                            runtime_context=record['runtime_context'])
+            buckets.setdefault(_digest(identity), {'send': [], 'recv': []})[record['operation']].append((source, node, record, tensors))
+        except (ValueError, KeyError, TypeError) as error:
+            skipped.append(dict(rank=node.rank, node_id=node.id, operator=node.name, reason=str(error)))
+    for bucket in buckets.values():
+        if len(bucket['send']) != len(bucket['recv']):
+            for source, node, record, tensors in bucket['send']+bucket['recv']:
+                skipped.append(dict(rank=node.rank, node_id=node.id, operator=node.name,
+                                    reason='P2P requires matching send/receive peer occurrences'))
+            continue
+        # Pair FIFO occurrences within the same source/tag/membership context.
+        for send, recv in zip(sorted(bucket['send'], key=lambda item:item[1].id),
+                              sorted(bucket['recv'], key=lambda item:item[1].id)):
+            source, node, record, tensors = send
+            case = {key: deepcopy(record[key]) for key in
+                    ('operator', 'operator_schema', 'participants', 'group_size', 'backend',
+                     'group_name', 'reduce_op', 'async_op', 'timeout', 'runtime_context')}
+            case.update(operation='p2p', tensors=tensors, alias={'kind':'separate_allocations'},
+                        logical_payload=_validate_tensors(record, tensors), reduction_factor=None,
+                        extra_arguments={}, peer_evidence=peer_evidence,
+                        rank_operations={str(item[1].rank):dict(operator=item[2]['operator'],
+                            operator_schema=item[2]['operator_schema'], p2p=deepcopy(item[2]['p2p']))
+                            for item in (send, recv)},
+                        source_provenance_by_rank={str(item[1].rank):deepcopy(item[0].manifest.get('provenance', {})) for item in (send, recv)},
+                        source_nodes=[dict(rank=item[1].rank,node_id=item[1].id,
+                            cost_key=item[1].attrs.get('cost_key'),tensor_storage=deepcopy(item[2]['tensors'])) for item in (send,recv)])
+            case['source_provenance'] = deepcopy(case['source_provenance_by_rank'][str(min(record['participants']))])
+            case['case_id'] = _digest({key:value for key,value in case.items() if key != 'source_nodes'})
+            existing = next((c for c in result if c['case_id'] == case['case_id']), None)
+            if existing is None:
+                result.append(case)
+            else:
+                existing['source_nodes'].extend(case['source_nodes'])
+    return result
 
 
 def communication_case_workload(workload, case_ids=None, *, topology, peer_workloads=()):
@@ -436,36 +551,43 @@ def region_provider(workload, config):
         for key, actual in (('torch_version', str(torch.__version__)), ('cuda_version', torch.version.cuda)):
             if any(peer.get(key) != actual for peer in case.get('source_provenance_by_rank', {'0': provenance}).values()):
                 raise ValueError('collective runtime mismatch: '+key)
-        namespace, operation, overload = case['operator'].split('.')
+        selected = case.get('rank_operations', {}).get(str(case['participants'][rank]), {})
+        operator = selected.get('operator', case['operator'])
+        namespace, operation, overload = operator.split('.')
         function = getattr(getattr(getattr(torch.ops, namespace), operation), overload)
-        if str(function._schema) != case['operator_schema']:
+        if str(function._schema) != selected.get('operator_schema', case['operator_schema']):
             raise ValueError('native collective schema differs from captured implementation')
 
         reduction = (dist._make_nccl_premul_sum(case['reduction_factor'])
                      if case['reduce_op'] == 'premul_sum' else
                      dist.ReduceOp(getattr(dist.ReduceOp, case['reduce_op'].upper())) if case['reduce_op'] else None)
         kwargs = dict(case.get('extra_arguments', {}))
+        kwargs.update(case.get('split_sizes', {}))
+        if selected:
+            kwargs.update(selected['p2p'])
         if namespace == 'c10d':
-            if type(case['async_op']) is not bool:
+            if not selected and type(case['async_op']) is not bool:
                 raise ValueError('native asynchronous collective mode is missing')
-            kwargs.update(process_group=group.boxed(), async_op=case['async_op'], timeout=case['timeout'])
+            kwargs.update(process_group=group.boxed())
+            if not selected:
+                kwargs.update(async_op=case['async_op'], timeout=case['timeout'])
             if operation == 'allreduce_':
                 kwargs['sparse_indices'] = None
             if reduction is not None:
                 kwargs['reduce_op'] = reduction.boxed()
         else:
             kwargs['group_name'] = group_name
-            if operation != 'all_reduce':
+            if operation not in ('all_reduce', 'all_to_all_single'):
                 kwargs['group_size'] = world
             if case['reduce_op'] is not None:
                 kwargs['reduce_op'] = case['reduce_op']
 
-        def run(_function=function, _kwargs=kwargs, _namespace=namespace, _case_id=case['case_id']):
+        def run(_function=function, _kwargs=kwargs, _namespace=namespace, _operation=operation, _case_id=case['case_id']):
             if active.get('case_id') != _case_id:
                 raise ValueError('collective case must be prepared before timing')
             result = _function(**dict(_kwargs, **active['tensors']))
             if _namespace == 'c10d':
-                result[-1].wait()
+                (result if _operation in ('alltoall_base_', 'send', 'recv_') else result[-1]).wait()
             else:
                 torch.ops._c10d_functional.wait_tensor.default(result)
 
