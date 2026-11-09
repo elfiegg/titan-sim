@@ -38,6 +38,19 @@ def main(argv=None):
     prepare.add_argument('workloads', type=Path, nargs='+')
     prepare.add_argument('--config', type=Path, help='preparation evidence JSON')
     prepare.add_argument('--output', type=Path, required=True)
+    recover = commands.add_parser('recover-schedule', help='recover supported native peer rendezvous and exact functional waits')
+    recover.add_argument('workloads', type=Path, nargs='+')
+    recover.add_argument('--output', type=Path, required=True)
+    freeze = commands.add_parser('freeze-prediction', help='freeze exact prediction inputs and scope before a native control')
+    freeze.add_argument('workload', type=Path)
+    freeze.add_argument('--calibration', type=Path, required=True)
+    freeze.add_argument('--context', type=Path, required=True)
+    freeze.add_argument('--output', type=Path, required=True)
+    control = commands.add_parser('validate-prediction', help='invoke a trusted fresh control and compare with a frozen prediction')
+    control.add_argument('frozen', type=Path)
+    control.add_argument('--runner', required=True, help='trusted module:function accepting context and config')
+    control.add_argument('--config', type=Path, required=True)
+    control.add_argument('--output', type=Path, required=True)
     export = commands.add_parser('export-plan', help='export prepared native schedules and graphs through a trusted adapter')
     export.add_argument('--adapter', default='titan_sim.plan_capture:export_recipe',
                         help='importable.module:function; defaults to native TorchTitan exporter')
@@ -70,6 +83,13 @@ def main(argv=None):
     memory_binding.add_argument('--bundle', type=Path, required=True)
     memory_binding.add_argument('--context', type=Path, required=True, help='exact requested target applicability')
     memory_binding.add_argument('--output', type=Path, required=True)
+    allocation = commands.add_parser('allocation-evidence', help='derive observed allocator generations and conditional lifetime envelopes')
+    allocation.add_argument('workload', type=Path)
+    allocation.add_argument('--capture', type=Path, required=True)
+    allocation.add_argument('--context', type=Path, required=True)
+    allocation.add_argument('--storage-bindings', type=Path)
+    allocation.add_argument('--report', type=Path)
+    allocation.add_argument('--output', type=Path, required=True)
     window = commands.add_parser('window-cases', help='validate a native window and build its isolated measurement workload')
     window.add_argument('workload', type=Path, help='source workload containing native executable bindings')
     window.add_argument('--config', type=Path, required=True, help='window membership, streams, dependencies and trusted provider')
@@ -99,6 +119,22 @@ def main(argv=None):
             result['command'] = args.command
             if args.output:
                 emit(result, args.output)
+        elif args.command == 'recover-schedule':
+            from .schedule_recovery import recover_schedule
+            workload = recover_schedule(args.workloads)
+            write_workload(args.output, workload)
+            result = dict(command=args.command, output=str(args.output),
+                          recovery=workload.manifest['schedule_recovery'], unresolved=workload.manifest['unresolved'])
+        elif args.command == 'freeze-prediction':
+            from .prediction_validation import freeze_prediction
+            result = freeze_prediction(read_workload(args.workload), read_json(args.calibration), context=read_json(args.context))
+            emit(result, args.output)
+        elif args.command == 'validate-prediction':
+            from .prediction_validation import run_control
+            if int(os.environ.get('WORLD_SIZE', 1)) > 1:
+                raise ValueError('validation CLI requires a single coordinator; trusted runner owns distributed controls')
+            result = run_control(read_json(args.frozen), runner=args.runner, config=read_json(args.config))
+            emit(result, args.output)
         elif args.command == 'export-plan':
             from .adapters import resolve
             from .native_plan import validate_plan, write_plan
@@ -155,6 +191,19 @@ def main(argv=None):
             result = dict(command=args.command, output=str(args.output), bound=len(report['bound']),
                           skipped=len(report['skipped']), unbound=len(report['unbound']),
                           unresolved=workload.manifest['unresolved'])
+        elif args.command == 'allocation-evidence':
+            from .allocation_contracts import analyze_allocation_capture, produce_allocation_evidence
+            capture = read_json(args.capture)
+            result = analyze_allocation_capture(capture)
+            bundle = produce_allocation_evidence(read_workload(args.workload), capture,
+                applicability=read_json(args.context),
+                storage_bindings=read_json(args.storage_bindings) if args.storage_bindings else None)
+            emit(bundle, args.output)
+            if args.report:
+                emit(result, args.report)
+            result = dict(command=args.command, output=str(args.output),
+                reconstruction_complete=result['reconstruction_complete'],
+                unresolved=result['unresolved'], scope='observations and conditional envelopes; no unconditional physical fit')
         elif args.command == 'bind-memory':
             from .memory_evidence import bind_memory_evidence
             workload = bind_memory_evidence(read_workload(args.workload), read_json(args.bundle),

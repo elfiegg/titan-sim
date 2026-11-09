@@ -92,6 +92,54 @@ class CaseBindingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'observed source'):
             bind_cases([original],[measurement])
 
+    def test_custom_dispatch_binding_requires_exact_schema_and_local_contract(self):
+        from titan_sim.native_runner import native_cost_key
+        original,measurement=self.live_fixture()
+        original.nodes=original.nodes[:1]
+        original.storage=[]
+        node=original.nodes[0]
+        node.name='custom.local.default'
+        node.attrs.update(operator=node.name,operator_schema='custom::local(Tensor x) -> Tensor',
+            native_boundary_kind='custom_dispatch',native_region_member_node_ids=[5])
+        record=original.manifest['retained_native_boundaries'][0]
+        record.update(name=node.name,boundary_kind='custom_dispatch',operator_schema=node.attrs['operator_schema'],
+            source_dispatch_contexts=[{'include':'fixture','exclude':'autograd'}],source_occurrences=[[5]],
+            input_output_contract={'args':[],'output':'fixture'})
+        binding=measurement.nodes[0].attrs['native_measurement']
+        binding['implementation'].update(name=node.name,boundary_kind='custom_dispatch',
+            operator_schema=record['operator_schema'],dispatch_context=record['source_dispatch_contexts'][0],
+            observed_occurrence=0,state_contract={'communication':'none'})
+        binding['context'].update(source_workload_sha256=workload_fingerprint(original),source_node_ids=[5])
+        measurement.nodes[0].attrs['cost_key']=native_cost_key(binding['implementation'],binding['context'])
+        self.assertEqual(len(bind_cases([original],[measurement]).manifest['case_binding']['bound']),1)
+        for field,value in [('operator_schema','different'),('dispatch_context',{}),('state_contract',{})]:
+            bad=copy.deepcopy(measurement)
+            descriptor=bad.nodes[0].attrs['native_measurement']
+            descriptor['implementation'][field]=value
+            bad.nodes[0].attrs['cost_key']=native_cost_key(descriptor['implementation'],descriptor['context'])
+            with self.assertRaises(ValueError):bind_cases([original],[bad])
+
+    def test_later_native_occurrence_uses_its_own_contract(self):
+        from titan_sim.native_runner import native_cost_key
+        original,measurement=self.live_fixture()
+        later=Node(20,'later native',0,deps=[8],attrs=dict(status='returned',native_callable_boundary=True,
+            native_callable_index=0,native_region_member_node_ids=[20]))
+        original.nodes.append(later)
+        record=original.manifest['retained_native_boundaries'][0]
+        contract={'args':['different specialization'],'kwargs':{}}
+        record['source_occurrences'].append([20])
+        record['source_argument_contracts']=[record['argument_contract'],contract]
+        record['source_runtime_identities'].append(record['source_runtime_identities'][0])
+        binding=measurement.nodes[0].attrs['native_measurement']
+        binding['implementation'].update(observed_occurrence=1,argument_contract=contract)
+        binding['context'].update(source_node_ids=[20],source_workload_sha256=workload_fingerprint(original))
+        measurement.nodes[0].attrs['cost_key']=native_cost_key(binding['implementation'],binding['context'])
+        bound=bind_cases([original],[measurement])
+        self.assertEqual(bound.manifest['case_binding']['bound'][0]['source_node_ids'],[20])
+        binding['implementation']['argument_contract']=record['argument_contract']
+        measurement.nodes[0].attrs['cost_key']=native_cost_key(binding['implementation'],binding['context'])
+        with self.assertRaisesRegex(ValueError,'arguments differ'):bind_cases([original],[measurement])
+
     def communication_sources(self, completion=True):
         def tensor(count, sid):
             return dict(shape=[count],stride=[1],storage_id=sid,storage_offset=0,
@@ -129,6 +177,23 @@ class CaseBindingTests(unittest.TestCase):
         skipped=bind_cases(originals,[cases],{'communication_topology':topology})
         self.assertEqual(len(skipped.manifest['case_binding']['bound']),0)
         self.assertIn('completion',skipped.manifest['case_binding']['skipped'][0]['reason'])
+
+    def test_recovered_cost_attaches_to_completion_not_issue(self):
+        from tests.test_schedule_recovery import rank_source
+        from titan_sim.communication_cases import communication_case_workload
+        originals=[rank_source(rank) for rank in range(2)]
+        topology={'fixture':'two devices'}
+        measurement=communication_case_workload(originals[0],peer_workloads=originals[1:],topology=topology)
+        bound=bind_cases(originals,[measurement],{'recover_schedule':True,'communication_topology':topology})
+        self.assertEqual(len(bound.manifest['case_binding']['bound']),2)
+        for node in bound.nodes:
+            if node.attrs.get('source_node_id') == 3:
+                if node.kind == 'collective':
+                    self.assertEqual(node.attrs['communication_completion'],'device')
+                    self.assertIn('measurement_binding',node.attrs)
+                else:
+                    self.assertTrue(node.attrs['zero_cost_semantic'])
+                    self.assertNotIn('cost_key',node.attrs)
 
     def test_compute_binding_preserves_source_dependencies_storage_and_gaps(self):
         original=source()

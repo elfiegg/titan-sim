@@ -70,11 +70,14 @@ def virtual_groups(*, rank, world_size, records):
                     os.environ[key] = value
 
 
-def communication_mode(records, *, native_records=None, retain_arguments=False, recorder_getter=lambda: None):
+def communication_mode(records, *, native_records=None, retain_arguments=False, recorder_getter=lambda: None,
+                       retention=None):
     import torch
     from torch.utils._python_dispatch import TorchDispatchMode
     from .communication_cases import describe_communication
-    from .executable_regions import _contract, _runtime_identity
+    from .executable_regions import (_contract, _runtime_identity, _dispatch_context,
+                                     _tensor_versions, ArgumentRetention)
+    retention = retention or ArgumentRetention(retain_arguments)
 
     class LocalCommunication(TorchDispatchMode):
         def __torch_dispatch__(self, func, types, args=(), kwargs=None):
@@ -83,20 +86,43 @@ def communication_mode(records, *, native_records=None, retain_arguments=False, 
             if not ('c10d' in name or 'collective' in name):
                 if native_records is not None and not name.startswith(('aten.', 'prims.')):
                     recorder = recorder_getter()
+                    occurrence = (recorder.nodes[-1] if recorder is not None and recorder.nodes and
+                                  recorder.nodes[-1].attrs.get('operator') == name and
+                                  recorder.nodes[-1].attrs.get('status') == 'issued' else None)
                     record = dict(native_handle=func, name=name, operator_schema=str(getattr(func, '_schema', '')),
                         compiled_correspondence='unverified', state_contract={'mutation': 'unknown'},
-                        source_occurrences=[[recorder.nodes[-1].id]] if recorder is not None and recorder.nodes else [])
+                        boundary_kind='custom_dispatch', status='issued', source_occurrences=[])
+                    index = len(native_records)
+                    native_records.append(record)
                     try:
                         record['argument_contract'] = _contract(dict(args=args, kwargs=kwargs))
+                        dispatch_context, dispatch_keys = _dispatch_context()
+                        if occurrence is not None:
+                            record.update(source_occurrences=[[occurrence.id]],
+                                source_argument_contracts=[record['argument_contract']],
+                                source_runtime_identities=[_runtime_identity()],
+                                source_tensor_versions=[_tensor_versions(dict(args=args, kwargs=kwargs))],
+                                source_dispatch_contexts=[dispatch_context])
+                            retain = retention(name)
+                            record['source_arguments'] = [(args, kwargs) if retain else None]
+                            if retain:
+                                record['source_dispatch_keys'] = [dispatch_keys]
+                            occurrence.attrs.update(native_callable_boundary=True, native_callable_index=index,
+                                native_boundary_kind='custom_dispatch', operator_schema=record['operator_schema'],
+                                native_region_member_node_ids=[occurrence.id])
                     except Exception as error:
                         record['observation_error'] = type(error).__name__+': '+str(error)
-                    if record['source_occurrences'] and 'argument_contract' in record:
-                        record['source_argument_contracts'] = [record['argument_contract']]
-                        record['source_runtime_identities'] = [_runtime_identity()]
-                    if retain_arguments:
-                        record['arguments'] = (args, kwargs)
-                        record['source_arguments'] = [(args, kwargs)] if record['source_occurrences'] else []
-                    native_records.append(record)
+                    try:
+                        output = func(*args, **kwargs)
+                    except BaseException:
+                        record['status'] = 'failed'
+                        raise
+                    record['status'] = 'returned'
+                    try:
+                        record['input_output_contract'] = _contract(dict(args=args, kwargs=kwargs, output=output))
+                    except Exception as error:
+                        record['observation_error'] = type(error).__name__+': '+str(error)
+                    return output
                 return func(*args, **kwargs)
             if name == '_c10d_functional.wait_tensor.default':
                 records.append(dict(operator=name, operation='wait', substitution='already_completed_local_representative'))
@@ -162,7 +188,7 @@ def capture(config):
     import torch
     from .torchtitan import _build_trainer, capture_trainer
     from .torch_capture import TorchCapture
-    from .executable_regions import observe_native_compile
+    from .executable_regions import observe_native_compile, ArgumentRetention
     from .operator_cases import execution_context
     if config.get('execution') != 'local_cuda':
         raise ValueError('local discovery requires explicit execution=local_cuda')
@@ -185,6 +211,8 @@ def capture(config):
         if handoff['status'] != 'ready':
             raise ValueError('prepare-runtime handoff is blocked: '+'; '.join(handoff['unresolved']))
     groups, communication, handles = [], [], []
+    retention = ArgumentRetention(config.get('retain_executable_arguments', False),
+        config.get('retain_native_names'), config.get('retain_native_max_occurrences'))
     provenance = dict(execution='local_cuda', torch_version=str(torch.__version__), cuda_version=torch.version.cuda,
         recipe_args=argv, runtime=config.get('runtime_provenance', {}), target_rank=rank, target_world_size=world,
         numerical_training_equivalence=False, compiled_correspondence='unverified')
@@ -198,8 +226,10 @@ def capture(config):
         try:
             with communication_mode(communication, native_records=handles,
                     retain_arguments=config.get('retain_executable_arguments', False),
+                    retention=retention,
                     recorder_getter=lambda: active_recorder[0]), observe_native_compile(handles,
                     retain_arguments=config.get('retain_executable_arguments', False),
+                    retention=retention,
                     recorder_getter=lambda: active_recorder[0]):
                 trainer = _build_trainer(argv, provenance)
                 provenance.update(operator_execution_context=execution_context(torch),
@@ -237,7 +267,7 @@ def capture(config):
     workload.manifest.update(execution='local_cuda', virtual_process_groups=groups,
         substituted_communications=communication, compiled_correspondence='unverified',
         retained_native_boundaries=[{key: value for key, value in record.items()
-            if key not in ('native_handle', 'reference', 'arguments', 'source_arguments')} for record in handles],
+            if key not in ('native_handle', 'reference', 'arguments', 'source_arguments', 'source_dispatch_keys')} for record in handles],
         local_cuda_memory_scope='discovery execution only; substituted communication and retained handles change lifetimes')
     workload.manifest['unresolved'] += [
         'Communication outputs are finite local representatives, not distributed numerical results.',

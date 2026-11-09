@@ -221,6 +221,41 @@ class GenericCLITests(unittest.TestCase):
             self.assertIn('controlled native windows',stderr)
             self.assertFalse((root/'invalid.json').exists())
 
+    def test_freeze_prediction_requires_complete_source_scope(self):
+        from tests.test_prediction_validation import fixture
+        source,costs,context=fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            write_workload(root/'source.json',source)
+            (root/'costs.json').write_text(json.dumps(costs))
+            (root/'context.json').write_text(json.dumps(context))
+            code,_,stderr=self.invoke('freeze-prediction',root/'source.json','--calibration',root/'costs.json',
+                '--context',root/'context.json','--output',root/'frozen.json')
+            self.assertEqual(code,0,stderr)
+            self.assertEqual(json.loads((root/'frozen.json').read_text())['context'],context)
+            source.manifest['capture_status']='blocked'
+            write_workload(root/'source.json',source)
+            code,_,stderr=self.invoke('freeze-prediction',root/'source.json','--calibration',root/'costs.json',
+                '--context',root/'context.json','--output',root/'invalid.json')
+            self.assertEqual(code,2)
+            self.assertFalse((root/'invalid.json').exists())
+
+    def test_allocation_history_producer_does_not_close_memory_fit(self):
+        from tests.test_allocation_contracts import AllocationContractsTests
+        capture,source,context=AllocationContractsTests().fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            write_workload(root/'source.json',source)
+            (root/'capture.json').write_text(json.dumps(capture))
+            (root/'context.json').write_text(json.dumps(context))
+            code,stdout,stderr=self.invoke('allocation-evidence',root/'source.json','--capture',root/'capture.json',
+                '--context',root/'context.json','--report',root/'analysis.json','--output',root/'bundle.json')
+            self.assertEqual(code,0,stderr)
+            self.assertTrue(json.loads(stdout)['reconstruction_complete'])
+            bundle=json.loads((root/'bundle.json').read_text())
+            self.assertTrue(all(not row['complete'] for row in bundle['coverage']))
+            self.assertTrue(all(row['kind']=='conditional' for row in bundle['allocations']))
+
 
 if __name__ == '__main__':
     unittest.main()

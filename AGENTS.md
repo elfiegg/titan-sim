@@ -5,6 +5,9 @@ Pin and record this repository's commit SHA. Read README.md and run
 prepare, validate, calibrate, simulate**, plus **export-plan, lower-plan** for native
 host-plan artifacts, **calibration-cases/window-cases** for native measurement,
 and **bind-cases/bind-window/bind-memory** for exact target evidence binding.
+**recover-schedule** reconciles supported native peer waits;
+**allocation-evidence** derives observed generations and conditional envelopes;
+**freeze-prediction/validate-prediction** compare declared scopes with fresh controls.
 There is no `--case` or built-in model selection.
 
 - CPU simulation and structural validation require Python 3.10+ only. Do not
@@ -68,6 +71,14 @@ There is no `--case` or built-in model selection.
   binding requires checked producer ordering/boundary assertions; controlled
   synthetic windows cannot replace training costs. Contracted storage remains
   unverified. Conditional memory forecasts cannot satisfy unconditional fit.
+- Native allocation history must preserve the original allocator configuration.
+  Expandable virtual reservations are not physical mapped bytes. Free requests
+  retain blocks until native completion. Coarse host intervals provide upper
+  envelopes, not unavoidable lower coexistence; external physical coverage stays
+  explicit. See `docs/memory-evidence.md`.
+- Full-update prediction validation requires producer-recorded exact context,
+  complete ranks/capture and timing coverage. Preserve wall/device timing and
+  memory lifecycle scope. A component control cannot qualify full-model accuracy.
 
 Use a compatible pinned training environment for native capture/calibration and
 preserve its installed PyTorch/CUDA/custom-op versions. GPU measurement requires

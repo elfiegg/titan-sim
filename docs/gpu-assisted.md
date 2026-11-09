@@ -61,6 +61,18 @@ schedule tables or graphs. Host schedules establish ordering constraints, not
 kernel durations or contention. Local dispatch order alone cannot recover all
 cross-rank completion dependencies, data-dependent routing or compiler overlap.
 
+For complete original native dispatch captures, [schedule recovery](schedule-recovery.md)
+can reconcile supported peer collectives and their exact functional wait lineage:
+
+```sh
+python -m titan_sim recover-schedule results/native.rank*.json \
+  --output results/recovered-workload.json
+```
+
+Every peer must share an explicit capture-run identity. Fake local waits remain
+configuration evidence; they cannot prove transport completion. Native c10d Work
+waits, global CUDA stream ordering and unsupported group layouts remain gaps.
+
 ## 2. Measure identified native implementations
 
 There are two local compute paths:
@@ -73,6 +85,11 @@ There are two local compute paths:
   arguments. Replay requires an explicit read-only or reset contract, matching
   execution context, and the same process. Opaque compiled boundaries do not
   automatically reveal their internal allocations or communication.
+
+Supported custom-dispatch boundaries retain their native schema and below-autograd
+dispatcher context. Bounded name/occurrence retention avoids keeping every
+training tensor alive. Each selected call must have complete input/output
+contracts, unchanged state or a reset, and an explicit no-communication contract.
 
 For dispatch cases, select the measurement workload, then time it on one GPU:
 
@@ -135,9 +152,11 @@ requires a reconciled **device-completion endpoint**, not just its host issue
 call. Topology must be explicitly bound to the measured placement.
 
 Observed local callable boundaries can be contracted into one measured event
-only when their membership and first captured argument specialization match.
-Externally visible intermediate dependencies are rejected. Later invocations
-are not automatically assumed equivalent.
+only when their membership and the selected occurrence's argument, runtime and
+dispatch contracts match. Externally visible intermediate dependencies are
+rejected. Later invocations require their own indexed observation. Set
+`recover_schedule: true` in the binding configuration to derive supported native
+functional completion endpoints from original peer captures before cost binding.
 
 `bind-window source.json --measurement window-workload.json --output bound.json`
 accepts closed source-backed windows. It charges the whole window once as one
@@ -158,6 +177,14 @@ generations, creation and completion events, placement and lifecycle bounds to
 the final prediction workload. Native optimizer/state inspection and allocator
 observations provide useful checks, but an observed maximum is not a proven
 upper bound. Single-region peaks must not be summed as a training peak.
+
+`NativeAllocationCapture` records raw allocator snapshots and state inventories.
+In an explicitly dedicated process it can own bounded allocation history.
+`allocation-evidence` reconstructs generations, aliases, free requests and
+completed releases, and produces conditional replay envelopes where correspondence
+is known. It does not infer future physical coverage from an observed trace;
+coarse host intervals provide upper envelopes, not proof of simultaneous lower
+usage. See [allocation evidence production](memory-evidence.md).
 
 ```sh
 python -m titan_sim bind-memory results/bound-workload.json \
@@ -187,7 +214,10 @@ is available without `--strict`, with its unresolved limitations retained.
 `--require-memory-fit` separately rejects inconclusive capacity. Useful-token
 counts must count unique training tokens, not copies on model-parallel ranks.
 
-Freeze prediction inputs before a held-out native training control. Compare
+Use [prediction validation](prediction-validation.md) to freeze prediction inputs
+before invoking a separate trusted native control. Full-update freezing rejects
+missing ranks, incomplete captures, unknown costs and declared execution gaps.
+Compare
 step time, per-device memory and fit decisions. Component replay, a successful
 local discovery step or a controlled overlap window is narrower evidence than
 full-model prediction accuracy. Validation models exercise shared runtime

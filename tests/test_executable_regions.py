@@ -147,3 +147,48 @@ class ExecutableRegionTests(unittest.TestCase):
         with torch.no_grad(), self.assertRaisesRegex(ValueError, 'runtime/math'):
             registry.register_observed(records[0], **kwargs)
         registry.close()
+
+    def test_opaque_arguments_and_changed_tensor_values_fail_closed(self):
+        from titan_sim.executable_regions import LiveRegionRegistry, region_provider
+        registry = LiveRegionRegistry()
+        kwargs = dict(implementation={'name':'native'}, context={'hardware_id':'unit'},
+            source_workload_sha256='a'*64, source_node_ids=[0],
+            state_contract={'mutation':'read_only'}, replay_safe=True)
+        with self.assertRaisesRegex(ValueError, 'opaque'):
+            registry.register(lambda x: x, args=(object(),), **kwargs)
+        value = torch.ones(2)
+        registry.register(torch.neg, args=(value,), **kwargs)
+        workload = registry.calibration_workload(hardware={'id':'unit'})
+        value.add_(1)
+        with self.assertRaisesRegex(ValueError, 'tensor state changed'):
+            region_provider(workload, {})
+        registry.close()
+
+    def test_later_compiled_specialization_uses_its_pre_call_contract(self):
+        import sys
+        from types import ModuleType
+        from unittest.mock import patch
+        from titan_sim.executable_regions import observe_native_compile, LiveRegionRegistry
+        from titan_sim.torch_capture import TorchCapture
+        module = ModuleType('torchtitan.distributed.local_compile')
+        class Config:
+            @staticmethod
+            def _compile(reference, **options):
+                return reference
+        module.LocalCompileConfig = Config
+        records, recorder = [], TorchCapture()
+        with patch.dict(sys.modules, {'torchtitan.distributed.local_compile': module}):
+            with observe_native_compile(records, retain_arguments=True,
+                    recorder_getter=lambda: recorder, boundary_only=True):
+                native = Config._compile(lambda value: value + 1)
+                native(torch.ones(2))
+                native(torch.ones(3))
+        registry = LiveRegionRegistry()
+        registry.register_observed(records[0], native_callable_index=0, occurrence=1,
+            source_workload_sha256='a'*64, context={'hardware_id':'unit'},
+            state_contract={'mutation':'read_only'}, replay_safe=True)
+        implementation = registry.entries[0]['implementation']
+        self.assertEqual(implementation['observed_occurrence'], 1)
+        self.assertEqual(implementation['argument_contract']['args'][0]['shape'], [3])
+        self.assertEqual(registry.entries[0]['context']['source_node_ids'], records[0]['source_occurrences'][1])
+        registry.close()

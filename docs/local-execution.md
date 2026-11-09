@@ -44,6 +44,14 @@ Without this option, metadata is retained but live arguments are released. Unkno
 mutation/state contracts prevent automatic replay. Handles do not survive process
 exit and are never deserialized from JSON.
 
+Use `retain_native_names` (a list of exact callable names) and
+`retain_native_max_occurrences` (a positive limit per name) to bound retention.
+Metadata still covers every observed call. Unretained entries in the live
+`source_arguments` list are `None`; they cannot be registered for replay. These
+controls apply to captured calls, so compile warmup outside observation does not
+consume the limit. Retaining a small view can still keep a large backing storage
+alive; the limit is a call count, not a memory budget.
+
 For a boundary with an established replay contract, use
 `executable_regions.LiveRegionRegistry.register(original_callable, args=...,
 kwargs=..., implementation=..., context=..., source_workload_sha256=...,
@@ -86,7 +94,33 @@ lists. The source workload
 must retain the corresponding native boundary inventory for later binding. This
 avoids manually substituting an unrelated function for an observed boundary.
 
-Current source binding supports the first observed native compile-hook boundary.
-Dispatch-visible custom overload handles and their contracts can be retained, but
-`bind-cases` does not yet bind those handles as observed native callable regions.
-Keeping an actual custom handle is not proof that it has a safe calibrated replay.
+Source binding checks the selected occurrence's input/runtime metadata, rather
+than using the first call as a proxy for later shapes or precision settings.
+Dispatch-visible custom overloads become single-node boundaries only when the
+observer matches the exact issued source operation and the native call returns.
+The retained schema, occurrence, dispatcher key sets and runtime identity must
+match. An unrelated most-recent source node cannot supply this evidence.
+
+Custom overload observation happens below autograd. Replay restores those native
+dispatcher key sets, preserving the original overload handle. Registration and
+measurement must use the observed grad/autocast/inference settings, commonly
+`torch.no_grad()` for a CUDA custom implementation. This measures the dispatched
+implementation, excluding outer autograd setup. Runtime changes, opaque
+input/output objects and unsupported schema contracts fail closed. Tensor version
+counters reject detected input mutation after observation or registration when no
+reset callback was supplied; counters do not detect every possible external or
+untracked write. The integration still owns exact input values and state safety.
+
+Custom replay additionally requires the explicit trusted state assertion
+`communication: "none"`. Schema-declared mutation requires a reset callback and
+a mutation contract other than `read_only`. Schema annotations alone do not prove
+the absence of global state, RNG changes, auxiliary streams or hidden transport.
+Keep those obligations in the caller's state contract. A local timing or binding
+never establishes distributed equivalence or complete memory coverage.
+
+HybridEP's native dispatch/combine uses a real process group, a native global
+communication buffer and opaque per-dispatch state shared with backward. Its
+native `deep_ep.HybridEPBuffer` dependency must exist in the prepared runtime.
+Those operations cannot be replayed through this single-device custom registry
+or replaced by a generic all-to-all measurement. Qualifying the actual APIs on
+their real group remains a separate distributed integration.

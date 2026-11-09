@@ -82,6 +82,10 @@ Keep original model and optimizer execution.
   A gap resolution records a checksum-bound integration assertion, not proof.
   Missing ranks and failed captures cannot be asserted away. See
   [preparation](../../docs/native-preparation.md).
+- For complete native peer captures, [schedule recovery](../../docs/schedule-recovery.md)
+  derives supported collective completion and wait dependencies from common run
+  identity and exact storage lineage. Fake waits and unobserved native Work waits
+  remain gaps. Cost binding can request this pass with `recover_schedule: true`.
 - Calibrate with the bundled `titan_sim.native_runner:measure`. Trace mode imports
   instrumented GPU observations; execute mode times original callable regions
   supplied by a trusted provider. Match implementation, shapes, scalars, precision,
@@ -117,6 +121,9 @@ Use [memory evidence binding](../../docs/memory-evidence.md) for target-applicab
 allocation generations, completion events and scoped coverage. Bind against the
 final workload after region/window contraction. Native state/allocator samples
 remain observations; conditional forecasts cannot pass unconditional fit.
+Native allocator history can derive recorded generations and completed releases.
+Use `allocation-evidence` for conditional envelopes only with matching source
+applicability; coarse host intervals do not prove unavoidable live overlap.
 
 Publish lower/upper peaks, capacity/budget, margin and limiting device. A credible
 lower bound above a device budget means `estimated_not_fit`; a covered upper bound
@@ -142,6 +149,11 @@ completed step time and all-device memory over the same lifecycle; separate
 intrusive profiling from throughput measurement. A replay of the calibration
 trace is not independent validation. Use multiple recipe families and layouts
 over time; one validated model does not imply universal TorchTitan support.
+Use [prediction validation](../../docs/prediction-validation.md) to freeze an exact
+producer-recorded context before a trusted fresh control. Full-update comparison
+requires complete timing coverage and target ranks; a component comparison cannot
+qualify full-model accuracy. Keep wall/device timing and memory lifecycle scopes
+consistent between prediction and control.
 
 Return artifact locations/hashes, pinned identities, recipe/placement, capacity
 and timing assessments, assumptions, unsupported features, evidence level,

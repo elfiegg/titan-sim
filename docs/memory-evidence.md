@@ -183,3 +183,103 @@ observation-only inconclusiveness, storage aliases/generations, asynchronous and
 zero-duration completion, retained global gaps, lifecycle bounds, and budget vs
 capacity outcomes. A CPU PyTorch test inspects actual Adam state before/after its
 native first update. These tests do not establish full-model GPU memory bounds.
+
+## Producing native allocator evidence
+
+`NativeAllocationCapture` in `titan_sim.allocation_capture` reads actual native
+state and CUDA allocator `_snapshot()` data. It does not synchronize CUDA,
+initialize lazy optimizer state, retain tensors, replace native calls, or change
+compiler/allocator policy. Its optional history recorder changes diagnostic
+recording only. Use it in a fresh, dedicated observation process:
+
+```python
+from titan_sim.allocation_capture import NativeAllocationCapture
+from titan_sim.allocation_contracts import (
+    analyze_allocation_capture, produce_allocation_evidence,
+)
+
+capture = NativeAllocationCapture(
+    device_index=local_device, physical_device=placement[str(rank)], rank=rank,
+    provenance={**provenance, 'applicability': context},
+)
+with capture.record_history(max_entries=100000, dedicated_process=True):
+    with capture.region(native_node_id, models=model_parts, optimizers=optimizers):
+        original_native_call()
+raw = capture.report()
+audit = analyze_allocation_capture(raw)
+bundle = produce_allocation_evidence(workload, raw, applicability=context)
+```
+
+`dedicated_process=True` attests fresh recorder ownership. The implementation
+checks for existing history and rejects it before enabling its recorder. Native
+APIs cannot reliably inspect/restore every prior recorder setting; recording
+therefore remains enabled until the dedicated process exits. Do not use this
+mode inside somebody else's profiler session. The bounded recorder requests all
+allocation/free actions. Entry and exit snapshots are automatic; a `region`
+records boundaries around the original call, including an exit sample on error.
+No implicit terminal synchronization is performed. A validation harness may use
+an explicit, separately identified terminal synchronization boundary.
+
+Raw evidence includes addresses, native stack/source metadata and state paths;
+retain it locally with the other private artifacts. Public examples and tests
+must use synthetic identifiers. Compact analysis replaces allocator addresses
+with local allocation IDs and generations. The analysis still contains local
+state evidence and is not a public export sanitizer.
+
+The CPU analyzer reconstructs the native allocator's allocation, free request
+and completed-free events. A free request does **not** release its backing block:
+`active_awaiting_free` blocks remain charged until `free_completed`, and address
+reuse starts a new generation only after that event. It reconciles each history
+prefix with the next snapshot's live block sizes and pending-free states. Lost
+prefixes, bounded-history saturation, unknown actions, unavailable snapshots,
+incomplete execution and native state outside the allocator remain explicit
+issues. Imported history with unknown recorder settings cannot establish that
+transient allocations were recorded.
+
+Newer native snapshots call pending stream retention `active_pending_free`; it
+has the same requirement for an actual completed-free event. Expandable allocator
+`segment_map`/`segment_unmap` events change physical mapped reservations, which are
+reconciled with the snapshot's segment `total_size`. The much larger
+`expandable_reservation_size` is a virtual address reservation and is never
+charged as physical GPU memory. These mappings do not create tensor allocations
+and do not release active blocks by themselves.
+
+`recorded_allocator_coverage` describes only this recorded process allocator
+domain and observed phases. It is separate from predictive physical coverage.
+The analyzer reports actual sampled state bytes, including alias deduplication,
+CPU/offloaded storage and newly created optimizer state. A complete history can
+establish the recorded active-block peak. Neither result bounds an unseen native
+invocation: mutable state, lazy optimizer creation, data-dependent control flow,
+external CUDA allocators, communication/library workspaces, graph/private-pool
+growth, allocator reservations, and unobserved lifecycle phases remain open.
+An allocation surviving the last snapshot is retained **at that boundary**; it
+is not proven permanent.
+
+The evidence producer derives allocation sizes and native generations from the
+raw records, and derives release boundaries from actual `free_completed` events.
+Its capture provenance must contain the exact requested `applicability` context;
+an observation from another source, target, runtime or implementation is rejected.
+It emits conditional replay envelopes, with explicit repetition and boundary
+correspondence conditions. Missing node correspondence keeps completion unknown.
+Coarse region lifetimes provide upper envelopes only, with zero lower bytes:
+allocations freed and reused inside one region need not coexist. An allocation
+present at capture entry and retained through the last snapshot can retain its
+known byte lower bound under the explicit replay condition.
+All predictive physical coverage rows remain false, and no sampled maximum
+becomes an unconditional bound. Thus this producer cannot establish unconditional
+memory fit, including when its recorded allocator audit is complete. It does not
+close the general native physical-bound production gap.
+
+Existing workload storage must have native identity correspondence before any
+allocation envelopes are added. Optional `storage_bindings` maps each local
+workload storage ID to `{sample_index, state_id}` in the native state inventory.
+The producer checks actual backing bytes and allocation generation, counts views
+once, and represents allocator rounding separately from backing storage. Equal-byte
+alias bindings currently require native storage present at entry and retained at
+exit: projected transient storage needs finer lifetime correspondence and remains
+observation-only. Missing correspondence retains observations only; it does not add
+allocator totals to projected storage. Multi-phase captures remain observations because this adapter
+does not yet map initialization/checkpoint lifetimes into scheduled nodes.
+Existing additional memory allocations also require an identity merge that this
+producer does not implement; such workloads retain observations without adding
+potentially duplicate allocations.

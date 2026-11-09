@@ -36,20 +36,31 @@ def _live_bindings(sources, measurement):
         if type(index) is not int or not 0 <= index < len(inventory):
             raise ValueError('live native handle has no observed source boundary')
         record = inventory[index]
+        occurrence = implementation.get('observed_occurrence', 0)
+        if type(occurrence) is not int or occurrence < 0:
+            raise ValueError('native observed occurrence must be a nonnegative integer')
+        occurrences = record.get('source_occurrences', [])
+        if occurrence >= len(occurrences):
+            raise ValueError('native observed occurrence is absent from source')
         runtime_identities = record.get('source_runtime_identities', [])
-        if not runtime_identities or not runtime_identities[0] or context.get('runtime_identity') != runtime_identities[0]:
+        if occurrence >= len(runtime_identities) or not runtime_identities[occurrence] or context.get('runtime_identity') != runtime_identities[occurrence]:
             raise ValueError('live native runtime/math context differs from observed boundary')
         source_contracts = record.get('source_argument_contracts', [])
-        argument_contract = source_contracts[0] if source_contracts else record.get('argument_contract')
+        if source_contracts:
+            if occurrence >= len(source_contracts):
+                raise ValueError('native occurrence lacks its input contract')
+            argument_contract = source_contracts[occurrence]
+        elif occurrence == 0:
+            argument_contract = record.get('argument_contract')
+        else:
+            raise ValueError('native occurrence lacks its input contract')
         if (implementation.get('name') != record.get('name') or
                 implementation.get('reference_source_sha256') != record.get('reference_source_sha256') or
                 implementation.get('argument_contract') != argument_contract):
             raise ValueError('live native callable/arguments differ from observed boundary')
-        occurrences = record.get('source_occurrences', [])
         members = context.get('source_node_ids')
-        # First-call argument metadata cannot justify later specializations.
-        if not occurrences or members != occurrences[0]:
-            raise ValueError('live native binding requires the first observed argument specialization')
+        if members != occurrences[occurrence]:
+            raise ValueError('live native binding requires the exact observed argument specialization')
         nodes = {n.id: n for n in source.nodes}
         if not members or len(set(members)) != len(members) or any(i not in nodes for i in members):
             raise ValueError('invalid native region occurrence membership')
@@ -61,8 +72,27 @@ def _live_bindings(sources, measurement):
             raise ValueError('native region does not start at its observed callable boundary')
         if boundary.attrs.get('status') != 'returned' or boundary.attrs.get('native_region_member_node_ids') != members:
             raise ValueError('native callable did not complete with the declared members')
+        kind = record.get('boundary_kind', 'compiled_callable')
+        if implementation.get('boundary_kind', 'compiled_callable') != kind:
+            raise ValueError('native boundary kind differs from observation')
+        if kind == 'custom_dispatch':
+            dispatch = record.get('source_dispatch_contexts', [])
+            if (record.get('observation_error') or not record.get('input_output_contract') or
+                    len(members) != 1 or boundary.attrs.get('native_boundary_kind') != kind or
+                    occurrence >= len(dispatch) or not dispatch[occurrence] or
+                    implementation.get('dispatch_context') != dispatch[occurrence] or
+                    not record.get('operator_schema') or
+                    implementation.get('operator_schema') != record['operator_schema'] or
+                    boundary.attrs.get('operator_schema') != record['operator_schema'] or
+                    boundary.attrs.get('operator') != record.get('name')):
+                raise ValueError('custom native schema/dispatch/source boundary mismatch')
+            if implementation.get('state_contract', {}).get('communication') != 'none':
+                raise ValueError('custom local binding requires an explicit no-communication contract')
+        elif kind != 'compiled_callable':
+            raise ValueError('unsupported native callable boundary kind')
         for member in selected:
-            if member.kind != 'compute' or 'communication' in member.attrs or 'c10d' in member.name:
+            if (member.kind != 'compute' or 'communication' in member.attrs or
+                    any(word in member.name.lower() for word in ('c10d', 'hybridep', 'hybrid_ep', 'deepep', 'deep_ep'))):
                 raise ValueError('single-GPU native region contains distributed communication')
         yield selected, node.attrs['cost_key'], binding
 
@@ -185,8 +215,10 @@ def bind_cases(sources, measurements, config=None):
     """
     sources, measurements = list(sources), list(measurements)
     config = deepcopy(config or {})
-    if set(config) - {'communication_topology', 'useful_tokens'}:
+    if set(config) - {'communication_topology', 'useful_tokens', 'recover_schedule'}:
         raise ValueError('unknown case binding configuration')
+    if type(config.get('recover_schedule', False)) is not bool:
+        raise ValueError('recover_schedule must be boolean')
     if not sources or not measurements:
         raise ValueError('source and measurement workloads are required')
     for source in sources:
@@ -197,9 +229,22 @@ def bind_cases(sources, measurements, config=None):
     options = {'chrome_traces': []}
     if 'useful_tokens' in config:
         options['useful_tokens'] = config['useful_tokens']
-    result = prepare(sources, options)
+    if config.get('recover_schedule'):
+        from .schedule_recovery import recover_schedule
+        result = recover_schedule(sources)
+        if 'useful_tokens' in options:
+            if type(options['useful_tokens']) is not int or options['useful_tokens'] < 0:
+                raise ValueError('useful_tokens must be a nonnegative integer')
+            result.manifest['useful_tokens'] = options['useful_tokens']
+    else:
+        result = prepare(sources, options)
     original = {(node.rank, node.id): node for source in sources for node in source.nodes}
-    prepared = {(node.rank, node.attrs['source_node_id']): node for node in result.nodes}
+    prepared = {}
+    for node in result.nodes:
+        identity = node.rank, node.attrs['source_node_id']
+        previous = prepared.get(identity)
+        if previous is None or node.attrs.get('communication_completion') == 'device':
+            prepared[identity] = node
     fingerprints = {str(rank): workload_fingerprint(source)
                     for source in sources for rank in source.manifest['ranks']}
     bound, skipped, claimed = [], [], set()

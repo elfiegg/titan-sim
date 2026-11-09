@@ -96,12 +96,15 @@ and allocator behavior. Calibrated timing alone cannot establish memory fit.
 | Native TorchTitan capture | Original training-step observation; ET+Kineto by default, explicit Kineto-only mode for ET-incompatible runtimes; raw evidence retained |
 | Native trace-to-GPU matching and rank preparation | Bundled `prepare`: checksum-verified direct correlations, rank merging and evidence-backed region/dependency/rendezvous assertions; ambiguous correlations and unknown waits remain gaps |
 | Local CUDA discovery | Original trainer with target logical fake groups and explicit communication substitutions; actual local compute; unsupported boundaries fail closed |
+| Native schedule recovery | Complete peer dispatch captures with shared run identity can recover supported functional collective completion/wait dependencies; fake waits and missing stream semantics remain gaps |
 | Native GPU measurement runner | Bundled trace-cost importer and callable-region timer; live native handles with explicit state/context contracts; existing all-rank process groups supported, distributed graph/subgroup-only rounds unsupported |
 | Identified compute/communication calibration | Native dense matmuls, supported collectives, uniform all-to-all and two-rank-source-group P2P; exact source/cost binding; explicit skips and local artifacts |
 | Concurrent native windows | Provider-owned state, CUDA streams/events and all-rank preflight; closed source-backed windows bind atomically; automatic trace-to-window recovery remains unimplemented |
 | Per-device physical-memory bounds | Placement-aware lifetime envelopes, heterogeneous capacities, aliases, external allocations and lifecycle peaks; complete coverage requires explicit evidence |
 | Real native memory observation | Allocator peaks, boundary snapshots and visible state inventories, including optional native peak-reset tracking; observations do not establish unseen-configuration fit |
 | Target-applicable memory evidence | Source/placement/phase-bound allocation contracts, aliases and coverage; conditional forecasts separated from unconditional fit; complete contract production still needs integration |
+| Native allocation history | Generation/release reconstruction and conditional replay envelopes from recorded allocator evidence; process-allocator coverage is distinct from physical predictive coverage |
+| Prediction comparison | Frozen exact-scope predictions and trusted fresh-control invocation; partial captures cannot qualify as full-update accuracy |
 | Full-model GPU/distributed accuracy across recipes | Requires held-out validation for each claimed scope; universal configuration support is not established |
 
 The repository-owned [simulation skill](skills/simulate-torchtitan/SKILL.md) consumes
@@ -166,6 +169,7 @@ The CLI exposes these operations:
 |---|---|---|---|
 | `runtime-check` | Runtime manifest, capability evidence and expected identities | Readiness/gaps and artifact hashes | CPU |
 | `prepare` | Rank workloads and optional preparation evidence | Combined workload with explicit semantics/gaps | CPU |
+| `recover-schedule` | Complete native peer captures with matching run identity | Supported collective completion and wait dependencies, with remaining gaps | CPU |
 | `export-plan` | Prepared native objects through a trusted adapter, or native recipe export configuration | Versioned schedule/graph plan | Original framework environment; observation may execute native steps |
 | `lower-plan` | Native pipeline-group plans, hardware and explicit bindings | Workload with schedule and logical storage lifetimes | CPU |
 | `calibration-cases` | Native dispatch workload; actual placement for communication | Isolated measurement workload and optional eligible/skipped inventory | CPU |
@@ -173,6 +177,9 @@ The CLI exposes these operations:
 | `bind-cases` | Exact source snapshots and native measurement workloads | Derived workload and occurrence-binding audit | CPU |
 | `bind-window` | Exact source and a closed source-backed window workload | One measured atomic event with all participant resources | CPU |
 | `bind-memory` | Final workload, allocation evidence bundle and exact applicability | Workload with audited observations and predictive contracts | CPU |
+| `allocation-evidence` | Raw native allocation capture, final workload and exact applicability | Observed generation audit and conditional replay evidence | CPU; capture uses the original runtime |
+| `freeze-prediction` | Workload, catalog and producer-recorded validation context | Immutable prediction identity and result | CPU |
+| `validate-prediction` | Frozen prediction and trusted fresh-control runner | Exact-scope timing/memory comparison | Single coordinator; runner owns native execution |
 | `capture` | Adapter reference and adapter-owned configuration | Workload JSON | Adapter's framework environment |
 | `validate` | Workload JSON | Structural counts and declared gaps | CPU |
 | `calibrate` | Workload, measurement runner and runner-owned configuration | Cost catalog and unmatched-key report | Runner's measurement environment, usually GPUs |
@@ -322,9 +329,12 @@ the comparison as independent validation.
 | [`operator_cases.py`](titan_sim/operator_cases.py), [`communication_cases.py`](titan_sim/communication_cases.py) | Eligible native overload cases and replay providers with exact metadata/runtime context |
 | [`local_execution.py`](titan_sim/local_execution.py), [`executable_regions.py`](titan_sim/executable_regions.py) | Target-rank CUDA discovery, explicit communication substitution and live native callable retention |
 | [`case_binding.py`](titan_sim/case_binding.py), [`identity.py`](titan_sim/identity.py) | Exact source snapshots, native measurement correspondence and occurrence audits |
+| [`schedule_recovery.py`](titan_sim/schedule_recovery.py) | Native peer collective reconciliation and exact functional wait lineage |
 | [`execution_windows.py`](titan_sim/execution_windows.py) | Native concurrent measurement and conservative closed-window binding |
 | [`memory_observer.py`](titan_sim/memory_observer.py) | Native process allocator peaks, sampled device use and state inventories |
 | [`memory_evidence.py`](titan_sim/memory_evidence.py) | Target-applicable allocation contracts, scoped coverage and separate empirical observations |
+| [`allocation_capture.py`](titan_sim/allocation_capture.py), [`allocation_contracts.py`](titan_sim/allocation_contracts.py) | Native allocator history/state capture, generations and conditional lifetime evidence |
+| [`prediction_validation.py`](titan_sim/prediction_validation.py) | Frozen predictions and exact-scope native control comparison |
 | [`memory.py`](titan_sim/memory.py) | Physical placement, allocation/lifecycle envelopes and fit verdicts |
 | [`hardware.py`](titan_sim/hardware.py) | Explicit capacity/rate validation; specification assumptions |
 | [`torchtitan.py`](titan_sim/torchtitan.py) | Native recipe loading and bounded trainer observation |
